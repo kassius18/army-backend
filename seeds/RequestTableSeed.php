@@ -1,27 +1,18 @@
 <?php
 
-declare(strict_types=1);
 
-namespace MyProject\Migrations;
+use Phinx\Seed\AbstractSeed;
 
-use Doctrine\DBAL\Schema\Schema;
-use Doctrine\Migrations\AbstractMigration;
-
-final class Version20211121165909 extends AbstractMigration
+class RequestTableSeed extends AbstractSeed
 {
-  public function getDescription(): string
+  public function run()
   {
-    return 'Populating the request table and the request_row table';
-  }
-
-  public function up(Schema $schema): void
-  {
-    $this->addSql(
+    $this->execute(
       " INSERT INTO request(phi1, phi2, YEAR, MONTH, DAY)
  VALUES(15,2000,2021,05,15)"
     );
 
-    $this->addSql(
+    $this->execute(
       " INSERT INTO request_row(
     request_phi1,
     request_phi2,
@@ -49,9 +40,5 @@ VALUES(
     2021
 ) "
     );
-  }
-
-  public function down(Schema $schema): void
-  {
   }
 }

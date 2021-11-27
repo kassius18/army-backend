@@ -1,0 +1,4 @@
+create the find oneByPhiAndDate and find manyByDateInterval methods for the request
+create the tests for the methods
+create the path for the request post and get and patch http methods
+
