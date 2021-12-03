@@ -10,19 +10,12 @@ final class CreateRequestTable extends AbstractMigration
   {
     $this->execute("CREATE TABLE request(
     id INT(6) AUTO_INCREMENT NOT NULL UNIQUE,
-    phi1 INT(6) ,
-    phi2 INT(6) ,
-    nameNumber VARCHAR(30),
-    name VARCHAR(30),
-    amountOfOrder INT(6),
-    unitOfOrder VARCHAR(20),
-    reasonOfOrder INT(6),
-    priorityOfOrder INT(6),
-    observations VARCHAR(30),
+    phi_first_part INT(6) ,
+    phi_second_part INT(6) ,
     year INT(6),
     month INT(6),
     day INT(6),
-    PRIMARY KEY (phi1, phi2, year))");
+    PRIMARY KEY (phi_first_part, phi_second_part, year))");
   }
 
   public function down(): void

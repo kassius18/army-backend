@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php"
+         colors="true"
+         verbose="true"
+         stopOnFailure="false"
+         stderr="true">
+
+    <testsuites>
+        <testsuite name="Test suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+      <includePath>.</includePath>
+      <const name="TEST_DIR" value = "./tests"/>
+      <const name="MIGRATION_DIR" value = "./migrations"/>
+      <const name="SEEDER_DIR" value = "./seeds"/>
+      <const name="APP_DIR" value = "./app"/>
+    </php>
+
+    <!-- <coverage includeUncoveredFiles="true" -->
+    <!--           processUncoveredFiles="true" -->
+    <!--           pathCoverage="true" -->
+    <!--           ignoreDeprecatedCodeUnits="true" -->
+    <!--           disableCodeCoverageIgnore="true"> -->
+
+    <!--     <include> -->
+    <!--       <directory suffix=".php">./app</directory> -->
+    <!--     </include> -->
+
+    <!--     <exclude> -->
+    <!--       <directory suffix=".php">./app/snippets/</directory> -->
+    <!--     </exclude> -->
+
+    <!--     <report> -->
+    <!--         <html outputDirectory="./coverage" lowUpperBound="50" highLowerBound="90"/> -->
+    <!--     </report> -->
+    <!--   </coverage> -->
+
+    <!--   <logging> -->
+    <!--     <testdoxHtml outputFile="./coverage/log/testdox.html"/> -->
+    <!--   </logging> -->
+
+</phpunit>

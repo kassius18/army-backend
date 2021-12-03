@@ -8,16 +8,30 @@ class RequestTableSeed extends AbstractSeed
   public function run()
   {
     $this->execute(
-      " INSERT INTO request(phi1, phi2, YEAR, MONTH, DAY)
- VALUES(15,2000,2021,05,15)"
+      <<<SQL
+INSERT INTO request(
+    phi_first_part,
+    phi_second_part,
+    YEAR,
+    MONTH,
+    DAY
+)
+VALUES(
+    1, 2, 2021, 05, 15
+    1, 2, 2022, 05, 15
+    1, 3, 2021, 05, 15
+    2, 2, 2021, 05, 15
+);
+SQL
     );
 
     $this->execute(
-      " INSERT INTO request_row(
-    request_phi1,
-    request_phi2,
+      <<<SQL
+INSERT INTO request_row(
+    request_phi_first_part,
+    request_phi_second_part,
     nameNumber,
-    name,
+    NAME,
     mainPart,
     amountOfOrder,
     unitOfOrder,
@@ -38,7 +52,8 @@ VALUES(
     50,
     'Π/Θ CAT',
     2021
-) "
+)
+SQL
     );
   }
 }
