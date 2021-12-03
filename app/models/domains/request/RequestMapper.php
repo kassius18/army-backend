@@ -47,7 +47,7 @@ SQL;
     ]);
   }
 
-  public function findOneByPhiAndYear(int $firstPartOfPhi, int $secondPartOfPhi, int $year): array
+  public function findOneByPhiAndYear(int $firstPartOfPhi, int $secondPartOfPhi, int $year): RequestEntity
   {
     $sql = <<<SQL
 SELECT
@@ -65,7 +65,8 @@ SQL;
         'year' => $year
       ]
     );
-    return $statement->fetchAll();
+    $result = $statement->fetchAll();
+    return RequestFactory::createRequestEntityFromReqord($result[0]);
   }
 
   public function saveManyRecords(array $arrayOfRequest): void
@@ -90,7 +91,7 @@ SQL;
       'secondPartOfPhi' => $secondPartOfPhi
     ]);
     $allRecords = $statement->fetchAll();
-    return $this->createRequestEntityFromArrayOfRecords($allRecords);
+    return RequestFactory::createRequestEntityFromArrayOfRecords($allRecords);
   }
 
   public function findAllByDateInterval(int $startYear, int $endYear = null): array
@@ -108,28 +109,6 @@ SQL;
       'endYear' => $endYear
     ]);
     $allRecords = $statement->fetchAll();
-    return $this->createRequestEntityFromArrayOfRecords($allRecords);
-  }
-
-
-
-  private function createRequestEntityFromArrayOfRecords(array $records): array
-  {
-    $arrayOfRequestEntitites = [];
-    foreach ($records as $key => $record) {
-      array_push($arrayOfRequestEntitites, $this->createRequestEntityFromReqord($record));
-    }
-    return $arrayOfRequestEntitites;
-  }
-
-  private function createRequestEntityFromReqord(array $record)
-  {
-    return new RequestEntity(
-      $record['phi_first_part'],
-      $record['phi_second_part'],
-      $record['year'],
-      $record['month'],
-      $record['day']
-    );
+    return RequestFactory::createRequestEntityFromArrayOfRecords($allRecords);
   }
 }
