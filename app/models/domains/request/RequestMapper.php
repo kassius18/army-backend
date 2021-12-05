@@ -66,7 +66,7 @@ SQL;
       ]
     );
     $result = $statement->fetchAll();
-    return RequestFactory::createRequestEntityFromReqord($result[0]);
+    return RequestFactory::createRequestEntityFromRecord($result[0]);
   }
 
   public function saveManyRecords(array $arrayOfRequest): void

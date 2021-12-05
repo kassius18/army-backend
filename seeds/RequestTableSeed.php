@@ -17,43 +17,40 @@ INSERT INTO request(
     DAY
 )
 VALUES(
-    1, 2, 2021, 05, 15
-    1, 2, 2022, 05, 15
-    1, 3, 2021, 05, 15
-    2, 2, 2021, 05, 15
+    15, 2000, 2021, 05, 15
 );
 SQL
     );
 
-    $this->execute(
-      <<<SQL
-INSERT INTO request_row(
-    request_phi_first_part,
-    request_phi_second_part,
-    nameNumber,
-    NAME,
-    mainPart,
-    amountOfOrder,
-    unitOfOrder,
-    reasonOfOrder,
-    priorityOfOrder,
-    observations,
-    request_YEAR
-)
-VALUES(
-    15,
-    2000,
-    '9S9972',
-    'ΦΙΛΤΡΟ ΑΕΡΑ ΕΣΩΤ',
-    'Π/Θ',
-    1,
-    'τεμ.',
-    04,
-    50,
-    'Π/Θ CAT',
-    2021
-)
-SQL
-    );
+    /* $this->execute( */
+    /*   <<<SQL */
+    /* INSERT INTO request_row( */
+    /* request_phi_first_part, */
+    /* request_phi_second_part, */
+    /* request_year, */
+    /* name_number, */
+    /* name, */
+    /* main_part, */
+    /* amount_of_order, */
+    /* unit_of_order, */
+    /* reason_of_order, */
+    /* priority_of_order, */
+    /* observations */
+    /* ) */
+    /* VALUES( */
+    /* 15, */
+    /* 2000, */
+    /* 2021, */
+    /* '9S9972', */
+    /* 'ΦΙΛΤΡΟ ΑΕΡΑ ΕΣΩΤ', */
+    /* 'Π/Θ', */
+    /* 1, */
+    /* 'τεμ.', */
+    /* 04, */
+    /* 50, */
+    /* 'Π/Θ CAT' */
+    /* ) */
+    /* SQL */
+    /* ); */
   }
 }

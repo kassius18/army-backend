@@ -153,7 +153,7 @@ class RequestMapperTest extends TestCase
     $this->assertTrue($result);
     $dbRecord = self::$pdo->query("SELECT * FROM request WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021")->fetchAll();
     $this->assertCount(1, $dbRecord);
-    $dbRecord = RequestFactory::createRequestEntityFromReqord($dbRecord[0]);
+    $dbRecord = RequestFactory::createRequestEntityFromRecord($dbRecord[0]);
     $this->assertJsonStringEqualsJsonString(json_encode($dbRecord), json_encode($this->request));
   }
 
@@ -164,7 +164,7 @@ class RequestMapperTest extends TestCase
     $this->assertTrue($result);
     $dbRecord = self::$pdo->query("SELECT * FROM request WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021")->fetchAll();
     $this->assertCount(1, $dbRecord);
-    $dbRecord = RequestFactory::createRequestEntityFromReqord($dbRecord[0]);
+    $dbRecord = RequestFactory::createRequestEntityFromRecord($dbRecord[0]);
     $this->assertJsonStringEqualsJsonString(json_encode($dbRecord), json_encode($this->requestWithDIfferentDay));
   }
 }

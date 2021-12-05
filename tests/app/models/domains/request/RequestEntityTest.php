@@ -1,10 +1,7 @@
 <?php
 
 use app\models\domains\request\RequestEntity;
-use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\NullOutput;
 
 class RequestEntityTest extends TestCase
 {

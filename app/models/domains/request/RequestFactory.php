@@ -8,12 +8,12 @@ class RequestFactory
   {
     $arrayOfRequestEntitites = [];
     foreach ($records as $key => $record) {
-      array_push($arrayOfRequestEntitites, self::createRequestEntityFromReqord($record));
+      array_push($arrayOfRequestEntitites, self::createRequestEntityFromRecord($record));
     }
     return $arrayOfRequestEntitites;
   }
 
-  public static function createRequestEntityFromReqord(array $record): RequestEntity
+  public static function createRequestEntityFromRecord(array $record): RequestEntity
   {
     return new RequestEntity(
       $record['phi_first_part'],
