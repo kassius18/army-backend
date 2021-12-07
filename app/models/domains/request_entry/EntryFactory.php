@@ -30,4 +30,22 @@ class EntryFactory
       $record['id']
     );
   }
+
+  public static function createEntryFromUserInput(array $record): EntryEntity
+  {
+    return new EntryEntity(
+      $record['firstPartOfPhi'],
+      $record['secondPartOfPhi'],
+      $record['year'],
+      $record['nameNumber'],
+      $record['name'],
+      $record['mainPart'],
+      $record['amountOfOrder'],
+      $record['unitOfOrder'],
+      $record['reasonOfOrder'],
+      $record['priorityOfOrder'],
+      $record['observations'],
+      $record['id']
+    );
+  }
 }

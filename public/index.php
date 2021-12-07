@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use app\core\Dispatcher;
 use app\core\Request;
 use app\core\Router;
 
@@ -36,14 +35,14 @@ $dotenv->load();
 $builder = new DI\ContainerBuilder();
 
 $builder->addDefinitions([
-  'dsn' => $_ENV["driver"] . $_ENV["host"] . $_ENV["dbname"],
+  'dsn' => $_ENV["driver"] . ":host=" . $_ENV["host"] . ";dbname=" . $_ENV["dbname"],
   'username' => $_ENV["username"],
   'password' => $_ENV["password"],
   'pdo_options' => [
     PDO::ATTR_EMULATE_PREPARES => false,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
   ],
-  Request::class => DI\create()->constructor($_GET, $_POST, $_SERVER, $_FILES, getallheaders()),
+  Request::class => DI\create()->constructor($_GET, json_decode(file_get_contents('php://input'), true), $_SERVER, $_FILES, getallheaders()),
   PDO::class => DI\create()->constructor(DI\get('dsn'), DI\get('username'), DI\get('password'), DI\get('pdo_options'))
 ]);
 
@@ -58,6 +57,7 @@ $router = $container->get(Router::class);
 /* $router->setPostRoute("/register", ["app\controllers\RegistrationController"]); */
 
 $router->setGetRoute("/requests", "app\controllers\RequestController");
+$router->setPostRoute("/requests", "app\controllers\RequestController");
 /* $router->setGetRoute("/entry", "app\controllers\LoginController", "handleGetRequest", "private"); */
 /* $router->setPostRoute("/entry", "app\controllers\LoginController", "handlePostRequest", "public"); */
 /* $router->setPostRoute("/", "app\controllers\LoginController", "handlePostRequest", "public"); */

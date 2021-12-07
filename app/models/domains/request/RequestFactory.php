@@ -23,4 +23,15 @@ class RequestFactory
       $record['day']
     );
   }
+
+  public static function createRequestFromUserInput(array $userPostInput): RequestEntity
+  {
+    return new RequestEntity(
+      $userPostInput['firstPartOfPhi'],
+      $userPostInput['secondPartOfPhi'],
+      $userPostInput['year'],
+      $userPostInput['month'],
+      $userPostInput['day']
+    );
+  }
 }
