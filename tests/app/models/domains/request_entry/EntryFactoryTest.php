@@ -58,6 +58,19 @@ class EntryFactoryTest extends TestCase
       'obs',
       7
     );
+    $this->entryWithoutId = new EntryEntity(
+      1,
+      2,
+      3,
+      'nameNumber',
+      'name',
+      'mainPart',
+      4,
+      "unit",
+      5,
+      6,
+      'obs',
+    );
   }
 
   public function testCreatingRequestFromDatabaseRecord()
@@ -68,6 +81,11 @@ class EntryFactoryTest extends TestCase
   public function testCreatingRequestFromUserInput()
   {
     $entryCreatedFromUserInput = EntryFactory::createEntryFromUserInput($this->userPostInput);
-    $this->assertEquals($this->entry, $entryCreatedFromUserInput);
+    $this->assertEquals($this->entryWithoutId, $entryCreatedFromUserInput);
+  }
+  public function testCreatingRequestFromArrayOfUserInput()
+  {
+    $entryCreatedFromUserInput = EntryFactory::createEntriesFromArrayOfUserInput([$this->userPostInput]);
+    $this->assertEquals([$this->entryWithoutId], $entryCreatedFromUserInput);
   }
 }
