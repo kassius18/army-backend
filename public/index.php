@@ -56,8 +56,9 @@ $router = $container->get(Router::class);
 /* $router->setGetRoute("/register", ["app\controllers\RegistrationController"]); */
 /* $router->setPostRoute("/register", ["app\controllers\RegistrationController"]); */
 
-$router->setGetRoute("/requests", "app\controllers\RequestController");
+$router->setGetRoute("/requests/", "app\controllers\RequestController");
 $router->setPostRoute("/requests", "app\controllers\RequestController");
+/* die(); */
 /* $router->setGetRoute("/entry", "app\controllers\LoginController", "handleGetRequest", "private"); */
 /* $router->setPostRoute("/entry", "app\controllers\LoginController", "handlePostRequest", "public"); */
 /* $router->setPostRoute("/", "app\controllers\LoginController", "handlePostRequest", "public"); */

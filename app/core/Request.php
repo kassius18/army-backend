@@ -15,7 +15,7 @@ class Request
   public function __construct($get, $post, $server, $files, $headers)
   {
     $this->get = filter_var_array($get, FILTER_SANITIZE_SPECIAL_CHARS);
-    $this->post = filter_var_array($post, FILTER_SANITIZE_SPECIAL_CHARS);
+    $this->post = filter_var_array((array)$post, FILTER_SANITIZE_SPECIAL_CHARS);
     $this->server = filter_var_array($server, FILTER_SANITIZE_SPECIAL_CHARS);
     $this->files = $files;
     $this->headers = $headers;
@@ -28,7 +28,7 @@ class Request
 
   public function getRequestUri()
   {
-    return $this->server["REQUEST_URI"];
+    return $this->server["REDIRECT_URL"];
   }
 
   public function getHeaders()
