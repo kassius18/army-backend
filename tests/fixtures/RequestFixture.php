@@ -3,7 +3,7 @@
 namespace fixtures;
 
 use app\models\domains\request\RequestEntity;
-use PDOStatement;
+use app\models\domains\request_entry\EntryEntity;
 
 class RequestFixture
 {
@@ -21,23 +21,47 @@ class RequestFixture
   public function __construct(\PDO $pdo)
   {
     self::$pdo = $pdo;
+
+    $entry = $this->createEntryThatBelongsToRequestWithIncrementalId(
+      self::$firstPartOfPhi,
+      self::$secondPartOfPhi,
+      self::$year,
+      0
+    );
+
     $this->commonRequest = new RequestEntity(
       self::$firstPartOfPhi,
       self::$secondPartOfPhi,
       self::$year,
       self::$month,
-      self::$day
+      self::$day,
+      [$entry]
     );
   }
 
   public function getFindingByFullPhiFixture(): array
   {
+    $entry = $this->createEntryThatBelongsToRequestWithIncrementalId(
+      self::$firstPartOfPhi,
+      self::$secondPartOfPhi,
+      self::$differentYear,
+      1
+    );
+
     $requestWithSamePhi = new RequestEntity(
       self::$firstPartOfPhi,
       self::$secondPartOfPhi,
       self::$differentYear,
       self::$month,
-      self::$day
+      self::$day,
+      [$entry]
+    );
+
+    $entryWithDifferentPhi = $this->createEntryThatBelongsToRequestWithIncrementalId(
+      self::$differentFirstPartOfPhi,
+      self::$secondPartOfPhi,
+      self::$differentYear,
+      2
     );
 
     $requestWithDifferentePhi = new RequestEntity(
@@ -45,7 +69,8 @@ class RequestFixture
       self::$secondPartOfPhi,
       self::$differentYear,
       self::$month,
-      self::$day
+      self::$day,
+      [$entryWithDifferentPhi]
     );
 
     $this->persistDataSet([$this->commonRequest, $requestWithSamePhi, $requestWithDifferentePhi]);
@@ -65,12 +90,19 @@ class RequestFixture
 
   public function getUpdatingRequestFixture(): array
   {
+    $entry = $this->createEntryThatBelongsToRequestWithIncrementalId(
+      self::$firstPartOfPhi,
+      self::$secondPartOfPhi,
+      self::$year,
+      0
+    );
     $requestWithDifferentDay = new RequestEntity(
       self::$firstPartOfPhi,
       self::$secondPartOfPhi,
       self::$year,
       self::$month,
-      self::$differentDay
+      self::$differentDay,
+      [$entry]
     );
     return [$this->commonRequest, $requestWithDifferentDay];
   }
@@ -94,26 +126,52 @@ class RequestFixture
     return $this->createRequestsForIntervalTestAndFilterByDate($startDate, $endDate);
   }
 
-  private function persistDataSet(array $arrayOfRequestObjects): PDOStatement
+  private function persistDataSet(array $arrayOfRequestObjects): void
   {
-    $sql = "INSERT INTO request(
-    phi_first_part,
-    phi_second_part,
-    YEAR,
-    MONTH,
-    DAY
-)VALUES";
     foreach ($arrayOfRequestObjects as $key => $requestEntity) {
+      $sql = "INSERT INTO request(
+`phi_first_part`,
+`phi_second_part`,
+`YEAR`,
+`MONTH`,
+`DAY`
+)VALUES";
       $sql .= "(
 {$requestEntity->getFirstPhi()},
 {$requestEntity->getSecondPhi()},
 {$requestEntity->getYear()},
 {$requestEntity->getMonth()},
 {$requestEntity->getDay()}
-),";
+)";
+      $sqlToInsertEntriesToTestRequest = "INSERT INTO `request_row`(
+`request_phi_first_part`,
+`request_phi_second_part`,
+`request_year`,
+`name_number`,
+`name`,
+`main_part`,
+`amount_of_order`,
+`unit_of_order`,
+`reason_of_order`,
+`priority_of_order`,
+`observations`
+)
+VALUES(
+    {$requestEntity->getFirstPhi()},
+    {$requestEntity->getSecondPhi()},
+    {$requestEntity->getYear()},
+    'nameNumberTest',
+    'nameTest',
+    'mainPartTest',
+    100,
+    'tem',
+    99,
+    1,
+    'obs'
+)";
+      self::$pdo->query($sql);
+      self::$pdo->query($sqlToInsertEntriesToTestRequest);
     }
-    $sqlWithoutEndComma = substr($sql, 0, -1);
-    return self::$pdo->query($sqlWithoutEndComma);
   }
 
   private function createRequestsForIntervalTestAndFilterByDate(array $startDate, mixed $endDate = null)
@@ -122,9 +180,7 @@ class RequestFixture
     $allArraysInsideInterval = $this->filterAllRequestsByDateInterval($arrayOfRequestsWithDateKeys, $startDate, $endDate);
 
     $this->persistDataSet($arrayOfRequests);
-    return [
-      "requests" => $allArraysInsideInterval
-    ];
+    return $allArraysInsideInterval;
   }
 
   private function createRequestsForFindingByInterval(): array
@@ -132,50 +188,79 @@ class RequestFixture
     $arrayOfRequestsWithDateKeys = [];
     $arrayOfRequests = [];
     $firstPartOfPhi = 0;
-    for ($year = 2000; $year < 2003; $year++) {
-      for ($month = 1; $month < 4; $month++) {
-        for ($day = 20; $day < 23; $day++) {
+    $incrementalId = 0;
+    for ($year = 2000; $year <= 2003; $year++) {
+      for ($month = 1; $month <= 4; $month++) {
+        for ($day = 20; $day <= 23; $day++) {
           $firstPartOfPhi++;
           $request =  new RequestEntity(
             $firstPartOfPhi,
             self::$secondPartOfPhi,
             $year,
             $month,
-            $day
+            $day,
+            [$this->createEntryThatBelongsToRequestWithIncrementalId(
+              $firstPartOfPhi,
+              self::$secondPartOfPhi,
+              $year,
+              $incrementalId
+            )]
           );
           $arrayOfRequestsWithDateKeys[$year][$month][$day] = $request;
           $arrayOfRequests[] = $request;
-          return [$arrayOfRequests, $arrayOfRequestsWithDateKeys];
+          $incrementalId++;
         }
       }
     }
+    return [$arrayOfRequests, $arrayOfRequestsWithDateKeys];
   }
 
   private function filterAllRequestsByDateInterval(array $arrayOfRequestsWithDateKeys, array $startDate, mixed $endDate = null)
   {
-    $negativeValueSoTheIfStatementsFailIfKeyNotSet = -1;
-    $endDate = $endDate ?: $startDate;
-    $startDate[0] = isset($startDate[0]) ? $startDate[0] : $negativeValueSoTheIfStatementsFailIfKeyNotSet;
-    $startDate[1] = isset($startDate[1]) ? $startDate[1] : $negativeValueSoTheIfStatementsFailIfKeyNotSet;
-    $startDate[2] = isset($startDate[2]) ? $startDate[2] : $negativeValueSoTheIfStatementsFailIfKeyNotSet;
-    $endDate[0] = isset($endDate[0]) ?: $negativeValueSoTheIfStatementsFailIfKeyNotSet;
-    $endDate[1] = isset($endDate[1]) ?: $negativeValueSoTheIfStatementsFailIfKeyNotSet;
-    $endDate[2] = isset($endDate[2]) ?: $negativeValueSoTheIfStatementsFailIfKeyNotSet;
+    $endDate = ($endDate === null) ? $startDate : $endDate;
 
     $allArraysInsideInterval = [];
     foreach ($arrayOfRequestsWithDateKeys as $year => $arrayBoundToYearKey) {
       if ($year >= $startDate[0] && $year <= $endDate[0]) {
-        foreach ($arrayBoundToYearKey as $month => $arrayBoundToYearAndMonthKey) {
-          if ($month >= $startDate[1] && $month <= $endDate[1]) {
-            foreach ($arrayBoundToYearAndMonthKey as $day => $arrayBoundToYearMonthAndDayKey) {
-              if ($day >= $startDate[2] && $day <= $endDate[2]) {
-                $allArraysInsideInterval[] = $arrayBoundToYearMonthAndDayKey;
+        if (isset($startDate[1])) {
+          foreach ($arrayBoundToYearKey as $month => $arrayBoundToYearAndMonthKey) {
+            if ($month >= $startDate[1] && $month <= $endDate[1]) {
+              if (isset($startDate[2])) {
+                foreach ($arrayBoundToYearAndMonthKey as $day => $arrayBoundToYearMonthAndDayKey) {
+                  if ($day >= $startDate[2] && $day <= $endDate[2]) {
+                    $allArraysInsideInterval[] = $arrayBoundToYearMonthAndDayKey;
+                  }
+                }
+              } else {
+                $allArraysInsideInterval = array_merge($allArraysInsideInterval, [...$arrayBoundToYearAndMonthKey]);
               }
             }
+          }
+        } else {
+          foreach ($arrayBoundToYearKey as $month => $arrayBoundToYearAndMonthKey) {
+            $allArraysInsideInterval = array_merge($allArraysInsideInterval, [...$arrayBoundToYearAndMonthKey]);
           }
         }
       }
     }
     return $allArraysInsideInterval;
+  }
+
+  private function createEntryThatBelongsToRequestWithIncrementalId(int $firstPartOfPhi, int $secondPartOfPhi, int $year, int $lastId)
+  {
+    return new EntryEntity(
+      $firstPartOfPhi,
+      $secondPartOfPhi,
+      $year,
+      'nameNumberTest',
+      'nameTest',
+      'mainPartTest',
+      100,
+      'tem',
+      99,
+      1,
+      'obs',
+      $lastId + 1
+    );
   }
 }

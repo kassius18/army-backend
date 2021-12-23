@@ -24,7 +24,7 @@ class RequestTest extends TestCase
 
   public function testRouteIsSplitCorrectly()
   {
-    $router = new Request([], [], ["REQUEST_URI" => "/user/test/something"], [], []);
+    $router = new Request([], [], ["REDIRECT_URL" => "/user/test/something"], [], []);
     $splitUri = $router->splitRequestUri();
 
     $this->assertEquals($splitUri[0], "user");

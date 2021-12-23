@@ -31,12 +31,12 @@ class EntryFactory
     );
   }
 
-  public static function createEntryFromUserInput(array $record): EntryEntity
+  public static function createEntryFromUserInput(int $firstPartOfPhi, int $secondPartOfPhi, int $year, array $record): EntryEntity
   {
     return new EntryEntity(
-      $record['firstPartOfPhi'],
-      $record['secondPartOfPhi'],
-      $record['year'],
+      $firstPartOfPhi,
+      $secondPartOfPhi,
+      $year,
       $record['nameNumber'],
       $record['name'],
       $record['mainPart'],
@@ -45,7 +45,20 @@ class EntryFactory
       $record['reasonOfOrder'],
       $record['priorityOfOrder'],
       $record['observations'],
-      $record['id']
     );
+  }
+
+  public static function createEntriesFromArrayOfUserInput(int $firstPartOfPhi, int $secondPartOfPhi, int $year, array $record): array
+  {
+    $arrayOfRequestEntitites = [];
+    foreach ($record as $entry) {
+      array_push($arrayOfRequestEntitites, self::createEntryFromUserInput(
+        $firstPartOfPhi,
+        $secondPartOfPhi,
+        $year,
+        $entry
+      ));
+    }
+    return $arrayOfRequestEntitites;
   }
 }

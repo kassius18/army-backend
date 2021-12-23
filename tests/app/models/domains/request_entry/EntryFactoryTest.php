@@ -80,12 +80,22 @@ class EntryFactoryTest extends TestCase
   }
   public function testCreatingRequestFromUserInput()
   {
-    $entryCreatedFromUserInput = EntryFactory::createEntryFromUserInput($this->userPostInput);
+    $entryCreatedFromUserInput = EntryFactory::createEntryFromUserInput(
+      $this->userPostInput['firstPartOfPhi'],
+      $this->userPostInput['secondPartOfPhi'],
+      $this->userPostInput['year'],
+      $this->userPostInput
+    );
     $this->assertEquals($this->entryWithoutId, $entryCreatedFromUserInput);
   }
   public function testCreatingRequestFromArrayOfUserInput()
   {
-    $entryCreatedFromUserInput = EntryFactory::createEntriesFromArrayOfUserInput([$this->userPostInput]);
+    $entryCreatedFromUserInput = EntryFactory::createEntriesFromArrayOfUserInput(
+      $this->userPostInput['firstPartOfPhi'],
+      $this->userPostInput['secondPartOfPhi'],
+      $this->userPostInput['year'],
+      [$this->userPostInput]
+    );
     $this->assertEquals([$this->entryWithoutId], $entryCreatedFromUserInput);
   }
 }

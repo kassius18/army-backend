@@ -119,9 +119,9 @@ SQL;
     return EntryFactory::createEntryFromArrayOfRecords($result);
   }
 
-  public function saveManyRecords(array $arrayOfRequest): void
+  public function saveManyEntries(array $arrayOfRequests): void
   {
-    foreach ($arrayOfRequest as $key => $request) {
+    foreach ($arrayOfRequests as $key => $request) {
       $this->saveEntry($request);
     }
   }

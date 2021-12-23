@@ -26,7 +26,6 @@ class EntryMapperTest extends TestCase
   private int $reasonOfOrder = 04;
   private int $priorityOfOrder = 50;
   private string $observations = 'Π/Θ CAT';
-
   private string $differentName = 'ΦΙΛΤΡΟ';
 
   private EntryEntity $entryWithoutId;

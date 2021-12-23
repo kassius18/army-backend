@@ -2,6 +2,7 @@
 
 namespace app\models\domains\request;
 
+use app\models\domains\request_entry\EntryMapper;
 use PDO;
 
 class RequestMapper
@@ -13,7 +14,7 @@ class RequestMapper
     $this->pdo = $pdo;
   }
 
-  public function saveRequest(RequestEntity $request): bool
+  public function saveRequest(RequestEntity $request, EntryMapper $entryMapper): void
   {
     $sql = <<<SQL
 INSERT INTO request(
@@ -29,22 +30,19 @@ VALUES(
     :year,
     :month,
     :day
-)
-ON DUPLICATE KEY
-UPDATE
-    MONTH =
-VALUES(MONTH), DAY =
-VALUES(DAY)
+);
 SQL;
 
     $statement = $this->pdo->prepare($sql);
-    return $statement->execute([
+    $statement->execute([
       'firstPartOfPhi' => $request->getFirstPhi(),
       'secondPartOfPhi' => $request->getSecondPhi(),
       'year' => $request->getYear(),
       'month' => $request->getMonth(),
       'day' => $request->getDay()
     ]);
+
+    $entryMapper->saveManyEntries($request->getEntries());
   }
 
   public function findOneByPhiAndYear(int $firstPartOfPhi, int $secondPartOfPhi, int $year): RequestEntity
@@ -54,6 +52,13 @@ SELECT
     *
 FROM
     request
+INNER JOIN request_row 
+ON 
+request_row.request_phi_first_part = request.phi_first_part
+AND 
+request_row.request_phi_second_part = request.phi_second_part
+AND
+request_row.request_year = request.year
 WHERE
     phi_first_part = :firstPartOfPhi AND phi_second_part = :secondPartOfPhi AND year = :year
 SQL;
@@ -66,20 +71,21 @@ SQL;
       ]
     );
     $result = $statement->fetchAll();
-    return RequestFactory::createRequestEntityFromRecord($result[0]);
-  }
-
-  public function saveManyRecords(array $arrayOfRequest): void
-  {
-    foreach ($arrayOfRequest as $key => $request) {
-      $this->saveRequest($request);
-    }
+    return RequestFactory::createRequestEntityFromRecord($result);
   }
 
   public function findManyByFullPhi(int $firstPartOfPhi, int $secondPartOfPhi): array
   {
     $sql = <<<SQL
-SELECT * FROM request WHERE 
+SELECT * FROM request
+INNER JOIN request_row 
+ON 
+request_row.request_phi_first_part = request.phi_first_part
+AND 
+request_row.request_phi_second_part = request.phi_second_part
+AND
+request_row.request_year = request.year
+WHERE 
 phi_first_part = :firstPartOfPhi
 AND
 phi_second_part = :secondPartOfPhi
@@ -90,25 +96,74 @@ SQL;
       'firstPartOfPhi' => $firstPartOfPhi,
       'secondPartOfPhi' => $secondPartOfPhi
     ]);
-    $allRecords = $statement->fetchAll();
+    $allRecords = $statement->fetchAll(PDO::FETCH_GROUP);
     return RequestFactory::createRequestEntityFromArrayOfRecords($allRecords);
   }
 
-  public function findAllByDateInterval(int $startYear, int $endYear = null): array
+  public function findAllByDateInterval(array $startDate, array $endDate = null): array
   {
-    $endYear = $endYear ?: $startYear;
+    $endDate = $endDate ?: $startDate;
+
     $sql = <<<SQL
-SELECT * FROM request WHERE
-year >= :startYear
+SELECT * FROM request
+INNER JOIN request_row 
+ON 
+request_row.request_phi_first_part = request.phi_first_part
+AND 
+request_row.request_phi_second_part = request.phi_second_part
 AND
-year <= :endYear
+request_row.request_year = request.year
+ WHERE
+YEAR >= :startYear
+AND
+YEAR <= :endYear
 SQL;
+
+    $preparedStatementValues = [
+      'startYear' => $startDate[0],
+      'endYear' => $endDate[0]
+    ];
+
+    if (isset($startDate[1])) {
+      $sql .= <<<SQL
+
+AND 
+MONTH >= :startMonth
+AND
+MONTH <= :endMonth
+SQL;
+      $preparedStatementValues['startMonth'] = $startDate[1];
+      $preparedStatementValues['endMonth'] = $endDate[1];
+    }
+    if (isset($startDate[2])) {
+      $sql .= <<<SQL
+
+AND 
+DAY >= :startDay
+AND
+DAY <= :endDay
+SQL;
+      $preparedStatementValues['startDay'] = $startDate[2];
+      $preparedStatementValues['endDay'] = $endDate[2];
+    }
+
     $statement = $this->pdo->prepare($sql);
-    $statement->execute([
-      'startYear' => $startYear,
-      'endYear' => $endYear
-    ]);
-    $allRecords = $statement->fetchAll();
+    $statement->execute($preparedStatementValues);
+    $allRecords = $statement->fetchAll(PDO::FETCH_GROUP);
     return RequestFactory::createRequestEntityFromArrayOfRecords($allRecords);
+  }
+
+  public function updateRequest(RequestEntity $request)
+  {
+    $sql = <<<SQL
+UPDATE request
+    SET MONTH = :month, DAY = :day
+SQL;
+
+    $statement = $this->pdo->prepare($sql);
+    return $statement->execute([
+      'month' => $request->getMonth(),
+      'day' => $request->getDay()
+    ]);
   }
 }

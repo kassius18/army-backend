@@ -11,14 +11,22 @@ class RequestEntity implements JsonSerializable
   private int $year;
   private int $month;
   private int $day;
+  private array $entries;
 
-  public function __construct(int $firstPartOfPhi, int $secondPartOfPhi, int $year, int $month, int $day)
-  {
+  public function __construct(
+    int $firstPartOfPhi,
+    int $secondPartOfPhi,
+    int $year,
+    int $month,
+    int $day,
+    array $entries = []
+  ) {
     $this->firstPartOfPhi = $firstPartOfPhi;
     $this->secondPartOfPhi = $secondPartOfPhi;
     $this->year = $year;
     $this->month = $month;
     $this->day = $day;
+    $this->entries = $entries;
   }
 
   public function getFirstPhi(): int
@@ -37,10 +45,17 @@ class RequestEntity implements JsonSerializable
   {
     return $this->month;
   }
+
   public function getDay(): int
   {
     return $this->day;
   }
+
+  public function getEntries()
+  {
+    return $this->entries;
+  }
+
 
   public function jsonSerialize(): array
   {
@@ -50,6 +65,7 @@ class RequestEntity implements JsonSerializable
       'year' => $this->year,
       'month' => $this->month,
       'day' => $this->day,
+      'entries' => $this->entries,
     ];
   }
 }

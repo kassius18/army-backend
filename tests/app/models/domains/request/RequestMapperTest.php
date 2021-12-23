@@ -3,11 +3,14 @@
 use app\models\domains\request\RequestEntity;
 use app\models\domains\request\RequestFactory;
 use app\models\domains\request\RequestMapper;
+use app\models\domains\request_entry\EntryMapper;
 use fixtures\RequestFixture;
 use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
+
+use function PHPUnit\Framework\assertEquals;
 
 class RequestMapperTest extends TestCase
 {
@@ -46,38 +49,19 @@ class RequestMapperTest extends TestCase
     $actual = $this->requestMapper->findOneByPhiAndYear($expected->getFirstPhi(), $expected->getSecondPhi(), $expected->getYear());
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
+
   public function testFindingManyByFullPhiReturnsCorrectNumberOfRecordsAndIsOrderedByYear()
   {
     $expected = self::$fixture->getFindingByFullPhiFixture();
     $result = $this->requestMapper->findManyByFullPhi($expected[0]->getFirstPhi(), $expected[0]->getSecondPhi());
-    $this->assertJsonStringEqualsJsonString(json_encode($result), json_encode($expected));
-  }
-
-  public function testSaveManyRequests()
-  {
-    $arrayOfRequestObjects = [$this->createMock(RequestEntity::class), $this->createMock(RequestEntity::class), $this->createMock(RequestEntity::class)];
-
-    foreach ($arrayOfRequestObjects as $key => $request) {
-      $requestMapperMock = $this->getMockBuilder(RequestMapper::class)
-        ->disableOriginalConstructor()
-        ->onlyMethods(["saveRequest"])
-        ->getMock();
-    }
-    $requestMapperMock
-      ->expects($this->exactly(count($arrayOfRequestObjects)))
-      ->method("saveRequest")
-      ->with($request);
-    $requestMapperMock->saveManyRecords($arrayOfRequestObjects);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($result));
   }
 
   public function testFindingByYearMonthAndDayInterval()
   {
-    $startDate = [2002, 2, 20];
+    $startDate = [2003, 4, 21];
     $endDate = [2003, 4, 22];
-    [
-      'requests' => $requests,
-    ] = self::$fixture->getFixturesForIntervalTestingByDate($startDate, $endDate);
-
+    $requests = self::$fixture->getFixturesForIntervalTestingByDate($startDate, $endDate);
     $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate);
     $this->assertJsonStringEqualsJsonString(json_encode($requests), json_encode($actual));
   }
@@ -86,9 +70,7 @@ class RequestMapperTest extends TestCase
   {
     $startDate = [2002, 2];
     $endDate = [2003, 4];
-    [
-      'requests' => $requests
-    ] = self::$fixture->getFixturesForIntervalTestingByDate($startDate, $endDate);
+    $requests = self::$fixture->getFixturesForIntervalTestingByDate($startDate, $endDate);
 
     $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate);
     $this->assertJsonStringEqualsJsonString(json_encode($requests), json_encode($actual));
@@ -98,9 +80,7 @@ class RequestMapperTest extends TestCase
   {
     $startDate = [2002];
     $endDate = [2003];
-    [
-      'requests' => $requests
-    ] = self::$fixture->getFixturesForIntervalTestingByDate($startDate, $endDate);
+    $requests = self::$fixture->getFixturesForIntervalTestingByDate($startDate, $endDate);
 
     $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate);
     $this->assertJsonStringEqualsJsonString(json_encode($requests), json_encode($actual));
@@ -109,9 +89,7 @@ class RequestMapperTest extends TestCase
   public function testFindingByStartingYearMonthAndDayOnly()
   {
     $startDate = [2002, 2, 20];
-    [
-      'requests' => $requests
-    ] = self::$fixture->getFixturesForIntervalTestingByDate($startDate);
+    $requests = self::$fixture->getFixturesForIntervalTestingByDate($startDate);
 
     $actual = $this->requestMapper->findAllByDateInterval($startDate);
     $this->assertJsonStringEqualsJsonString(json_encode($requests), json_encode($actual));
@@ -120,9 +98,7 @@ class RequestMapperTest extends TestCase
   public function testFindingByStartingYearAndMonthOnly()
   {
     $startDate = [2002, 2];
-    [
-      'requests' => $requests
-    ] = self::$fixture->getFixturesForIntervalTestingByDate($startDate);
+    $requests  = self::$fixture->getFixturesForIntervalTestingByDate($startDate);
 
     $actual = $this->requestMapper->findAllByDateInterval($startDate);
     $this->assertJsonStringEqualsJsonString(json_encode($requests), json_encode($actual));
@@ -131,9 +107,7 @@ class RequestMapperTest extends TestCase
   public function testFindingByStartingYearOnly()
   {
     $startDate = [2002];
-    [
-      'requests' => $requests
-    ] = self::$fixture->getFixturesForIntervalTestingByDate($startDate);
+    $requests =  self::$fixture->getFixturesForIntervalTestingByDate($startDate);
 
     $actual = $this->requestMapper->findAllByDateInterval($startDate);
     $this->assertJsonStringEqualsJsonString(json_encode($requests), json_encode($actual));
@@ -142,22 +116,40 @@ class RequestMapperTest extends TestCase
   public function testSavingOneUnique()
   {
     $request = self::$fixture->getSavingOneUniqueFixture();
-    $this->requestMapper->saveRequest($request);
-    $dbRecord = self::$pdo->query("SELECT * FROM request WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021")->fetchAll();
+    $this->requestMapper->saveRequest($request, new EntryMapper(self::$pdo));
+    $dbRecord = self::$pdo->query(" SELECT * FROM request 
+INNER JOIN request_row 
+ON 
+request_row.request_phi_first_part = request.phi_first_part
+AND 
+request_row.request_phi_second_part = request.phi_second_part
+AND
+request_row.request_year = request.year
+WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
+")->fetchAll(PDO::FETCH_GROUP);
     $this->assertCount(1, $dbRecord);
-    $dbRecord = RequestFactory::createRequestEntityFromRecord($dbRecord[0]);
+    $dbRecord = RequestFactory::createRequestEntityFromRecord(...$dbRecord);
     $this->assertJsonStringEqualsJsonString(json_encode($dbRecord), json_encode($request));
   }
 
   public function testUpdatingRequest()
   {
     $fixture = self::$fixture->getUpdatingRequestFixture();
-    $this->requestMapper->saveRequest($fixture[0]);
+    $this->requestMapper->saveRequest($fixture[0], new EntryMapper(self::$pdo));
     $requestWithDifferentDay = $fixture[1];
     $this->requestMapper->updateRequest($fixture[1]);
-    $dbRecord = self::$pdo->query("SELECT * FROM request WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021")->fetchAll();
+    $dbRecord = self::$pdo->query(" SELECT * FROM request 
+INNER JOIN request_row 
+ON 
+request_row.request_phi_first_part = request.phi_first_part
+AND 
+request_row.request_phi_second_part = request.phi_second_part
+AND
+request_row.request_year = request.year
+WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
+")->fetchAll(PDO::FETCH_GROUP);
     $this->assertCount(1, $dbRecord);
-    $dbRecord = RequestFactory::createRequestEntityFromRecord($dbRecord[0]);
+    $dbRecord = RequestFactory::createRequestEntityFromRecord(...$dbRecord);
     $this->assertJsonStringEqualsJsonString(json_encode($dbRecord), json_encode($requestWithDifferentDay));
   }
 }
