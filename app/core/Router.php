@@ -82,6 +82,8 @@ class Router
   public function route($requestMethod, $requestUri): array
   {
     $routes = $this->routes[$requestMethod];
+    $this->handleOptionsMethod($requestMethod);
+
 
     if ($this->isStaticRoute($requestMethod, $requestUri)) {
       $this->controllerName = $routes[$requestUri][0];
@@ -111,5 +113,12 @@ class Router
       return "handlePostRequest";
     }
     return "index";
+  }
+
+  private function handleOptionsMethod($requestMethod)
+  {
+    if ($requestMethod === "OPTIONS") {
+      die();
+    }
   }
 }

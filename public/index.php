@@ -31,9 +31,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(APP_DIR);
 $dotenv->load();
 
-//Container
 $builder = new DI\ContainerBuilder();
-
 $builder->addDefinitions([
   'dsn' => $_ENV["driver"] . ":host=" . $_ENV["host"] . ";dbname=" . $_ENV["dbname"],
   'username' => $_ENV["username"],
@@ -51,31 +49,8 @@ $container = $builder->build();
 $request = $container->get(Request::class);
 $router = $container->get(Router::class);
 
-/* $router->setGetRoute("/", ["app\controllers\HomeController"]); */
-
-/* $router->setGetRoute("/register", ["app\controllers\RegistrationController"]); */
-/* $router->setPostRoute("/register", ["app\controllers\RegistrationController"]); */
-
 $router->setGetRoute("/requests/", "app\controllers\RequestController");
 $router->setPostRoute("/requests", "app\controllers\RequestController");
-/* die(); */
-/* $router->setGetRoute("/entry", "app\controllers\LoginController", "handleGetRequest", "private"); */
-/* $router->setPostRoute("/entry", "app\controllers\LoginController", "handlePostRequest", "public"); */
-/* $router->setPostRoute("/", "app\controllers\LoginController", "handlePostRequest", "public"); */
-
-/* $router->setGetRoute("/dashboard", "app\controllers\DashboardController", "handleGetRequest", "private"); */
-
-/* $router->setGetRoute("/signout", ["app\controllers\SignOutController"]); */
-
-/* $router->setGetRoute("/user/:username", ["app\controllers\UserController"]); */
-/* $router->setGetRoute("/user/:username/settings", ["app\controllers\UserController", "handleSettingsGetRequest"]); */
-/* $router->setPostRoute("/user/:username/update-password", ["app\controllers\UserController", "handleUpdateUserPasswordPostRequest"]); */
-/* $router->setPostRoute("/user/:username/update-image", ["app\controllers\UserController", "handleUpdateUserProfileImagePostRequest"]); */
-
-/* $router->setGetRoute("/users", ["app\controllers\UsersController"]); */
-
-/* $router->setGetRoute("/ingredients", ["app\controllers\IngredientController"]); */
-$router->setGetRoute("/products", "app\controllers\ProductController", "handleGetRequest", "public");
 
 [$controllerName, $action] = $router->route($request->getRequestMethod(), $request->getRequestUri());
 $controller = $container->get($controllerName);
