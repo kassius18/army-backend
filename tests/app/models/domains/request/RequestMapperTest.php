@@ -10,8 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
 
-use function PHPUnit\Framework\assertEquals;
-
 class RequestMapperTest extends TestCase
 {
   private static PhinxApplication $phinxApp;
@@ -117,16 +115,16 @@ class RequestMapperTest extends TestCase
   {
     $request = self::$fixture->getSavingOneUniqueFixture();
     $this->requestMapper->saveRequest($request, new EntryMapper(self::$pdo));
-    $dbRecord = self::$pdo->query(" SELECT * FROM request 
-INNER JOIN request_row 
-ON 
-request_row.request_phi_first_part = request.phi_first_part
-AND 
-request_row.request_phi_second_part = request.phi_second_part
-AND
-request_row.request_year = request.year
-WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
-")->fetchAll(PDO::FETCH_GROUP);
+    $dbRecord = self::$pdo->query(" SELECT * FROM request
+  INNER JOIN request_row
+  ON
+  request_row.request_phi_first_part = request.phi_first_part
+  AND
+  request_row.request_phi_second_part = request.phi_second_part
+  AND
+  request_row.request_year = request.year
+  WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
+  ")->fetchAll(PDO::FETCH_GROUP);
     $this->assertCount(1, $dbRecord);
     $dbRecord = RequestFactory::createRequestEntityFromRecord(...$dbRecord);
     $this->assertJsonStringEqualsJsonString(json_encode($dbRecord), json_encode($request));
@@ -138,16 +136,16 @@ WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
     $this->requestMapper->saveRequest($fixture[0], new EntryMapper(self::$pdo));
     $requestWithDifferentDay = $fixture[1];
     $this->requestMapper->updateRequest($fixture[1]);
-    $dbRecord = self::$pdo->query(" SELECT * FROM request 
-INNER JOIN request_row 
-ON 
-request_row.request_phi_first_part = request.phi_first_part
-AND 
-request_row.request_phi_second_part = request.phi_second_part
-AND
-request_row.request_year = request.year
-WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
-")->fetchAll(PDO::FETCH_GROUP);
+    $dbRecord = self::$pdo->query(" SELECT * FROM request
+  INNER JOIN request_row
+  ON
+  request_row.request_phi_first_part = request.phi_first_part
+  AND
+  request_row.request_phi_second_part = request.phi_second_part
+  AND
+  request_row.request_year = request.year
+  WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
+  ")->fetchAll(PDO::FETCH_GROUP);
     $this->assertCount(1, $dbRecord);
     $dbRecord = RequestFactory::createRequestEntityFromRecord(...$dbRecord);
     $this->assertJsonStringEqualsJsonString(json_encode($dbRecord), json_encode($requestWithDifferentDay));

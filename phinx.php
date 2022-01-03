@@ -17,21 +17,21 @@ return
       'production' => [
         'adapter' => $_ENV['driver'],
         'host' => $_ENV['host'],
-        'name' => 'papadhmhtrakhs_production',
+        'name' => $_ENV['dbname_production'],
         'user' => $_ENV['username'],
         'pass' => $_ENV['password'],
       ],
       'development' => [
         'adapter' => $_ENV['driver'],
         'host' => $_ENV['host'],
-        'name' => 'papadhmhtrakhs_dev',
+        'name' => $_ENV['dbname_dev'],
         'user' => $_ENV['username'],
         'pass' => $_ENV['password'],
       ],
       'testing' => [
         'adapter' => $_ENV['driver'],
         'host' => $_ENV['host'],
-        'name' => 'papadhmhtrakhs_test',
+        'name' => $_ENV['dbname_test'],
         'user' => $_ENV['username'],
         'pass' => $_ENV['password'],
       ]
