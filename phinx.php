@@ -34,6 +34,13 @@ return
         'name' => $_ENV['dbname_test'],
         'user' => $_ENV['username'],
         'pass' => $_ENV['password'],
+      ],
+      'online' => [
+        'adapter' => $_ENV['driver_online'],
+        'host' => $_ENV['host_online'],
+        'name' => $_ENV['dbname_online'],
+        'user' => $_ENV['username_online'],
+        'pass' => $_ENV['password_online'],
       ]
     ],
     'version_order' => 'creation'

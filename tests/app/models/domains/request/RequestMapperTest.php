@@ -1,6 +1,5 @@
 <?php
 
-use app\models\domains\request\RequestEntity;
 use app\models\domains\request\RequestFactory;
 use app\models\domains\request\RequestMapper;
 use app\models\domains\request_entry\EntryMapper;
