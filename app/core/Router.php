@@ -81,8 +81,8 @@ class Router
 
   public function route($requestMethod, $requestUri): array
   {
-    $routes = $this->routes[$requestMethod];
     $this->handleOptionsMethod($requestMethod);
+    $routes = $this->routes[$requestMethod];
 
 
     if ($this->isStaticRoute($requestMethod, $requestUri)) {
