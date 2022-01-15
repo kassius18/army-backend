@@ -33,6 +33,23 @@ class RouterTest extends TestCase
     $this->assertEquals(["SomeController", "handlePostRequest"], $this->router->getRoutes()["POST"]["/register"]);
   }
 
+  public function testSettingADeleteRouteWorks()
+  {
+    $this->assertEmpty($this->router->getRoutes()["DELETE"]);
+    $this->router->setDeleteRoute("/register", "SomeController", "handleDeleteRequest");
+    $this->assertNotEmpty($this->router->getRoutes()["DELETE"]);
+    $this->assertEquals(["SomeController", "handleDeleteRequest"], $this->router->getRoutes()["DELETE"]["/register"]);
+  }
+
+  public function testSettingAPutRouteWorks()
+  {
+    $this->assertEmpty($this->router->getRoutes()["PUT"]);
+    $this->router->setPutRoute("/register", "SomeController", "handlePutRequest");
+    $this->assertNotEmpty($this->router->getRoutes()["PUT"]);
+    $this->assertEquals(["SomeController", "handlePutRequest"], $this->router->getRoutes()["PUT"]["/register"]);
+  }
+
+
   public function testStaticGetRoute()
   {
     $this->router->setGetRoute("/dashboard", "app\controllers\dashboardController");
@@ -56,7 +73,7 @@ class RouterTest extends TestCase
     $this->assertEquals($action, "handlePostRequest");
   }
 
-  public function testDynamicRouteWithMultipleDynamiaParts()
+  public function testDynamicRouteWithMultipleDynamicParts()
   {
     $this->router->setGetRoute("/static1/:username/static2/:number", "app\controllers\UserController");
     [$controllerName, $action] = $this->router->route("GET", "/static1/username/static2/123");

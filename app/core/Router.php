@@ -6,7 +6,7 @@ namespace app\core;
 
 class Router
 {
-  private array $routes = ["GET" => [], "POST" => []];
+  private array $routes = ["GET" => [], "POST" => [], "DELETE" => [], "PUT" => []];
   private string $controllerName;
   private string $action;
 
@@ -20,6 +20,18 @@ class Router
   {
     $action = "handlePostRequest";
     $this->routes["POST"][$Uri] = [$controllerName, $action];
+  }
+
+  public function setDeleteRoute(string $Uri, string $controllerName): void
+  {
+    $action = "handleDeleteRequest";
+    $this->routes["DELETE"][$Uri] = [$controllerName, $action];
+  }
+
+  public function setPutRoute(string $Uri, string $controllerName): void
+  {
+    $action = "handlePutRequest";
+    $this->routes["PUT"][$Uri] = [$controllerName, $action];
   }
 
   public function getRoutes()
