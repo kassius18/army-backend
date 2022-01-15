@@ -31,7 +31,7 @@ $builder->addDefinitions([
     PDO::ATTR_EMULATE_PREPARES => false,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
   ],
-  Request::class => DI\create()->constructor($_GET, json_decode(file_get_contents('php://input'), true), $_SERVER, $_FILES, getallheaders()),
+  Request::class => DI\create()->constructor($_GET, $_POST, json_decode(file_get_contents('php://input'), true), $_SERVER, $_FILES, getallheaders()),
   PDO::class => DI\create()->constructor(DI\get('dsn'), DI\get('username'), DI\get('password'), DI\get('pdo_options'))
 ]);
 

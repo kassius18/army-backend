@@ -22,7 +22,7 @@ class RequestController
 
   public function handleGetRequest()
   {
-    $getRequest = $this->request->getGetUserInput();
+    $getRequest = $this->request->getQueryParameters();
     if ($getRequest['findBy'] === 'date') {
       echo (json_encode($this->requestMapper->findAllByDateInterval(
         [$getRequest["startYear"]]
@@ -38,7 +38,7 @@ class RequestController
 
   public function handlePostRequest()
   {
-    $requestAsArray = $this->request->getPostUserInput();
+    $requestAsArray = $this->request->getRequestBody();
     $request = RequestFactory::createRequestFromUserInput($requestAsArray);
     $this->requestMapper->saveRequest($request, $this->entryMapper);
   }
@@ -47,6 +47,7 @@ class RequestController
   {
     return null;
   }
+
   public function handleDeleteRequest()
   {
     return null;

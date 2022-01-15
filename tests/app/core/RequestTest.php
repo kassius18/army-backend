@@ -9,14 +9,14 @@ class RequestTest extends TestCase
 {
   public function testGetRequestMethodReturnsCorrectMethod()
   {
-    $router = new Request([], [], ["REQUEST_METHOD" => "GET"], [], []);
+    $router = new Request([], [], [], ["REQUEST_METHOD" => "GET"], [], []);
 
     $this->assertEquals("GET", $router->getRequestMethod());
   }
 
   public function testMethodsThatCheckWhatTypeOfHttpRequestIsBeingMade()
   {
-    $router = new Request([], [], ["REQUEST_METHOD" => "POST"], [], []);
+    $router = new Request([], [], [], ["REQUEST_METHOD" => "POST"], [], []);
 
     $this->assertTrue($router->isMethodPOST());
     $this->assertFalse($router->isMethodGET());
@@ -24,7 +24,7 @@ class RequestTest extends TestCase
 
   public function testRouteIsSplitCorrectly()
   {
-    $router = new Request([], [], ["REDIRECT_URL" => "/user/test/something"], [], []);
+    $router = new Request([], [], [], ["REDIRECT_URL" => "/user/test/something"], [], []);
     $splitUri = $router->splitRequestUri();
 
     $this->assertEquals($splitUri[0], "user");
@@ -35,6 +35,7 @@ class RequestTest extends TestCase
   public function testSanitazation()
   {
     $router = new Request(
+      ["><\"'"],
       ["><\"'"],
       ["><\"'"],
       ["><\"';:/"],
@@ -49,8 +50,8 @@ class RequestTest extends TestCase
       "'" => "&#39;"
     ];
 
-    $getRequestData = $router->getGetUserInput();
-    $getPostData = $router->getPostUserInput();
+    $getRequestData = $router->getQueryParameters();
+    $getPostData = $router->getRequestBody();
     $getServerData = $router->getServerInput();
 
     $this->assertEquals(
@@ -86,7 +87,7 @@ class RequestTest extends TestCase
 
   public function testHeadersAreRetreivedFromRequest()
   {
-    $router = new Request([], [], ["REQUEST_METHOD" => "GET"], [], ["Header" => "someHeader"]);
+    $router = new Request([], [], [], ["REQUEST_METHOD" => "GET"], [], ["Header" => "someHeader"]);
 
     $this->assertEquals(["Header" => "someHeader"], $router->getHeaders("Header"));
   }
