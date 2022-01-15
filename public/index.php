@@ -43,6 +43,11 @@ $router = $container->get(Router::class);
 $router->setGetRoute("/requests/", "app\controllers\RequestController");
 $router->setPostRoute("/requests", "app\controllers\RequestController");
 
+$router->setGetRoute("/vehicles", "app\controllers\VehicleController");
+$router->setPostRoute("/vehicles", "app\controllers\VehicleController");
+$router->setDeleteRoute("/vehicles/:id", "app\controllers\VehicleController");
+$router->setPutRoute("/vehicles/:id", "app\controllers\VehicleController");
+
 [$controllerName, $action] = $router->route($request->getRequestMethod(), $request->getRequestUri());
 $controller = $container->get($controllerName);
 $controller->$action();
