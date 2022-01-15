@@ -57,9 +57,9 @@ class Request
   public function getRequestBody(): array
   {
     if (!empty($this->requestBody)) {
-      return $this->post;
-    } elseif (!empty($this->post)) {
       return $this->requestBody;
+    } elseif (!empty($this->post)) {
+      return $this->post;
     }
     return [];
   }

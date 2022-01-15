@@ -91,4 +91,12 @@ class RequestTest extends TestCase
 
     $this->assertEquals(["Header" => "someHeader"], $router->getHeaders("Header"));
   }
+
+  public function testRequestBodyReturnsCorrectArray()
+  {
+    $router = new Request([], ["nonEptyPostArray"], [], [], [], []);
+    $this->assertEquals(["nonEptyPostArray"], $router->getRequestBody());
+    $router = new Request([], [], ["nonEptyInputArray"], [], [], []);
+    $this->assertEquals(["nonEptyInputArray"], $router->getRequestBody());
+  }
 }
