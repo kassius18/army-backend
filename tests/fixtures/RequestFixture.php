@@ -128,7 +128,7 @@ class RequestFixture
 
   private function persistDataSet(array $arrayOfRequestObjects): void
   {
-    foreach ($arrayOfRequestObjects as $key => $requestEntity) {
+    foreach ($arrayOfRequestObjects as $requestEntity) {
       $sql = "INSERT INTO request(
 `phi_first_part`,
 `phi_second_part`,
@@ -145,7 +145,6 @@ class RequestFixture
 )";
       $sqlToInsertEntriesToTestRequest = "INSERT INTO `request_row`(
 `request_phi_first_part`,
-`request_phi_second_part`,
 `request_year`,
 `name_number`,
 `name`,
@@ -158,7 +157,6 @@ class RequestFixture
 )
 VALUES(
     {$requestEntity->getFirstPhi()},
-    {$requestEntity->getSecondPhi()},
     {$requestEntity->getYear()},
     'nameNumberTest',
     'nameTest',
@@ -250,7 +248,6 @@ VALUES(
   {
     return new EntryEntity(
       $firstPartOfPhi,
-      $secondPartOfPhi,
       $year,
       'nameNumberTest',
       'nameTest',

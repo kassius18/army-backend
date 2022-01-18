@@ -12,7 +12,6 @@ final class CreateRequestRowTable extends AbstractMigration
       'CREATE TABLE request_row(
     id INT(6) AUTO_INCREMENT PRIMARY KEY,
     request_phi_first_part INT(6),
-    request_phi_second_part INT(6),
     request_year INT(6),
     name_number VARCHAR(30),
     name VARCHAR(30),
@@ -22,7 +21,7 @@ final class CreateRequestRowTable extends AbstractMigration
     reason_of_order INT(6),
     priority_of_order INT(6),
     observations VARCHAR(30),
-    FOREIGN KEY(request_phi_first_part,request_phi_second_part, request_YEAR) REFERENCES request(phi_first_part,phi_second_part,year))'
+    FOREIGN KEY(request_phi_first_part, request_YEAR) REFERENCES request(phi_first_part, year))'
     );
   }
 

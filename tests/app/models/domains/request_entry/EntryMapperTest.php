@@ -15,7 +15,6 @@ class EntryMapperTest extends TestCase
   private EntryMapper $entryMapper;
 
   private int  $firstPartOfPhi = 15;
-  private int  $secondPartOfPhi = 2000;
   private int  $year = 2021;
   private int  $id = 1;
   private string $nameNumber = '9S9972';
@@ -56,7 +55,6 @@ class EntryMapperTest extends TestCase
     //entries with id are meant to be used to updates the ones without id. 
     $this->entryWithoutId = new EntryEntity(
       $this->firstPartOfPhi,
-      $this->secondPartOfPhi,
       $this->year,
       $this->nameNumber,
       $this->name,
@@ -70,7 +68,6 @@ class EntryMapperTest extends TestCase
 
     $this->entryWithoutIdWithDifferentName = new EntryEntity(
       $this->firstPartOfPhi,
-      $this->secondPartOfPhi,
       $this->year,
       $this->nameNumber,
       $this->differentName,
@@ -85,7 +82,6 @@ class EntryMapperTest extends TestCase
 
     $this->entryWithIdWithDifferentName = new EntryEntity(
       $this->firstPartOfPhi,
-      $this->secondPartOfPhi,
       $this->year,
       $this->nameNumber,
       $this->differentName,
@@ -108,7 +104,7 @@ class EntryMapperTest extends TestCase
   {
     $this->entryMapper->saveEntry($this->entryWithoutId);
     $this->entryMapper->saveEntry($this->entryWithoutIdWithDifferentName);
-    $result = $this->entryMapper->findAllByPhiAndYear($this->firstPartOfPhi, $this->secondPartOfPhi, $this->year);
+    $result = $this->entryMapper->findAllByPhiAndYear($this->firstPartOfPhi, $this->year);
     $this->assertCount(2, $result);
     $this->testTwoEntriesAreEqualWithoutCheckingForId($result[0], $this->entryWithoutId);
     $this->testTwoEntriesAreEqualWithoutCheckingForId($result[1], $this->entryWithoutIdWithDifferentName);
@@ -135,7 +131,7 @@ class EntryMapperTest extends TestCase
   public function testDeletingOneByPhiDateAndId()
   {
     $this->entryMapper->saveEntry($this->entryWithoutId);
-    $this->entryMapper->deleteOneByFullPhiYearAndId($this->firstPartOfPhi, $this->secondPartOfPhi, $this->year, $this->id);
+    $this->entryMapper->deleteOneByFullPhiYearAndId($this->firstPartOfPhi, $this->year, $this->id);
     $dbRecord = self::$pdo->query("SELECT * FROM request_row WHERE id={$this->entryWithIdWithDifferentName->getId()}")->fetchAll();
     $this->assertCount(0, $dbRecord);
   }

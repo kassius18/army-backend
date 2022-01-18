@@ -60,7 +60,6 @@ class RequestFactoryTest extends TestCase
   {
     $entry = new EntryEntity(
       self::$dbRecord[0]['request_phi_first_part'],
-      self::$dbRecord[0]['request_phi_second_part'],
       self::$dbRecord[0]['request_year'],
       self::$dbRecord[0]['name_number'],
       self::$dbRecord[0]['name'],
@@ -75,7 +74,6 @@ class RequestFactoryTest extends TestCase
 
     $entryWithoutId = new EntryEntity(
       self::$dbRecord[0]['request_phi_first_part'],
-      self::$dbRecord[0]['request_phi_second_part'],
       self::$dbRecord[0]['request_year'],
       self::$dbRecord[0]['name_number'],
       self::$dbRecord[0]['name'],
@@ -124,7 +122,6 @@ class RequestFactoryTest extends TestCase
     $arrayOfEntriesOfRequest = $requestEntity->getEntries();
     foreach ($arrayOfEntriesOfRequest as $entry) {
       $this->assertEquals($requestEntity->getFirstPhi(), $entry->getFirstPhi());
-      $this->assertEquals($requestEntity->getSecondPhi(), $entry->getSecondPhi());
       $this->assertEquals($requestEntity->getYear(), $entry->getYear());
     }
   }

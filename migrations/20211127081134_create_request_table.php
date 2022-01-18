@@ -15,7 +15,7 @@ final class CreateRequestTable extends AbstractMigration
     year INT(6),
     month INT(6),
     day INT(6),
-    PRIMARY KEY (phi_first_part, phi_second_part, year))");
+    PRIMARY KEY (phi_first_part, year))");
   }
 
   public function down(): void

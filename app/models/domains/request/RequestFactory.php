@@ -22,8 +22,6 @@ class RequestFactory
       if (
         ($entry['request_phi_first_part'] === $entry['phi_first_part'])
         &&
-        ($entry['request_phi_second_part'] === $entry['phi_second_part'])
-        &&
         ($entry['request_year'] === $entry['year'])
       ) {
         $entry = EntryFactory::createEntryFromRecord($entry);
@@ -47,7 +45,6 @@ class RequestFactory
     foreach ($userPostInput['entries'] as $entry) {
       $entryEntity = EntryFactory::createEntryFromUserInput(
         $userPostInput['firstPartOfPhi'],
-        $userPostInput['secondPartOfPhi'],
         $userPostInput['year'],
         $entry
       );

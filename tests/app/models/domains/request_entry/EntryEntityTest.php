@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 class EntryEntityTest extends TestCase
 {
   private int $firstPartOfPhi;
-  private int $secondPartOfPhi;
   private int $year;
   private int $id;
   private string $nameNumber;
@@ -23,7 +22,6 @@ class EntryEntityTest extends TestCase
   public function setUp(): void
   {
     $this->firstPartOfPhi = 15;
-    $this->secondPartOfPhi = 2000;
     $this->year = 2001;
     $this->id = 1;
     $this->nameNumber = '9S9972';
@@ -37,7 +35,6 @@ class EntryEntityTest extends TestCase
 
     $this->entryEntity = new EntryEntity(
       $this->firstPartOfPhi,
-      $this->secondPartOfPhi,
       $this->year,
       $this->nameNumber,
       $this->name,
@@ -50,7 +47,6 @@ class EntryEntityTest extends TestCase
     );
     $this->entryEntityWithIdSet = new EntryEntity(
       $this->firstPartOfPhi,
-      $this->secondPartOfPhi,
       $this->year,
       $this->nameNumber,
       $this->name,
@@ -67,7 +63,6 @@ class EntryEntityTest extends TestCase
   public function testEntityStructure()
   {
     $this->assertEquals($this->entryEntity->getFirstPhi(), $this->firstPartOfPhi);
-    $this->assertEquals($this->entryEntity->getSecondPhi(), $this->secondPartOfPhi);
     $this->assertEquals($this->entryEntity->getYear(), $this->year);
     $this->assertEquals($this->entryEntity->getNameNumber(), $this->nameNumber);
     $this->assertEquals($this->entryEntity->getName(), $this->name);
@@ -85,7 +80,6 @@ class EntryEntityTest extends TestCase
     $expected = json_encode(
       [
         'firstPartOfPhi' => $this->firstPartOfPhi,
-        'secondPartOfPhi' => $this->secondPartOfPhi,
         'year' => $this->year,
         'nameNumber' => $this->nameNumber,
         'name' => $this->name,
@@ -106,7 +100,6 @@ class EntryEntityTest extends TestCase
     $expected = json_encode(
       [
         'firstPartOfPhi' => $this->firstPartOfPhi,
-        'secondPartOfPhi' => $this->secondPartOfPhi,
         'year' => $this->year,
         'nameNumber' => $this->nameNumber,
         'name' => $this->name,

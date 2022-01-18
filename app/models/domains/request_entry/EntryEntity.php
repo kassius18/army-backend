@@ -7,7 +7,6 @@ use JsonSerializable;
 class EntryEntity implements JsonSerializable
 {
   private int $firstPartOfPhi;
-  private int $secondPartOfPhi;
   private int $year;
   private string $nameNumber;
   private string $name;
@@ -21,7 +20,6 @@ class EntryEntity implements JsonSerializable
 
   public function __construct(
     int $firstPartOfPhi,
-    int $secondPartOfPhi,
     int $year,
     string $nameNumber,
     string $name,
@@ -34,7 +32,6 @@ class EntryEntity implements JsonSerializable
     int $id = null
   ) {
     $this->firstPartOfPhi = $firstPartOfPhi;
-    $this->secondPartOfPhi = $secondPartOfPhi;
     $this->year = $year;
     $this->nameNumber = $nameNumber;
     $this->name = $name;
@@ -50,10 +47,6 @@ class EntryEntity implements JsonSerializable
   public function getFirstPhi(): int
   {
     return $this->firstPartOfPhi;
-  }
-  public function getSecondPhi(): int
-  {
-    return $this->secondPartOfPhi;
   }
   public function getYear(): int
   {
@@ -99,26 +92,9 @@ class EntryEntity implements JsonSerializable
 
   public function jsonSerialize(): array
   {
-    if (isset($this->id)) {
-      return [
-        'firstPartOfPhi' => $this->firstPartOfPhi,
-        'secondPartOfPhi' => $this->secondPartOfPhi,
-        'year' => $this->year,
-        'nameNumber' => $this->nameNumber,
-        'name' => $this->name,
-        'mainPart' => $this->mainPart,
-        'amountOfOrder' => $this->amountOfOrder,
-        'unitOfOrder' => $this->unitOfOrder,
-        'reasonOfOrder' => $this->reasonOfOrder,
-        'priorityOfOrder' => $this->priorityOfOrder,
-        'observations' => $this->observations,
-        'id' => $this->id
-      ];
-    }
 
-    return [
+    $json = [
       'firstPartOfPhi' => $this->firstPartOfPhi,
-      'secondPartOfPhi' => $this->secondPartOfPhi,
       'year' => $this->year,
       'nameNumber' => $this->nameNumber,
       'name' => $this->name,
@@ -127,7 +103,13 @@ class EntryEntity implements JsonSerializable
       'unitOfOrder' => $this->unitOfOrder,
       'reasonOfOrder' => $this->reasonOfOrder,
       'priorityOfOrder' => $this->priorityOfOrder,
-      'observations' => $this->observations,
+      'observations' => $this->observations
     ];
+
+    if (isset($this->id)) {
+      $json["id"] = $this->id;
+    }
+
+    return $json;
   }
 }

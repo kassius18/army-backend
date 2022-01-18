@@ -45,7 +45,7 @@ SQL;
     $entryMapper->saveManyEntries($request->getEntries());
   }
 
-  public function findOneByPhiAndYear(int $firstPartOfPhi, int $secondPartOfPhi, int $year): RequestEntity
+  public function findOneByPhiAndYear(int $firstPartOfPhi, int $year): RequestEntity
   {
     $sql = <<<SQL
 SELECT
@@ -55,18 +55,15 @@ FROM
 INNER JOIN request_row 
 ON 
 request_row.request_phi_first_part = request.phi_first_part
-AND 
-request_row.request_phi_second_part = request.phi_second_part
 AND
 request_row.request_year = request.year
 WHERE
-    phi_first_part = :firstPartOfPhi AND phi_second_part = :secondPartOfPhi AND year = :year
+    phi_first_part = :firstPartOfPhi AND year = :year
 SQL;
     $statement = $this->pdo->prepare($sql);
     $statement->execute(
       [
         'firstPartOfPhi' => $firstPartOfPhi,
-        'secondPartOfPhi' => $secondPartOfPhi,
         'year' => $year
       ]
     );
@@ -74,7 +71,7 @@ SQL;
     return RequestFactory::createRequestEntityFromRecord($result);
   }
 
-  public function findManyByFullPhi(int $firstPartOfPhi, int $secondPartOfPhi): array
+  public function findManyByPhi(int $firstPartOfPhi): array
   {
     $sql = <<<SQL
 SELECT * FROM request
@@ -82,19 +79,14 @@ INNER JOIN request_row
 ON 
 request_row.request_phi_first_part = request.phi_first_part
 AND 
-request_row.request_phi_second_part = request.phi_second_part
-AND
 request_row.request_year = request.year
 WHERE 
 phi_first_part = :firstPartOfPhi
-AND
-phi_second_part = :secondPartOfPhi
 ORDER BY year
 SQL;
     $statement = $this->pdo->prepare($sql);
     $statement->execute([
       'firstPartOfPhi' => $firstPartOfPhi,
-      'secondPartOfPhi' => $secondPartOfPhi
     ]);
     $allRecords = $statement->fetchAll(PDO::FETCH_GROUP);
     return RequestFactory::createRequestEntityFromArrayOfRecords($allRecords);
@@ -109,8 +101,6 @@ SELECT * FROM request
 INNER JOIN request_row 
 ON 
 request_row.request_phi_first_part = request.phi_first_part
-AND 
-request_row.request_phi_second_part = request.phi_second_part
 AND
 request_row.request_year = request.year
  WHERE

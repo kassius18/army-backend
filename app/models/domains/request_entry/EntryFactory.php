@@ -7,7 +7,7 @@ class EntryFactory
   public static function createEntryFromArrayOfRecords(array $records): array
   {
     $arrayOfRequestEntitites = [];
-    foreach ($records as $key => $record) {
+    foreach ($records as $record) {
       array_push($arrayOfRequestEntitites, self::createEntryFromRecord($record));
     }
     return $arrayOfRequestEntitites;
@@ -17,7 +17,6 @@ class EntryFactory
   {
     return new EntryEntity(
       $record['request_phi_first_part'],
-      $record['request_phi_second_part'],
       $record['request_year'],
       $record['name_number'],
       $record['name'],
@@ -31,11 +30,10 @@ class EntryFactory
     );
   }
 
-  public static function createEntryFromUserInput(int $firstPartOfPhi, int $secondPartOfPhi, int $year, array $record): EntryEntity
+  public static function createEntryFromUserInput(int $firstPartOfPhi, int $year, array $record): EntryEntity
   {
     return new EntryEntity(
       $firstPartOfPhi,
-      $secondPartOfPhi,
       $year,
       $record['nameNumber'],
       $record['name'],
@@ -48,13 +46,12 @@ class EntryFactory
     );
   }
 
-  public static function createEntriesFromArrayOfUserInput(int $firstPartOfPhi, int $secondPartOfPhi, int $year, array $record): array
+  public static function createEntriesFromArrayOfUserInput(int $firstPartOfPhi, int $year, array $record): array
   {
     $arrayOfRequestEntitites = [];
     foreach ($record as $entry) {
       array_push($arrayOfRequestEntitites, self::createEntryFromUserInput(
         $firstPartOfPhi,
-        $secondPartOfPhi,
         $year,
         $entry
       ));

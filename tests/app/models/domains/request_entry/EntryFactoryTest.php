@@ -17,7 +17,6 @@ class EntryFactoryTest extends TestCase
     $this->dbRecord =
       [
         'request_phi_first_part' => 1,
-        'request_phi_second_part' => 2,
         'request_year' => 3,
         'name_number' => 'nameNumber',
         'name' => 'name',
@@ -31,7 +30,6 @@ class EntryFactoryTest extends TestCase
       ];
     $this->userPostInput = [
       'firstPartOfPhi' => 1,
-      'secondPartOfPhi' => 2,
       'year' => 3,
       'nameNumber' => 'nameNumber',
       'name' => 'name',
@@ -46,7 +44,6 @@ class EntryFactoryTest extends TestCase
 
     $this->entry = new EntryEntity(
       1,
-      2,
       3,
       'nameNumber',
       'name',
@@ -60,7 +57,6 @@ class EntryFactoryTest extends TestCase
     );
     $this->entryWithoutId = new EntryEntity(
       1,
-      2,
       3,
       'nameNumber',
       'name',
@@ -82,7 +78,6 @@ class EntryFactoryTest extends TestCase
   {
     $entryCreatedFromUserInput = EntryFactory::createEntryFromUserInput(
       $this->userPostInput['firstPartOfPhi'],
-      $this->userPostInput['secondPartOfPhi'],
       $this->userPostInput['year'],
       $this->userPostInput
     );
@@ -92,7 +87,6 @@ class EntryFactoryTest extends TestCase
   {
     $entryCreatedFromUserInput = EntryFactory::createEntriesFromArrayOfUserInput(
       $this->userPostInput['firstPartOfPhi'],
-      $this->userPostInput['secondPartOfPhi'],
       $this->userPostInput['year'],
       [$this->userPostInput]
     );

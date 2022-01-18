@@ -2,6 +2,7 @@
 
 namespace app\models\domains\request_entry;
 
+use app\models\domains\request\RequestEntity;
 use PDO;
 
 class EntryMapper
@@ -18,7 +19,6 @@ class EntryMapper
     $sql = <<<SQL
 INSERT INTO request_row(
     request_phi_first_part,
-    request_phi_second_part,
     request_year,
     name_number,
     name,
@@ -31,7 +31,6 @@ INSERT INTO request_row(
 )
 VALUES(
     :firstPartOfPhi,
-    :secondPartOfPhi,
     :year,
     :nameNumber,
     :name,
@@ -47,7 +46,6 @@ SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
       'firstPartOfPhi' => $entry->getFirstPhi(),
-      'secondPartOfPhi' => $entry->getSecondPhi(),
       'year' => $entry->getYear(),
       'nameNumber' => $entry->getNameNumber(),
       'name' => $entry->getName(),
@@ -66,7 +64,6 @@ SQL;
 UPDATE request_row
 SET
 request_phi_first_part = :firstPartOfPhi,
-request_phi_second_part = :secondPartOfPhi,
 request_year = :year,
 name_number = :nameNumber,
 name = :name,
@@ -81,7 +78,6 @@ SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
       'firstPartOfPhi' => $entry->getFirstPhi(),
-      'secondPartOfPhi' => $entry->getSecondPhi(),
       'year' => $entry->getYear(),
       'nameNumber' => $entry->getNameNumber(),
       'name' => $entry->getName(),
@@ -97,7 +93,7 @@ SQL;
   }
 
 
-  public function findAllByPhiAndYear(int $firstPartOfPhi, int $secondPartOfPhi, int $year): array
+  public function findAllByPhiAndYear(int $firstPartOfPhi, int $year): array
   {
     $sql = <<<SQL
 SELECT
@@ -105,13 +101,12 @@ SELECT
 FROM
     request_row
 WHERE
-    request_phi_first_part = :firstPartOfPhi AND request_phi_second_part = :secondPartOfPhi AND request_year = :year
+    request_phi_first_part = :firstPartOfPhi AND request_year = :year
 SQL;
     $statement = $this->pdo->prepare($sql);
     $statement->execute(
       [
         'firstPartOfPhi' => $firstPartOfPhi,
-        'secondPartOfPhi' => $secondPartOfPhi,
         'year' => $year
       ]
     );
@@ -121,25 +116,23 @@ SQL;
 
   public function saveManyEntries(array $arrayOfRequests): void
   {
-    foreach ($arrayOfRequests as $key => $request) {
+    foreach ($arrayOfRequests as $request) {
       $this->saveEntry($request);
     }
   }
 
-  public function deleteOneByFullPhiYearAndId(int $firstPartOfPhi, int $secondPartOfPhi, int $year, int $id)
+  public function deleteOneByFullPhiYearAndId(int $firstPartOfPhi, int $year, int $id)
   {
     $sql = <<<SQL
 DELETE FROM
     request_row
 WHERE
-    request_phi_first_part = :firstPartOfPhi AND request_phi_second_part = :secondPartOfPhi AND 
-    request_year = :year AND id = :id
+    request_phi_first_part = :firstPartOfPhi AND request_year = :year AND id = :id
 SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute(
       [
         'firstPartOfPhi' => $firstPartOfPhi,
-        'secondPartOfPhi' => $secondPartOfPhi,
         'year' => $year,
         'id' => $id
       ]

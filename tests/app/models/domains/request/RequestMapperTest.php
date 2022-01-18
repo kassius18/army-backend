@@ -43,14 +43,14 @@ class RequestMapperTest extends TestCase
   public function testFindingOneByPhiAndYear()
   {
     $expected = self::$fixture->getFindingOneByPhiAndYearFixture();
-    $actual = $this->requestMapper->findOneByPhiAndYear($expected->getFirstPhi(), $expected->getSecondPhi(), $expected->getYear());
+    $actual = $this->requestMapper->findOneByPhiAndYear($expected->getFirstPhi(), $expected->getYear());
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
 
   public function testFindingManyByFullPhiReturnsCorrectNumberOfRecordsAndIsOrderedByYear()
   {
     $expected = self::$fixture->getFindingByFullPhiFixture();
-    $result = $this->requestMapper->findManyByFullPhi($expected[0]->getFirstPhi(), $expected[0]->getSecondPhi());
+    $result = $this->requestMapper->findManyByPhi($expected[0]->getFirstPhi());
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($result));
   }
 
@@ -119,10 +119,8 @@ class RequestMapperTest extends TestCase
   ON
   request_row.request_phi_first_part = request.phi_first_part
   AND
-  request_row.request_phi_second_part = request.phi_second_part
-  AND
   request_row.request_year = request.year
-  WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
+  WHERE phi_first_part=15 AND year=2021
   ")->fetchAll(PDO::FETCH_GROUP);
     $this->assertCount(1, $dbRecord);
     $dbRecord = RequestFactory::createRequestEntityFromRecord(...$dbRecord);
@@ -140,10 +138,8 @@ class RequestMapperTest extends TestCase
   ON
   request_row.request_phi_first_part = request.phi_first_part
   AND
-  request_row.request_phi_second_part = request.phi_second_part
-  AND
   request_row.request_year = request.year
-  WHERE phi_first_part=15 AND phi_second_part=2000 AND year=2021
+  WHERE phi_first_part=15 AND year=2021
   ")->fetchAll(PDO::FETCH_GROUP);
     $this->assertCount(1, $dbRecord);
     $dbRecord = RequestFactory::createRequestEntityFromRecord(...$dbRecord);
