@@ -2,7 +2,6 @@
 
 namespace app\models\domains\request_entry;
 
-use app\models\domains\request\RequestEntity;
 use PDO;
 
 class EntryMapper
