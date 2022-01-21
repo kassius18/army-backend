@@ -46,7 +46,7 @@ SQL;
     ]);
   }
 
-  public function getAllPartsByEntryId(int $entryId)
+  public function findAllPartsByEntryId(int $entryId)
   {
     $sql = <<<SQL
 SELECT * FROM part WHERE entry_id = :entryId;
@@ -58,7 +58,7 @@ SQL;
     return PartFactory::createManyPartsFromRecord($stm->fetchAll());
   }
 
-  public function getPartById(int $id)
+  public function findPartById(int $id)
   {
     $sql = <<<SQL
 SELECT * FROM part WHERE id = :id;
@@ -70,7 +70,7 @@ SQL;
     return PartFactory::createPartFromRecord($stm->fetch());
   }
 
-  public function deleteById(int $id): bool
+  public function deletePartById(int $id): bool
   {
     $sql = <<<SQL
 DELETE FROM part WHERE id = :id;
@@ -81,7 +81,7 @@ SQL;
     ]);
   }
 
-  public function updateById(int $id, PartEntity $editedPart)
+  public function updatePartById(int $id, PartEntity $editedPart)
   {
     $sql = <<<SQL
 UPDATE part

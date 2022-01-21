@@ -1,7 +1,7 @@
 <?php
 
-use app\models\domains\part\PartFactory;
 use app\models\domains\part\PartMapper;
+use common\MapperCommonMethods;
 use fixtures\PartFixture;
 use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
@@ -48,39 +48,38 @@ class PartMapperTest extends TestCase
 
   public function testSavingPart()
   {
-    $parts = $this->getAllFromPartTableDb();
+    $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(0, $parts);
 
     $part = self::$fixture->createParts(1, true)[0];
     $bool = $this->partMapper->savePartToEntry($part, 1);
     $this->assertTrue($bool);
 
-    $parts = $this->getAllFromPartTableDb();
+    $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(1, $parts);
     $actual = $parts[0];
 
     $this->assertJsonStringEqualsJsonString(json_encode($part), json_encode($actual));
   }
 
-  public function testGettingAllParts()
+  public function testFindingAllParts()
   {
     $expected = self::$fixture->createParts(3, true);
 
     self::$fixture->persistParts($expected, $this->entryId);
-    /* Persisting them as children of a second Entry too makes the test make 
-     * sure that only the parts that belong to the entry are returned */
+    //Adding extra parts to other entry to test that we find the correct ones
     self::$fixture->persistParts($expected, $this->secondEntryId);
 
-    $actual = $this->partMapper->getAllPartsByEntryId($this->entryId);
+    $actual = $this->partMapper->findAllPartsByEntryId($this->entryId);
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
 
-  public function testGettingOnePartByUsingItsId()
+  public function testFindingOnePartById()
   {
     $expected = self::$fixture->createParts(2, true);
     self::$fixture->persistParts($expected);
 
-    $actual = $this->partMapper->getPartById(2);
+    $actual = $this->partMapper->findPartById(2);
     $this->assertJsonStringEqualsJsonString(json_encode($expected[1]), json_encode($actual));
   }
 
@@ -89,13 +88,13 @@ class PartMapperTest extends TestCase
     $expected = self::$fixture->createParts(2, true);
     self::$fixture->persistParts($expected);
 
-    $parts = $this->getAllFromPartTableDb();
+    $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(2, $parts);
 
-    $bool = $this->partMapper->deleteById($expected[0]->getId());
+    $bool = $this->partMapper->deletePartById($expected[0]->getId());
     $this->assertTrue($bool);
 
-    $actual = $this->getAllFromPartTableDb();
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(1, $actual);
 
     $this->assertJsonStringEqualsJsonString(json_encode($expected[1]), json_encode($actual[0]));
@@ -106,32 +105,19 @@ class PartMapperTest extends TestCase
     [$part, $editedPart] = self::$fixture->createParts(2, true);
     self::$fixture->persistParts([$part]);
 
-    $parts = $this->getAllFromPartTableDb();
+    $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(1, $parts);
     $this->assertJsonStringEqualsJsonString(json_encode($part), json_encode($parts[0]));
 
-    $bool = $this->partMapper->updateById($part->getId(), $editedPart);
+    $bool = $this->partMapper->updatePartById($part->getId(), $editedPart);
     $this->assertTrue($bool);
 
-    $parts = $this->getAllFromPartTableDb();
+    $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(1, $parts);
-    $this->assertEqualsWithoutCheckingForId(json_encode($editedPart), json_encode($parts[0]));
-  }
 
-  private function getAllFromPartTableDb(): array
-  {
-    $sql = "SELECT * FROM part";
-    $dbRecord = self::$pdo->query($sql)->fetchAll();
-    return PartFactory::createManyPartsFromRecord($dbRecord);
-  }
-
-  private function assertEqualsWithoutCheckingForId($expected, $actual)
-  {
-    $expectedArr = json_decode($expected, true);
-    $actualArr = json_decode($actual, true);
-    unset($expectedArr["id"]);
-    unset($actualArr["id"]);
-
-    return $this->assertJsonStringEqualsJsonString(json_encode($expectedArr), json_encode($actualArr));
+    MapperCommonMethods::testTwoEntitiesAreEqualWithoutCheckingForId(
+      $editedPart,
+      $parts[0]
+    );
   }
 }

@@ -124,8 +124,8 @@ class PartFactoryTest extends TestCase
   public function testCreatingManyPartsFromUserInput()
   {
     $expected = [$this->partWithoutId, $this->partWithEmptyValues];
-    $manyPartsFromUserInput = PartFactory::createManyPartsFromUserInput(self::$userInput);
-    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($manyPartsFromUserInput));
+    $partsFromUserInput = PartFactory::createManyPartsFromUserInput(self::$userInput);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($partsFromUserInput));
   }
 
   public function testCreatingPartFromDatabaseRecord()
@@ -134,16 +134,16 @@ class PartFactoryTest extends TestCase
     $this->assertJsonStringEqualsJsonString(json_encode($this->part), json_encode($partFromRecord));
   }
 
-  public function testCreatingManyVehiclesFromDatabaseRecord()
+  public function testCreatingManyPartsFromDatabaseRecord()
   {
     $expected = [$this->part, $this->secondPart, $this->partWithNullValues];
-    $manyPartsFromRecord = PartFactory::createManyPartsFromRecord(self::$dbRecord);
-    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($manyPartsFromRecord));
+    $partsFromRecord = PartFactory::createManyPartsFromRecord(self::$dbRecord);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($partsFromRecord));
   }
 
   public function testCreatingArrayFromRecordWithEmptyValues()
   {
-    $expected = new PartEntity(null, null, null, null, null, null, 3);
+    $expected = $this->partWithNullValues;
     $partFromRecordWithEmptyValues = PartFactory::createPartFromRecord(self::$dbRecord[2]);
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($partFromRecordWithEmptyValues));
   }

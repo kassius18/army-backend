@@ -4,7 +4,7 @@ namespace app\models\domains\part;
 
 class PartFactory
 {
-  public static function createPartFromRecord(array $dbRecord)
+  public static function createPartFromRecord(array $dbRecord): PartEntity
   {
     return new PartEntity(
       $dbRecord["date_recieved"],
@@ -17,7 +17,7 @@ class PartFactory
     );
   }
 
-  public static function createPartFromUserInput(array $userInput)
+  public static function createPartFromUserInput(array $userInput): PartEntity
   {
     return new PartEntity(
       $userInput["dateRecieved"] ?: null,
@@ -29,7 +29,7 @@ class PartFactory
     );
   }
 
-  public static function createManyPartsFromRecord(array $dbRecords)
+  public static function createManyPartsFromRecord(array $dbRecords): array
   {
     $allParts = [];
     foreach ($dbRecords as $record) {
@@ -39,7 +39,7 @@ class PartFactory
     return $allParts;
   }
 
-  public static function createManyPartsFromUserInput(array $userInput)
+  public static function createManyPartsFromUserInput(array $userInput): array
   {
     $allParts = [];
     foreach ($userInput as $array) {

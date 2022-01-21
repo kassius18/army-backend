@@ -87,4 +87,41 @@ class PartEntityTest extends TestCase
       json_encode($this->part)
     );
   }
+
+  public function testSerializingToJsonWithNullInputs()
+  {
+    $expected = json_encode([
+      "dateRecieved" => "",
+      "pieNumber" => "",
+      "amountRecieved" => "",
+      "tabUsed" => "",
+      "dateUsed" => "",
+      "amountUsed" => "",
+    ]);
+
+    $actual = new PartEntity(null, null, null, null, null, null);
+    $this->assertJsonStringEqualsJsonString(
+      $expected,
+      json_encode($actual)
+    );
+  }
+
+  public function testSerializingToJsonWithNullInputsButIdSet()
+  {
+    $expected = json_encode([
+      "dateRecieved" => "",
+      "pieNumber" => "",
+      "amountRecieved" => "",
+      "tabUsed" => "",
+      "dateUsed" => "",
+      "amountUsed" => "",
+      "id" => 3,
+    ]);
+
+    $actual = new PartEntity(null, null, null, null, null, null, 3);
+    $this->assertJsonStringEqualsJsonString(
+      $expected,
+      json_encode($actual)
+    );
+  }
 }
