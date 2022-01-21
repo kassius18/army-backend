@@ -102,22 +102,25 @@ class PartMapperTest extends TestCase
 
   public function testUpdatingOnePartById()
   {
-    [$part, $editedPart] = self::$fixture->createParts(2, true);
-    self::$fixture->persistParts([$part]);
+    [$part, $secondPart, $editedPart] = self::$fixture->createParts(3, true);
+    self::$fixture->persistParts([$part, $secondPart]);
 
     $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
-    $this->assertCount(1, $parts);
-    $this->assertJsonStringEqualsJsonString(json_encode($part), json_encode($parts[0]));
+    $this->assertCount(2, $parts);
 
     $bool = $this->partMapper->updatePartById($part->getId(), $editedPart);
     $this->assertTrue($bool);
 
     $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
-    $this->assertCount(1, $parts);
+    $this->assertCount(2, $parts);
 
     MapperCommonMethods::testTwoEntitiesAreEqualWithoutCheckingForId(
       $editedPart,
       $parts[0]
+    );
+    MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId(
+      $editedPart,
+      $parts[1]
     );
   }
 }
