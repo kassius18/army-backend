@@ -18,7 +18,8 @@ final class CreatePartTable extends AbstractMigration
     tab_used VARCHAR(30),
     date_used VARCHAR(30),
     amount_used VARCHAR(30),
-    FOREIGN KEY(entry_id) REFERENCES request_row(id))'
+    FOREIGN KEY(entry_id) REFERENCES request_row(id)
+    ON DELETE CASCADE)'
     );
   }
 

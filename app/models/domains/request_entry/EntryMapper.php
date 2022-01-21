@@ -13,7 +13,7 @@ class EntryMapper
     $this->pdo = $pdo;
   }
 
-  public function saveEntry(EntryEntity $entry): bool
+  public function saveEntryToRequest(EntryEntity $entry, array $requestPrimaryKeys): bool
   {
     $sql = <<<SQL
 INSERT INTO request_row(
@@ -44,8 +44,8 @@ SQL;
 
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
-      'firstPartOfPhi' => $entry->getFirstPhi(),
-      'year' => $entry->getYear(),
+      'firstPartOfPhi' => $requestPrimaryKeys["firstPartOfPhi"],
+      'year' => $requestPrimaryKeys["year"],
       'nameNumber' => $entry->getNameNumber(),
       'name' => $entry->getName(),
       'mainPart' => $entry->getMainPart(),
@@ -57,13 +57,11 @@ SQL;
     ]);
   }
 
-  public function updateEntry(EntryEntity $entry)
+  public function updateEntryById(EntryEntity $entry, int $id): bool
   {
     $sql = <<<SQL
 UPDATE request_row
 SET
-request_phi_first_part = :firstPartOfPhi,
-request_year = :year,
 name_number = :nameNumber,
 name = :name,
 main_part = :mainPart,
@@ -72,12 +70,11 @@ unit_of_order = :unitOfOrder,
 reason_of_order = :reasonOfOrder,
 priority_of_order = :priorityOfOrder,
 observations= :observations
-WHERE id = :id
+WHERE 
+id = :id;
 SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
-      'firstPartOfPhi' => $entry->getFirstPhi(),
-      'year' => $entry->getYear(),
       'nameNumber' => $entry->getNameNumber(),
       'name' => $entry->getName(),
       'mainPart' => $entry->getMainPart(),
@@ -86,9 +83,8 @@ SQL;
       'reasonOfOrder' => $entry->getReasonOfOrder(),
       'priorityOfOrder' => $entry->getPriorityOfOrder(),
       'observations' => $entry->getObservations(),
-      'id' => $entry->getId(),
+      'id' => $id,
     ]);
-    return null;
   }
 
 
@@ -110,29 +106,37 @@ SQL;
       ]
     );
     $result = $statement->fetchAll();
-    return EntryFactory::createEntryFromArrayOfRecords($result);
+    return EntryFactory::createManyEntriesFromRecord($result);
   }
 
-  public function saveManyEntries(array $arrayOfRequests): void
+  public function findEntryById(int $entryId)
   {
-    foreach ($arrayOfRequests as $request) {
-      $this->saveEntry($request);
-    }
+    $sql = <<<SQL
+SELECT
+    *
+FROM
+    request_row
+WHERE 
+    id = :id;
+SQL;
+    $stm = $this->pdo->prepare($sql);
+    $stm->execute(
+      ['id' => $entryId]
+    );
+    return EntryFactory::createEntryFromRecord($stm->fetch());
   }
 
-  public function deleteOneByFullPhiYearAndId(int $firstPartOfPhi, int $year, int $id)
+  public function deleteEntryById(int $id): bool
   {
     $sql = <<<SQL
 DELETE FROM
     request_row
 WHERE
-    request_phi_first_part = :firstPartOfPhi AND request_year = :year AND id = :id
+    id = :id;
 SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute(
       [
-        'firstPartOfPhi' => $firstPartOfPhi,
-        'year' => $year,
         'id' => $id
       ]
     );

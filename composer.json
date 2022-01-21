@@ -10,7 +10,8 @@
       "app\\": "app",
       "migrations\\": "migrations",
       "seeds\\": "seeds",
-      "fixtures\\": "tests/fixtures"
+      "fixtures\\": "tests/fixtures",
+      "common\\": "tests/common"
     }
   }
 }

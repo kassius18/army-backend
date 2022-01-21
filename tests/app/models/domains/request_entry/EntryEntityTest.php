@@ -5,37 +5,21 @@ use PHPUnit\Framework\TestCase;
 
 class EntryEntityTest extends TestCase
 {
-  private int $firstPartOfPhi;
-  private int $year;
-  private int $id;
-  private string $nameNumber;
-  private string $name;
-  private string $mainPart;
-  private int $amountOfOrder;
-  private string $unitOfOrder;
-  private int $reasonOfOrder;
-  private int $priorityOfOrder;
-  private string $observations;
+  private int $id =  1;
+  private string $nameNumber =  "9S9972";
+  private string $name =  "ΦΙΛΤΡΟ ΑΕΡΑ ΕΣΩΤ";
+  private string $mainPart =  "Π/Θ";
+  private int $amountOfOrder =  1;
+  private string $unitOfOrder =  "τεμ.";
+  private int $reasonOfOrder =  4;
+  private int $priorityOfOrder =  50;
+  private string $observations =  "Π/Θ CAT";
 
   private EntryEntity $entryEntity;
 
   public function setUp(): void
   {
-    $this->firstPartOfPhi = 15;
-    $this->year = 2001;
-    $this->id = 1;
-    $this->nameNumber = '9S9972';
-    $this->name = 'ΦΙΛΤΡΟ ΑΕΡΑ ΕΣΩΤ';
-    $this->mainPart = 'Π/Θ';
-    $this->amountOfOrder = 1;
-    $this->unitOfOrder =     'τεμ.';
-    $this->reasonOfOrder = 4;
-    $this->priorityOfOrder = 50;
-    $this->observations = 'Π/Θ CAT';
-
     $this->entryEntity = new EntryEntity(
-      $this->firstPartOfPhi,
-      $this->year,
       $this->nameNumber,
       $this->name,
       $this->mainPart,
@@ -45,9 +29,8 @@ class EntryEntityTest extends TestCase
       $this->priorityOfOrder,
       $this->observations,
     );
+
     $this->entryEntityWithIdSet = new EntryEntity(
-      $this->firstPartOfPhi,
-      $this->year,
       $this->nameNumber,
       $this->name,
       $this->mainPart,
@@ -62,8 +45,6 @@ class EntryEntityTest extends TestCase
 
   public function testEntityStructure()
   {
-    $this->assertEquals($this->entryEntity->getFirstPhi(), $this->firstPartOfPhi);
-    $this->assertEquals($this->entryEntity->getYear(), $this->year);
     $this->assertEquals($this->entryEntity->getNameNumber(), $this->nameNumber);
     $this->assertEquals($this->entryEntity->getName(), $this->name);
     $this->assertEquals($this->entryEntity->getMainPart(), $this->mainPart);
@@ -79,17 +60,15 @@ class EntryEntityTest extends TestCase
   {
     $expected = json_encode(
       [
-        'firstPartOfPhi' => $this->firstPartOfPhi,
-        'year' => $this->year,
-        'nameNumber' => $this->nameNumber,
-        'name' => $this->name,
-        'mainPart' => $this->mainPart,
-        'amountOfOrder' => $this->amountOfOrder,
-        'unitOfOrder' => $this->unitOfOrder,
-        'reasonOfOrder' => $this->reasonOfOrder,
-        'priorityOfOrder' => $this->priorityOfOrder,
-        'observations' => $this->observations,
-        'id' => $this->id
+        "nameNumber" => $this->nameNumber,
+        "name" => $this->name,
+        "mainPart" => $this->mainPart,
+        "amountOfOrder" => $this->amountOfOrder,
+        "unitOfOrder" => $this->unitOfOrder,
+        "reasonOfOrder" => $this->reasonOfOrder,
+        "priorityOfOrder" => $this->priorityOfOrder,
+        "observations" => $this->observations,
+        "id" => $this->id
       ]
     );
     $this->assertJsonStringEqualsJsonString($expected, json_encode($this->entryEntityWithIdSet));
@@ -99,19 +78,58 @@ class EntryEntityTest extends TestCase
   {
     $expected = json_encode(
       [
-        'firstPartOfPhi' => $this->firstPartOfPhi,
-        'year' => $this->year,
-        'nameNumber' => $this->nameNumber,
-        'name' => $this->name,
-        'mainPart' => $this->mainPart,
-        'amountOfOrder' => $this->amountOfOrder,
-        'unitOfOrder' => $this->unitOfOrder,
-        'reasonOfOrder' => $this->reasonOfOrder,
-        'priorityOfOrder' => $this->priorityOfOrder,
-        'observations' => $this->observations,
+        "nameNumber" => $this->nameNumber,
+        "name" => $this->name,
+        "mainPart" => $this->mainPart,
+        "amountOfOrder" => $this->amountOfOrder,
+        "unitOfOrder" => $this->unitOfOrder,
+        "reasonOfOrder" => $this->reasonOfOrder,
+        "priorityOfOrder" => $this->priorityOfOrder,
+        "observations" => $this->observations,
       ]
     );
 
     $this->assertJsonStringEqualsJsonString($expected, json_encode($this->entryEntity));
+  }
+
+  public function testSerializingToJsonWithNullInputs()
+  {
+    $expected = json_encode([
+      "nameNumber" => "",
+      "name" => "",
+      "mainPart" => "",
+      "amountOfOrder" => "",
+      "unitOfOrder" => "",
+      "reasonOfOrder" => "",
+      "priorityOfOrder" => "",
+      "observations" => "",
+    ]);
+
+    $actual = new EntryEntity(null, null, null, null, null, null, null, null);
+    $this->assertJsonStringEqualsJsonString(
+      $expected,
+      json_encode($actual)
+    );
+  }
+
+  public function testSerializingToJsonWithNullInputsButIdSet()
+  {
+    $expected = json_encode([
+      "nameNumber" => "",
+      "name" => "",
+      "mainPart" => "",
+      "amountOfOrder" => "",
+      "unitOfOrder" => "",
+      "reasonOfOrder" => "",
+      "priorityOfOrder" => "",
+      "observations" => "",
+      "id" => 2,
+    ]);
+
+    $actual = new EntryEntity(null, null, null, null, null, null, null, null, 2);
+    $this->assertJsonStringEqualsJsonString(
+      $expected,
+      json_encode($actual)
+    );
   }
 }

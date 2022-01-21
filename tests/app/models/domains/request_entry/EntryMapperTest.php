@@ -1,8 +1,11 @@
 <?php
 
-use app\models\domains\request_entry\EntryEntity;
+use app\models\domains\part\PartFactory;
 use app\models\domains\request_entry\EntryMapper;
 use app\models\domains\request_entry\EntryFactory;
+use common\MapperCommonMethods;
+use fixtures\EntryFixture;
+use fixtures\PartFixture;
 use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\StringInput;
@@ -10,31 +13,20 @@ use Symfony\Component\Console\Output\NullOutput;
 
 class EntryMapperTest extends TestCase
 {
+  private static ?PDO $pdo;
   private static PhinxApplication $phinxApp;
-  private static $pdo;
-  private EntryMapper $entryMapper;
+  private static EntryFixture $fixture;
+  private static PartFixture $partFixture;
 
-  private int  $firstPartOfPhi = 15;
-  private int  $year = 2021;
-  private int  $id = 1;
-  private string $nameNumber = '9S9972';
-  private string $name = 'ΦΙΛΤΡΟ ΑΕΡΑ ΕΣΩΤ';
-  private string $mainPart = 'Π/Θ';
-  private int $amountOfOrder = 1;
-  private string $unitOfOrder = 'τεμ.';
-  private int $reasonOfOrder = 04;
-  private int $priorityOfOrder = 50;
-  private string $observations = 'Π/Θ CAT';
-  private string $differentName = 'ΦΙΛΤΡΟ';
-
-  private EntryEntity $entryWithoutId;
-  private EntryEntity $entryWithoutIdWithDifferentName;
-  private EntryEntity $entryWithIdWithDifferentName;
+  private array $requestPrimaryKeys = ["firstPartOfPhi" => 1, "year" => 2];
+  private array $otherRequestPrimaryKeys = ["firstPartOfPhi" => 2, "year" => 3];
 
   public static function setUpBeforeClass(): void
   {
     self::$pdo = include(TEST_DIR . "/setDatabaseForTestsScript.php");
     self::$phinxApp = new PhinxApplication();
+    self::$fixture = new EntryFixture(self::$pdo);
+    self::$partFixture = new PartFixture(self::$pdo);
   }
 
   public static function tearDownAfterClass(): void
@@ -46,53 +38,12 @@ class EntryMapperTest extends TestCase
   {
     self::$phinxApp->setAutoExit(false);
     self::$phinxApp->run(new StringInput('migrate -e testing'), new NullOutput());
-    //Necessary for this test since the foreign keys need to already exist in the Request Table
-    //This means the primary keys used in this test are arbitrary and set equal to those in the seed file
-    self::$phinxApp->run(new StringInput('seed:run -e testing -s RequestTableSeed'), new NullOutput());
+    //Inserting a row into parent table to test methods that require parent's PK
+    $sql = "INSERT INTO `request` (`phi_first_part`, `year`) VALUES (1, 2);";
+    self::$pdo->exec($sql);
+    $sql = "INSERT INTO `request` (`phi_first_part`, `year`) VALUES (2, 3);";
+    self::$pdo->exec($sql);
     $this->entryMapper = new EntryMapper(self::$pdo);
-
-    //Entries id is given by the db as auto increment so entries without id are meant to be saved, while
-    //entries with id are meant to be used to updates the ones without id. 
-    $this->entryWithoutId = new EntryEntity(
-      $this->firstPartOfPhi,
-      $this->year,
-      $this->nameNumber,
-      $this->name,
-      $this->mainPart,
-      $this->amountOfOrder,
-      $this->unitOfOrder,
-      $this->reasonOfOrder,
-      $this->priorityOfOrder,
-      $this->observations,
-    );
-
-    $this->entryWithoutIdWithDifferentName = new EntryEntity(
-      $this->firstPartOfPhi,
-      $this->year,
-      $this->nameNumber,
-      $this->differentName,
-      $this->mainPart,
-      $this->amountOfOrder,
-      $this->unitOfOrder,
-      $this->reasonOfOrder,
-      $this->priorityOfOrder,
-      $this->observations,
-      $this->id
-    );
-
-    $this->entryWithIdWithDifferentName = new EntryEntity(
-      $this->firstPartOfPhi,
-      $this->year,
-      $this->nameNumber,
-      $this->differentName,
-      $this->mainPart,
-      $this->amountOfOrder,
-      $this->unitOfOrder,
-      $this->reasonOfOrder,
-      $this->priorityOfOrder,
-      $this->observations,
-      $this->id
-    );
   }
 
   protected function tearDown(): void
@@ -102,48 +53,99 @@ class EntryMapperTest extends TestCase
 
   public function testFindingAllEntriesByPhiAndYear()
   {
-    $this->entryMapper->saveEntry($this->entryWithoutId);
-    $this->entryMapper->saveEntry($this->entryWithoutIdWithDifferentName);
-    $result = $this->entryMapper->findAllByPhiAndYear($this->firstPartOfPhi, $this->year);
-    $this->assertCount(2, $result);
-    $this->testTwoEntriesAreEqualWithoutCheckingForId($result[0], $this->entryWithoutId);
-    $this->testTwoEntriesAreEqualWithoutCheckingForId($result[1], $this->entryWithoutIdWithDifferentName);
+    $expected = self::$fixture->createEntries(2, true);
+    self::$fixture->persistEntries($expected, $this->requestPrimaryKeys);
+
+    //Adding extra entries to another request  to test that we find the correct ones
+    $entries = self::$fixture->createEntries(3, true);
+    self::$fixture->persistEntries($entries, $this->otherRequestPrimaryKeys);
+
+    $actual = $this->entryMapper->findAllByPhiAndYear(
+      $this->requestPrimaryKeys["firstPartOfPhi"],
+      $this->requestPrimaryKeys["year"]
+    );
+
+    $this->assertCount(2, $actual);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
 
-  public function testSavingOneUnique()
+  public function testFindOneEntryById()
   {
-    $result = $this->entryMapper->saveEntry($this->entryWithoutId);
-    $this->assertTrue($result);
-    $dbRecord = self::$pdo->query("SELECT * FROM request_row WHERE id=1")->fetchAll();
-    $entryFromDatabaseRecord = EntryFactory::createEntryFromRecord($dbRecord[0]);
-    $this->testTwoEntriesAreEqualWithoutCheckingForId($entryFromDatabaseRecord, $this->entryWithoutId);
+    $entries = self::$fixture->createEntries(2, true);
+    self::$fixture->persistEntries($entries, $this->requestPrimaryKeys);
+
+    $actual = $this->entryMapper->findEntryById($entries[0]->getId());
+    $this->assertJsonStringEqualsJsonString(json_encode($entries[0]), json_encode($actual));
   }
 
-  public function testSavingDuplicateUpdates()
+  public function testSavingEntry()
   {
-    $this->entryMapper->saveEntry($this->entryWithoutId);
-    $this->entryMapper->updateEntry($this->entryWithIdWithDifferentName);
-    $dbRecord = self::$pdo->query("SELECT * FROM request_row WHERE id={$this->entryWithIdWithDifferentName->getId()}")->fetchAll();
-    $entryFromDatabaseRecord = EntryFactory::createEntryFromRecord($dbRecord[0]);
-    $this->assertJsonStringEqualsJsonString(json_encode($entryFromDatabaseRecord), json_encode($this->entryWithIdWithDifferentName));
+    $entries = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(0, $entries);
+
+    $expected = self::$fixture->createEntries(1, true);
+    $bool = $this->entryMapper->saveEntryToRequest($expected[0], $this->requestPrimaryKeys);
+
+    $this->assertTrue($bool);
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(1, $actual);
+
+    $this->assertJsonStringEqualsJsonString(json_encode($expected[0]), json_encode($actual[0]));
   }
 
-  public function testDeletingOneByPhiDateAndId()
+  public function testDeletingOneById()
   {
-    $this->entryMapper->saveEntry($this->entryWithoutId);
-    $this->entryMapper->deleteOneByFullPhiYearAndId($this->firstPartOfPhi, $this->year, $this->id);
-    $dbRecord = self::$pdo->query("SELECT * FROM request_row WHERE id={$this->entryWithIdWithDifferentName->getId()}")->fetchAll();
-    $this->assertCount(0, $dbRecord);
+    $expected = self::$fixture->createEntries(2, true);
+    self::$fixture->persistEntries($expected);
+
+    $bool = $this->entryMapper->deleteEntryById($expected[0]->getId());
+    $this->assertTrue($bool);
+
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(1, $actual);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected[1]), json_encode($actual[0]));
   }
 
-  private function testTwoEntriesAreEqualWithoutCheckingForId(EntryEntity $firstEntry, EntryEntity $secondEntry)
+  public function testDeletingEntryDeletesChildrenPartsToo()
   {
-    $firstEntryAsArray = json_decode(json_encode($firstEntry), true);
-    $secondEntryAsArray = json_decode(json_encode($secondEntry), true);
+    $expected = self::$fixture->createEntries(2, true);
+    self::$fixture->persistEntries($expected);
+    $partsForEntryOne = self::$partFixture->createParts(3, true);
+    self::$partFixture->persistParts($partsForEntryOne, $expected[0]->getId());
+    $partsForEntryTwo = self::$partFixture->createParts(2, true, 4);
+    self::$partFixture->persistParts($partsForEntryTwo, $expected[1]->getId());
 
-    unset($firstEntryAsArray['id']);
-    unset($secondEntryAsArray['id']);
+    $actualEntries = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(2, $actualEntries);
 
-    $this->assertEquals($firstEntryAsArray, $secondEntryAsArray);
+    $actualParts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
+    $this->assertCount(5, $actualParts);
+
+    $bool = $this->entryMapper->deleteEntryById($expected[0]->getId());
+    $this->assertTrue($bool);
+
+    $actualEntries = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertcount(1, $actualEntries);
+
+    $actualParts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
+    $this->assertcount(2, $actualParts);
+  }
+
+  public function testUpdatingOneById()
+  {
+    $entries = self::$fixture->createEntries(3, true);
+    self::$fixture->persistEntries(array_slice($entries, 0, 2));
+
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(2, $actual);
+
+    $bool = $this->entryMapper->updateEntryById($entries[2], $entries[0]->getId());
+    $this->assertTrue($bool);
+
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(2, $actual);
+
+    MapperCommonMethods::testTwoEntitiesAreEqualWithoutCheckingForId($entries[2], $actual[0]);
+    MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId($entries[2], $actual[1]);
   }
 }
