@@ -2,127 +2,143 @@
 
 use app\models\domains\request\RequestEntity;
 use app\models\domains\request\RequestFactory;
-use app\models\domains\request_entry\EntryEntity;
-use fixtures\RequestFactoryFixture;
 use PHPUnit\Framework\TestCase;
 
 class RequestFactoryTest extends TestCase
 {
   private static array $dbRecord;
-  private static array $userPostInput;
-  private static RequestFactoryFixture $fixture;
+  private static array $userInput;
   private RequestEntity $request;
-  private RequestEntity $requestFromUserPost;
+  private RequestEntity $otherRequest;
+  private RequestEntity $requestWithNullValues;
+  private RequestEntity $requestWithoutId;
+  private RequestEntity $requestWithEmptyValues;
+
 
   public static function setUpBeforeClass(): void
   {
-    self::$fixture = new RequestFactoryFixture();
-    self::$dbRecord = [[
-      'phi_first_part' => 1,
-      'phi_second_part' => 2,
-      'year' => 3,
-      'month' => 4,
-      'day' => 5,
-      'request_phi_first_part' => 1,
-      'request_phi_second_part' => 2,
-      'request_year' => 3,
-      'name_number' => 'nameNumber',
-      'name' => 'name',
-      'main_part' => 'mainPart',
-      'amount_of_order' => 4,
-      'unit_of_order' => "unit",
-      'reason_of_order' => 5,
-      'priority_of_order' => 6,
-      'observations' => 'obs',
-      'id' => 7
-    ]];
+    self::$dbRecord = [
+      [
+        "phi_first_part" => 1,
+        "phi_second_part" => 2,
+        "year" => 3,
+        "month" => 4,
+        "day" => 5,
+        "id" => 1,
+      ], [
+        "phi_first_part" => 6,
+        "phi_second_part" => 7,
+        "year" => 8,
+        "month" => 9,
+        "day" => 10,
+        "id" => 2,
+      ], [
+        "phi_first_part" => null,
+        "phi_second_part" => null,
+        "year" => null,
+        "month" => null,
+        "day" => null,
+        "id" => 3,
+      ]
+    ];
 
-    self::$userPostInput = [
-      'firstPartOfPhi' => 1,
-      'secondPartOfPhi' => 2,
-      'year' => 3,
-      'month' => 4,
-      'day' => 5,
-      'entries' => [[
-        'nameNumber' => 'nameNumber',
-        'name' => 'name',
-        'mainPart' => 'mainPart',
-        'amountOfOrder' => 4,
-        'unitOfOrder' => "unit",
-        'reasonOfOrder' => 5,
-        'priorityOfOrder' => 6,
-        'observations' => 'obs'
-      ]]
+    self::$userInput = [
+      [
+        "firstPartOfPhi" => 1,
+        "secondPartOfPhi" => 2,
+        "year" => 3,
+        "month" => 4,
+        "day" => 5,
+      ], [
+        "firstPartOfPhi" => "",
+        "secondPartOfPhi" => "",
+        "year" => "",
+        "month" => "",
+        "day" => "",
+      ]
     ];
   }
 
   protected function setUp(): void
   {
-    $entry = new EntryEntity(
-      self::$dbRecord[0]['request_phi_first_part'],
-      self::$dbRecord[0]['request_year'],
-      self::$dbRecord[0]['name_number'],
-      self::$dbRecord[0]['name'],
-      self::$dbRecord[0]['main_part'],
-      self::$dbRecord[0]['amount_of_order'],
-      self::$dbRecord[0]['unit_of_order'],
-      self::$dbRecord[0]['reason_of_order'],
-      self::$dbRecord[0]['priority_of_order'],
-      self::$dbRecord[0]['observations'],
-      self::$dbRecord[0]['id']
-    );
-
-    $entryWithoutId = new EntryEntity(
-      self::$dbRecord[0]['request_phi_first_part'],
-      self::$dbRecord[0]['request_year'],
-      self::$dbRecord[0]['name_number'],
-      self::$dbRecord[0]['name'],
-      self::$dbRecord[0]['main_part'],
-      self::$dbRecord[0]['amount_of_order'],
-      self::$dbRecord[0]['unit_of_order'],
-      self::$dbRecord[0]['reason_of_order'],
-      self::$dbRecord[0]['priority_of_order'],
-      self::$dbRecord[0]['observations'],
-    );
-
-
     $this->request = new RequestEntity(
-      self::$dbRecord[0]['phi_first_part'],
-      self::$dbRecord[0]['phi_second_part'],
-      self::$dbRecord[0]['year'],
-      self::$dbRecord[0]['month'],
-      self::$dbRecord[0]['day'],
-      [$entry]
+      self::$dbRecord[0]["phi_first_part"],
+      self::$dbRecord[0]["phi_second_part"],
+      self::$dbRecord[0]["year"],
+      self::$dbRecord[0]["month"],
+      self::$dbRecord[0]["day"],
+      self::$dbRecord[0]["id"]
     );
-    $this->requestFromUserPost = new RequestEntity(
-      self::$dbRecord[0]['phi_first_part'],
-      self::$dbRecord[0]['phi_second_part'],
-      self::$dbRecord[0]['year'],
-      self::$dbRecord[0]['month'],
-      self::$dbRecord[0]['day'],
-      [$entryWithoutId]
+
+    $this->otherRequest = new RequestEntity(
+      self::$dbRecord[1]["phi_first_part"],
+      self::$dbRecord[1]["phi_second_part"],
+      self::$dbRecord[1]["year"],
+      self::$dbRecord[1]["month"],
+      self::$dbRecord[1]["day"],
+      self::$dbRecord[1]["id"]
     );
+
+    $this->requestWithNullValues = new RequestEntity(
+      self::$dbRecord[2]["phi_first_part"],
+      self::$dbRecord[2]["phi_second_part"],
+      self::$dbRecord[2]["year"],
+      self::$dbRecord[2]["month"],
+      self::$dbRecord[2]["day"],
+      self::$dbRecord[2]["id"]
+    );
+
+    $this->requestWithoutId = new RequestEntity(
+      self::$userInput[0]["firstPartOfPhi"],
+      self::$userInput[0]["secondPartOfPhi"],
+      self::$userInput[0]["year"],
+      self::$userInput[0]["month"],
+      self::$userInput[0]["day"],
+    );
+
+    $this->requestWithEmptyValues = new RequestEntity(null, null, null, null, null);
   }
 
   public function testCreatingRequestFromDatabaseRecord()
   {
-    $requestCreateFromFactory = RequestFactory::createRequestEntityFromRecord(self::$dbRecord);
+    $requestCreateFromFactory = RequestFactory::createRequestFromRecord(self::$dbRecord[0]);
     $this->assertEquals($this->request, $requestCreateFromFactory);
   }
 
   public function testCreatingRequestFromUserInput()
   {
-    $requestCreateFromFactory = RequestFactory::createRequestFromUserInput(self::$userPostInput);
-    $this->assertEquals($this->requestFromUserPost, $requestCreateFromFactory);
+    $requestFromInput = RequestFactory::createRequestFromUserInput(self::$userInput[0]);
+    $this->assertEquals(json_encode($this->requestWithoutId), json_encode($requestFromInput));
   }
 
-  public function testEntriesWithDifferentPrimaryKeyGetIgnored()
+  public function testCreatingArrayFromUserInputWithEmptyValues()
   {
-    $requestEntity = self::$fixture->testEntriesBelongToRequestsFixture();
-    $arrayOfEntriesOfRequest = $requestEntity->getEntries();
-    foreach ($arrayOfEntriesOfRequest as $entry) {
-      $this->assertEquals($requestEntity->getFirstPhi(), $entry->getFirstPhi());
-      $this->assertEquals($requestEntity->getYear(), $entry->getYear());
-    }
+    $expected = $this->requestWithEmptyValues;
+    $requestFromRecordWithEmptyValues = RequestFactory::createRequestFromUserInput(self::$userInput[1]);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($requestFromRecordWithEmptyValues));
+  }
+
+  public function testCreatingManyRequestsFromUserInput()
+  {
+    $expected = [$this->requestWithoutId, $this->requestWithEmptyValues];
+    $requestsFromUserInput = RequestFactory::createManyRequestsFromUserInput(self::$userInput);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($requestsFromUserInput));
+  }
+
+  public function testCreatingManyRequestsFromDatabaseRecord()
+  {
+    $expected = [$this->request, $this->otherRequest, $this->requestWithNullValues];
+    $requestsFromRecord = RequestFactory::createManyRequestsFromRecord(self::$dbRecord);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($requestsFromRecord));
+  }
+
+  public function testCreatingArrayFromRecordWithEmptyValues()
+  {
+    $expected = $this->requestWithNullValues;
+    $requestFromRecordWithEmptyValues = RequestFactory::createRequestFromRecord(self::$dbRecord[2]);
+    $this->assertJsonStringEqualsJsonString(
+      json_encode($expected),
+      json_encode($requestFromRecordWithEmptyValues)
+    );
   }
 }

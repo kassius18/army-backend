@@ -43,8 +43,13 @@ class MapperCommonMethods
         $factory = '\app\models\domains\request_entry\EntryFactory';
         $method = "createManyEntriesFromRecord";
         break;
+      case "request":
+        $tableName = "request";
+        $factory = '\app\models\domains\request\RequestFactory';
+        $method = "createManyRequestsFromRecord";
+        break;
     }
-    $sql = "SELECT * FROM {$tableName}";
+    $sql = "SELECT * FROM {$tableName} ORDER BY id";
     $dbRecord = $pdo->query($sql)->fetchAll();
     return call_user_func_array([$factory, $method], [$dbRecord]);
   }

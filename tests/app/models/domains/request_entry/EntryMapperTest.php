@@ -1,8 +1,7 @@
 <?php
 
-use app\models\domains\part\PartFactory;
+use app\models\domains\part\PartMapper;
 use app\models\domains\request_entry\EntryMapper;
-use app\models\domains\request_entry\EntryFactory;
 use common\MapperCommonMethods;
 use fixtures\EntryFixture;
 use fixtures\PartFixture;

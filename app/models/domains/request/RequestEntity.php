@@ -6,66 +6,70 @@ use JsonSerializable;
 
 class RequestEntity implements JsonSerializable
 {
-  private int $firstPartOfPhi;
-  private int $secondPartOfPhi;
-  private int $year;
-  private int $month;
-  private int $day;
-  private array $entries;
+  private ?int $firstPartOfPhi;
+  private ?int $secondPartOfPhi;
+  private ?int $year;
+  private ?int $month;
+  private ?int $day;
+  private ?int $id;
 
   public function __construct(
-    int $firstPartOfPhi,
-    int $secondPartOfPhi,
-    int $year,
-    int $month,
-    int $day,
-    array $entries = []
+    ?int $firstPartOfPhi,
+    ?int $secondPartOfPhi,
+    ?int $year,
+    ?int $month,
+    ?int $day,
+    ?int $id = null
   ) {
     $this->firstPartOfPhi = $firstPartOfPhi;
     $this->secondPartOfPhi = $secondPartOfPhi;
     $this->year = $year;
     $this->month = $month;
     $this->day = $day;
-    $this->entries = $entries;
+    $this->id = $id;
   }
 
-  public function getFirstPhi(): int
+  public function getFirstPhi(): ?int
   {
     return $this->firstPartOfPhi;
   }
-  public function getSecondPhi(): int
+  public function getSecondPhi(): ?int
   {
     return $this->secondPartOfPhi;
   }
-  public function getYear(): int
+  public function getYear(): ?int
   {
     return $this->year;
   }
-  public function getMonth(): int
+  public function getMonth(): ?int
   {
     return $this->month;
   }
 
-  public function getDay(): int
+  public function getDay(): ?int
   {
     return $this->day;
   }
 
-  public function getEntries()
+  public function getId(): ?int
   {
-    return $this->entries;
+    return $this->id;
   }
-
 
   public function jsonSerialize(): array
   {
-    return [
-      'firstPartOfPhi' => $this->firstPartOfPhi,
-      'secondPartOfPhi' => $this->secondPartOfPhi,
-      'year' => $this->year,
-      'month' => $this->month,
-      'day' => $this->day,
-      'entries' => $this->entries,
+    $json = [
+      'firstPartOfPhi' => $this->firstPartOfPhi ?: "",
+      'secondPartOfPhi' => $this->secondPartOfPhi ?: "",
+      'year' => $this->year ?: "",
+      'month' => $this->month ?: "",
+      'day' => $this->day ?: "",
     ];
+
+    if (isset($this->id)) {
+      $json["id"] = $this->id;
+    }
+
+    return $json;
   }
 }

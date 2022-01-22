@@ -1,34 +1,36 @@
 <?php
 
 use app\models\domains\request\RequestEntity;
-use app\models\domains\request_entry\EntryEntity;
 use PHPUnit\Framework\TestCase;
 
 class RequestEntityTest extends TestCase
 {
-  private int $firstPartOfPhi;
-  private int $secondPartOfPhi;
-  private int $year;
-  private int $month;
-  private int $day;
+  private int $firstPartOfPhi = 15;
+  private int $secondPartOfPhi = 2000;
+  private int $year = 2001;
+  private int $month = 05;
+  private int $day = 15;
+  private int $id = 1;
   private RequestEntity $requestEntity;
+  private RequestEntity $requestEntityWithIdSet;
 
   public function setUp(): void
   {
-    $this->firstPartOfPhi = 15;
-    $this->secondPartOfPhi = 2000;
-    $this->year = 2001;
-    $this->month = 05;
-    $this->day = 15;
-    $this->entries = [$this->createMock(EntryEntity::class)];
-
     $this->requestEntity = new RequestEntity(
       $this->firstPartOfPhi,
       $this->secondPartOfPhi,
       $this->year,
       $this->month,
+      $this->day
+    );
+
+    $this->requestEntityWithIdSet = new RequestEntity(
+      $this->firstPartOfPhi,
+      $this->secondPartOfPhi,
+      $this->year,
+      $this->month,
       $this->day,
-      $this->entries
+      $this->id
     );
   }
 
@@ -39,22 +41,72 @@ class RequestEntityTest extends TestCase
     $this->assertEquals($this->requestEntity->getYear(), $this->year);
     $this->assertEquals($this->requestEntity->getMonth(), $this->month);
     $this->assertEquals($this->requestEntity->getDay(), $this->day);
-    $this->assertEquals($this->requestEntity->getEntries(), $this->entries);
+    $this->assertEquals($this->requestEntityWithIdSet->getId(), $this->id);
   }
 
-  public function testSerializingToJson()
+  public function testSerializingToJsonWithIdSet()
   {
     $expected = json_encode(
       [
-        'firstPartOfPhi' => $this->firstPartOfPhi,
-        'secondPartOfPhi' => $this->secondPartOfPhi,
-        'year' => $this->year,
-        'month' => $this->month,
-        'day' => $this->day,
-        'entries' => $this->entries
+        "firstPartOfPhi" => $this->firstPartOfPhi,
+        "secondPartOfPhi" => $this->secondPartOfPhi,
+        "year" => $this->year,
+        "month" => $this->month,
+        "day" => $this->day,
+        "id" => $this->id
+      ]
+    );
+
+    $this->assertJsonStringEqualsJsonString($expected, json_encode($this->requestEntityWithIdSet));
+  }
+
+  public function testSerializingToJsonWithIdNotSet()
+  {
+    $expected = json_encode(
+      [
+        "firstPartOfPhi" => $this->firstPartOfPhi,
+        "secondPartOfPhi" => $this->secondPartOfPhi,
+        "year" => $this->year,
+        "month" => $this->month,
+        "day" => $this->day
       ]
     );
 
     $this->assertJsonStringEqualsJsonString($expected, json_encode($this->requestEntity));
+  }
+
+  public function testSerializingToJsonWithNullInputs()
+  {
+    $expected = json_encode([
+      "firstPartOfPhi" => "",
+      "secondPartOfPhi" => "",
+      "year" => "",
+      "month" => "",
+      "day" => ""
+    ]);
+
+    $actual = new RequestEntity(null, null, null, null, null);
+    $this->assertJsonStringEqualsJsonString(
+      $expected,
+      json_encode($actual)
+    );
+  }
+
+  public function testSerializingToJsonWithNullInputsButIdSet()
+  {
+    $expected = json_encode([
+      "firstPartOfPhi" => "",
+      "secondPartOfPhi" => "",
+      "year" => "",
+      "month" => "",
+      "day" => "",
+      "id" => $this->id
+    ]);
+
+    $actual = new RequestEntity(null, null, null, null, null, $this->id);
+    $this->assertJsonStringEqualsJsonString(
+      $expected,
+      json_encode($actual)
+    );
   }
 }

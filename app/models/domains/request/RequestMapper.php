@@ -14,7 +14,7 @@ class RequestMapper
     $this->pdo = $pdo;
   }
 
-  public function saveRequest(RequestEntity $request, EntryMapper $entryMapper): void
+  public function saveRequest(RequestEntity $request): bool
   {
     $sql = <<<SQL
 INSERT INTO request(
@@ -34,15 +34,13 @@ VALUES(
 SQL;
 
     $statement = $this->pdo->prepare($sql);
-    $statement->execute([
+    return  $statement->execute([
       'firstPartOfPhi' => $request->getFirstPhi(),
       'secondPartOfPhi' => $request->getSecondPhi(),
       'year' => $request->getYear(),
       'month' => $request->getMonth(),
       'day' => $request->getDay()
     ]);
-
-    $entryMapper->saveManyEntries($request->getEntries());
   }
 
   public function findOneByPhiAndYear(int $firstPartOfPhi, int $year): RequestEntity
@@ -52,11 +50,6 @@ SELECT
     *
 FROM
     request
-INNER JOIN request_row 
-ON 
-request_row.request_phi_first_part = request.phi_first_part
-AND
-request_row.request_year = request.year
 WHERE
     phi_first_part = :firstPartOfPhi AND year = :year
 SQL;
@@ -67,29 +60,44 @@ SQL;
         'year' => $year
       ]
     );
-    $result = $statement->fetchAll();
-    return RequestFactory::createRequestEntityFromRecord($result);
+    $result = $statement->fetch();
+    return RequestFactory::createRequestFromRecord($result);
+  }
+
+  public function findOneById(int $id): ?RequestEntity
+  {
+    $sql = <<<SQL
+SELECT * FROM 
+    request
+WHERE
+    id = :id
+ORDER BY
+    id
+SQL;
+    $statement = $this->pdo->prepare($sql);
+    $statement->execute([
+      'id' => $id,
+    ]);
+    $record = $statement->fetch();
+    return RequestFactory::createRequestFromRecord($record);
   }
 
   public function findManyByPhi(int $firstPartOfPhi): array
   {
     $sql = <<<SQL
-SELECT * FROM request
-INNER JOIN request_row 
-ON 
-request_row.request_phi_first_part = request.phi_first_part
-AND 
-request_row.request_year = request.year
-WHERE 
-phi_first_part = :firstPartOfPhi
-ORDER BY year
+SELECT * FROM 
+    request
+WHERE
+    phi_first_part = :firstPartOfPhi
+ORDER BY
+    year;
 SQL;
     $statement = $this->pdo->prepare($sql);
     $statement->execute([
       'firstPartOfPhi' => $firstPartOfPhi,
     ]);
-    $allRecords = $statement->fetchAll(PDO::FETCH_GROUP);
-    return RequestFactory::createRequestEntityFromArrayOfRecords($allRecords);
+    $allRecords = $statement->fetchAll();
+    return RequestFactory::createManyRequestsFromRecord($allRecords);
   }
 
   public function findAllByDateInterval(array $startDate, array $endDate = null): array
@@ -97,16 +105,12 @@ SQL;
     $endDate = $endDate ?: $startDate;
 
     $sql = <<<SQL
-SELECT * FROM request
-INNER JOIN request_row 
-ON 
-request_row.request_phi_first_part = request.phi_first_part
+SELECT * FROM 
+    request
+WHERE
+    YEAR >= :startYear
 AND
-request_row.request_year = request.year
- WHERE
-YEAR >= :startYear
-AND
-YEAR <= :endYear
+    year <= :endYear
 SQL;
 
     $preparedStatementValues = [
@@ -118,9 +122,9 @@ SQL;
       $sql .= <<<SQL
 
 AND 
-MONTH >= :startMonth
+    month >= :startMonth
 AND
-MONTH <= :endMonth
+    month <= :endMonth
 SQL;
       $preparedStatementValues['startMonth'] = $startDate[1];
       $preparedStatementValues['endMonth'] = $endDate[1];
@@ -129,31 +133,61 @@ SQL;
       $sql .= <<<SQL
 
 AND 
-DAY >= :startDay
+    day >= :startDay
 AND
-DAY <= :endDay
+    day <= :endDay
 SQL;
       $preparedStatementValues['startDay'] = $startDate[2];
       $preparedStatementValues['endDay'] = $endDate[2];
     }
 
+    $sql .= <<<SQL
+
+ORDER BY
+    year, month, day, id
+SQL;
     $statement = $this->pdo->prepare($sql);
     $statement->execute($preparedStatementValues);
-    $allRecords = $statement->fetchAll(PDO::FETCH_GROUP);
-    return RequestFactory::createRequestEntityFromArrayOfRecords($allRecords);
+    $allRecords = $statement->fetchAll();
+    return RequestFactory::createManyRequestsFromRecord($allRecords);
   }
 
-  public function updateRequest(RequestEntity $request)
+  public function updateRequest(RequestEntity $request, int $requestId)
   {
     $sql = <<<SQL
-UPDATE request
-    SET MONTH = :month, DAY = :day
+UPDATE 
+    request
+SET 
+    `phi_first_part` = :firstPartOfPhi,
+    `phi_second_part` = :secondPartOfPhi,
+    `year` = :year,
+    `month` = :month,
+    `day` = :day
+WHERE
+    `id` = :id
 SQL;
 
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
+      'firstPartOfPhi' => $request->getFirstPhi(),
+      'secondPartOfPhi' => $request->getSecondPhi(),
+      'year' => $request->getYear(),
       'month' => $request->getMonth(),
-      'day' => $request->getDay()
+      'day' => $request->getDay(),
+      'id' => $requestId
     ]);
+  }
+
+  public function deleteRequestById(int $requestId)
+  {
+    $sql = <<<SQL
+DELETE FROM 
+    request
+WHERE
+    id = :id
+;
+SQL;
+    $statement = $this->pdo->prepare($sql);
+    return $statement->execute(["id" => $requestId]);
   }
 }

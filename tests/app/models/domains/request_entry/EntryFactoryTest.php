@@ -141,8 +141,8 @@ class EntryFactoryTest extends TestCase
   public function testCreatingArrayFromUserInputWithEmptyValues()
   {
     $expected = $this->entryWithEmptyValues;
-    $partFromRecordWithEmptyValues = EntryFactory::createEntryFromUserInput(self::$userInput[1]);
-    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($partFromRecordWithEmptyValues));
+    $entryFromRecordWithEmptyValues = EntryFactory::createEntryFromUserInput(self::$userInput[1]);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($entryFromRecordWithEmptyValues));
   }
 
   public function testCreatingManyEntriesFromUserInput()

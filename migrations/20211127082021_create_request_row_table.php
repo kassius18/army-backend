@@ -21,7 +21,8 @@ final class CreateRequestRowTable extends AbstractMigration
     reason_of_order INT(6),
     priority_of_order INT(6),
     observations VARCHAR(30),
-    FOREIGN KEY(request_phi_first_part, request_YEAR) REFERENCES request(phi_first_part, year))'
+    FOREIGN KEY(request_phi_first_part, request_YEAR) REFERENCES request(phi_first_part,year)
+    ON DELETE CASCADE ON UPDATE CASCADE)'
     );
   }
 
