@@ -6,28 +6,23 @@ use PHPUnit\Framework\TestCase;
 class VehicleEntityTest extends TestCase
 {
   private VehicleEntity $vehicleEntityWithId;
-  private VehicleEntity $vehicleEntityWithoutId;
-  private string $plate;
-  private string $vehicleType;
-  private int $id;
+  private string $plate = "somePlate";
+  private string $vehicleType = "someVehcile";
+  private int $id = 333;
 
   public function setUp(): void
   {
-    $this->plate = "somePlate";
-    $this->vehicleType = "someVehcile";
-    $this->id = 3;
-    $this->vehicleEntityWithId = new VehicleEntity($this->plate, $this->vehicleType, $this->id);
-    $this->vehicleEntityWithoutId = new VehicleEntity($this->plate, $this->vehicleType);
+    $this->vehicleEntity = new VehicleEntity($this->plate, $this->vehicleType, $this->id);
   }
 
   public function testEntityStructure()
   {
-    $this->assertEquals($this->plate, $this->vehicleEntityWithId->getPlate());
-    $this->assertEquals($this->vehicleType, $this->vehicleEntityWithId->getVehicleType());
-    $this->assertEquals($this->id, $this->vehicleEntityWithId->getId());
+    $this->assertEquals($this->plate, $this->vehicleEntity->getPlate());
+    $this->assertEquals($this->vehicleType, $this->vehicleEntity->getVehicleType());
+    $this->assertEquals($this->id, $this->vehicleEntity->getId());
   }
 
-  public function testSerializingToJsonWithIdSet()
+  public function testSerializingToJson()
   {
     $expected = json_encode([
       "id" => $this->id,
@@ -37,20 +32,22 @@ class VehicleEntityTest extends TestCase
 
     $this->assertJsonStringEqualsJsonString(
       $expected,
-      json_encode($this->vehicleEntityWithId)
+      json_encode($this->vehicleEntity)
     );
   }
 
-  public function testSerializingToJsonWithIdNotSet()
+  public function testSerializingToJsonWithNullInputs()
   {
     $expected = json_encode([
-      "plate" => $this->plate,
-      "vehicleType" => $this->vehicleType
+      "plate" => "",
+      "vehicleType" => "",
+      "id" => 3,
     ]);
 
+    $actual = new VehicleEntity(null, null, 3);
     $this->assertJsonStringEqualsJsonString(
       $expected,
-      json_encode($this->vehicleEntityWithoutId)
+      json_encode($actual)
     );
   }
 }

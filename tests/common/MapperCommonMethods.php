@@ -48,6 +48,16 @@ class MapperCommonMethods
         $factory = '\app\models\domains\request\RequestFactory';
         $method = "createManyRequestsFromRecord";
         break;
+      case "tab":
+        $tableName = "tab";
+        $factory = '\app\models\domains\tab\TabFactory';
+        $method = "createManyTabsFromRecord";
+        break;
+      case "vehicle":
+        $tableName = "vehicle";
+        $factory = '\app\models\domains\vehicle\VehicleFactory';
+        $method = "createManyVehiclesFromRecord";
+        break;
     }
     $sql = "SELECT * FROM {$tableName} ORDER BY id";
     $dbRecord = $pdo->query($sql)->fetchAll();

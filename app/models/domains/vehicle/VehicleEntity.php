@@ -6,12 +6,12 @@ use JsonSerializable;
 
 class VehicleEntity implements JsonSerializable
 {
-  private ?int $id;
-  private string $plate;
-  private string $vehicleType;
+  private int $id;
+  private ?string $plate;
+  private ?string $vehicleType;
 
 
-  public function __construct($plate, $vehicleType, $id = null)
+  public function __construct(?string $plate, ?string $vehicleType, int $id)
   {
     $this->id = $id;
     $this->plate = $plate;
@@ -36,8 +36,8 @@ class VehicleEntity implements JsonSerializable
   public function jsonSerialize(): array
   {
     $arrayWithoutId = [
-      "plate" => $this->plate,
-      "vehicleType" => $this->vehicleType,
+      "plate" => $this->plate ?: "",
+      "vehicleType" => $this->vehicleType ?: "",
     ];
 
     if (isset($this->id)) {

@@ -22,11 +22,12 @@ class VehicleMapper
     return $vehicles;
   }
 
-  public function saveVehicle(VehicleEntity $vehicle)
+  public function saveVehicle(VehicleEntity $vehicle): bool
   {
     $sql = <<<SQL
- INSERT INTO vehicle(plate, vehicle_type) 
+ INSERT INTO vehicle(id,plate, vehicle_type) 
 VALUES (
+:id,
 :plate,
 :vehicleType
 );
@@ -35,11 +36,12 @@ SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
       "plate" => $vehicle->getPlate(),
-      "vehicleType" => $vehicle->getVehicleType()
+      "vehicleType" => $vehicle->getVehicleType(),
+      "id" => $vehicle->getId()
     ]);
   }
 
-  public function deleteVehicle(int $vehicleId)
+  public function deleteVehicle(int $vehicleId): bool
   {
     $sql = <<<SQL
       DELETE FROM vehicle WHERE id = :vehicleId;
@@ -48,15 +50,18 @@ SQL;
     return $statement->execute(["vehicleId" => $vehicleId]);
   }
 
-  public function updateVehicle(int $vehicleId, VehicleEntity $vehicle)
+  public function updateVehicle(VehicleEntity $vehicle, int $vehicleId): bool
   {
     $sql = <<<SQL
 UPDATE vehicle 
-SET plate = :plate , vehicle_type= :vehicleType
-WHERE id = :vehicleId;
+SET
+    plate = :plate ,
+    vehicle_type= :vehicleType
+WHERE
+    id = :vehicleId;
 SQL;
     $statement = $this->pdo->prepare($sql);
-    $statement->execute([
+    return $statement->execute([
       "plate" => $vehicle->getPlate(),
       "vehicleType" => $vehicle->getVehicleType(),
       "vehicleId" => $vehicleId

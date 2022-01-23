@@ -7,9 +7,9 @@ class VehicleFactory
   static function createVehicleFromRecord(array $dbRecord)
   {
     return new VehicleEntity(
-      $dbRecord['plate'],
-      $dbRecord['vehicle_type'],
-      $dbRecord['id']
+      $dbRecord["plate"],
+      $dbRecord["vehicle_type"],
+      $dbRecord["id"]
     );
   }
 
@@ -24,8 +24,12 @@ class VehicleFactory
     return $vehicles;
   }
 
-  static function createVehicleFromPost(array $userPostInput)
+  static function createVehicleFromInput(array $userPostInput)
   {
-    return new VehicleEntity($userPostInput['plate'], $userPostInput['vehicleType']);
+    return new VehicleEntity(
+      $userPostInput["plate"] ?: null,
+      $userPostInput["vehicleType"] ?: null,
+      $userPostInput["id"]
+    );
   }
 }
