@@ -16,7 +16,7 @@ class EntryFixture
     $this->pdo = $pdo;
   }
 
-  public function setConsumableIdForTest(int $consumableId): void
+  public function setConsumableIdForTest(?int $consumableId): void
   {
     $this->consumableId = $consumableId;
   }

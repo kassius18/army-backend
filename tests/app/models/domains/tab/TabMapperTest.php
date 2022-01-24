@@ -2,6 +2,8 @@
 
 use app\models\domains\tab\TabMapper;
 use common\MapperCommonMethods;
+use fixtures\EntryFixture;
+use fixtures\PartFixture;
 use fixtures\TabFixture;
 use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
@@ -13,6 +15,8 @@ class TabMapperTest extends TestCase
   private static ?PDO $pdo;
   private static PhinxApplication $phinxApp;
   private static TabFixture $fixture;
+  private static EntryFixture $entryFixture;
+  private static PartFixture $partFixture;
   private TabMapper $tabMapper;
 
   public static function setUpBeforeClass(): void
@@ -20,6 +24,8 @@ class TabMapperTest extends TestCase
     self::$pdo = include(TEST_DIR . "/setDatabaseForTestsScript.php");
     self::$phinxApp = new PhinxApplication();
     self::$fixture = new TabFixture(self::$pdo);
+    self::$entryFixture = new EntryFixture(self::$pdo);
+    self::$partFixture = new PartFixture(self::$pdo);
   }
 
   public static function tearDownAfterClass(): void
@@ -96,5 +102,62 @@ class TabMapperTest extends TestCase
 
     $this->assertJsonStringEqualsJsonString(json_encode($editedTab), json_encode($actual[0]));
     MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId($secondTab, $editedTab);
+  }
+
+  public function testGettingAllPartsBelogningToALLEntriesBelongingToATab()
+  {
+    $tabs = self::$fixture->createTabs(3);
+    self::$fixture->persistTabs($tabs);
+
+    $tabBeingTested = $tabs[0];
+
+    self::$entryFixture->setConsumableIdForTest($tabBeingTested->getId());
+    $entriesThatBelongToTab = self::$entryFixture->createEntries(2, true);
+
+    self::$entryFixture->setConsumableIdForTest($tabs[1]->getId());
+    $entriesThatBelongToDifferentTab = self::$entryFixture->createEntries(1, true, 2);
+
+    self::$entryFixture->setConsumableIdForTest(null);
+    $entriesThatBelongToNoTab = self::$entryFixture->createEntries(1, true, 3);
+
+    $allEntries = [
+      ...$entriesThatBelongToTab,
+      ...$entriesThatBelongToDifferentTab,
+      ...$entriesThatBelongToNoTab
+    ];
+    self::$entryFixture->persistEntries($allEntries);
+
+    $partsThatBelongToFirstEntryThatBelongsToTab = self::$partFixture->createParts(2, true);
+    self::$partFixture->persistParts(
+      $partsThatBelongToFirstEntryThatBelongsToTab,
+      $entriesThatBelongToTab[0]->getId()
+    );
+
+    $partsThatBelongToSecondEntryThatBelongsToTab = self::$partFixture->createParts(1, true, 2);
+    self::$partFixture->persistParts(
+      $partsThatBelongToSecondEntryThatBelongsToTab,
+      $entriesThatBelongToTab[1]->getId()
+    );
+
+    $partsThatBelongToTabThatBelongsToDifferentEntry = self::$partFixture->createParts(2, true, 3);
+    self::$partFixture->persistParts(
+      $partsThatBelongToTabThatBelongsToDifferentEntry,
+      $entriesThatBelongToDifferentTab[0]->getId()
+    );
+
+    $partsThatBelongToEntryWithNoTab = self::$partFixture->createParts(1, true, 5);
+    self::$partFixture->persistParts($partsThatBelongToEntryWithNoTab);
+
+
+    $partsExpected = [
+      ...$partsThatBelongToFirstEntryThatBelongsToTab,
+      ...$partsThatBelongToSecondEntryThatBelongsToTab
+    ];
+
+    $actualParts = $this->tabMapper->findAllPartsThatBelongToTab($tabBeingTested->getId());
+    $this->assertJsonStringEqualsJsonString(
+      json_encode($partsExpected),
+      json_encode($actualParts)
+    );
   }
 }

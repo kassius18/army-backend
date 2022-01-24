@@ -2,6 +2,7 @@
 
 namespace app\models\domains\tab;
 
+use app\models\domains\part\PartFactory;
 use PDO;
 
 class TabMapper
@@ -73,5 +74,26 @@ SQL;
       "observations" => $tab->getObservations(),
       "tabId" => $tabId
     ]);
+  }
+
+  public function findAllPartsThatBelongToTab(int $tabId): array
+  {
+    $sql = <<<SQL
+SELECT
+    *
+FROM
+    `request_row`
+INNER JOIN part 
+WHERE `request_row`.`consumable_tab_id` = :tabId
+AND `part`.entry_id = `request_row`.id
+;
+SQL;
+    $statement = $this->pdo->prepare($sql);
+    $statement->execute([
+      "tabId" => $tabId,
+    ]);
+    $records = $statement->fetchAll();
+    $parts = PartFactory::createManyPartsFromRecord($records);
+    return $parts;
   }
 }
