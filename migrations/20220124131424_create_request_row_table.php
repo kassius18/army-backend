@@ -21,8 +21,14 @@ final class CreateRequestRowTable extends AbstractMigration
     `reason_of_order` INT(6),
     `priority_of_order` INT(6),
     `observations` VARCHAR(30),
-    FOREIGN KEY(`request_phi_first_part`, `request_YEAR`) REFERENCES request(`phi_first_part`,`year`)
- ON DELETE CASCADE ON UPDATE CASCADE
+    `consumable_tab_id` INT(6),
+
+    FOREIGN KEY(`request_phi_first_part`, `request_YEAR`) 
+      REFERENCES request(`phi_first_part`,`year`)
+      ON DELETE CASCADE ON UPDATE CASCADE,
+
+    FOREIGN KEY (`consumable_tab_id`) 
+      REFERENCES tab(`id`)
 );
 SQL;
     $this->execute($sql);
