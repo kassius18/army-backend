@@ -14,6 +14,7 @@ class EntryEntity implements JsonSerializable
   private ?int $reasonOfOrder;
   private ?int $priorityOfOrder;
   private ?string $observations;
+  private ?int $consumableId;
   private ?int $id;
 
   public function __construct(
@@ -25,6 +26,7 @@ class EntryEntity implements JsonSerializable
     ?int $reasonOfOrder,
     ?int $priorityOfOrder,
     ?string $observations,
+    ?int $consumableId,
     ?int $id = null
   ) {
     $this->nameNumber = $nameNumber;
@@ -35,6 +37,7 @@ class EntryEntity implements JsonSerializable
     $this->reasonOfOrder = $reasonOfOrder;
     $this->priorityOfOrder = $priorityOfOrder;
     $this->observations = $observations;
+    $this->consumableId = $consumableId;
     $this->id = $id;
   }
 
@@ -79,6 +82,11 @@ class EntryEntity implements JsonSerializable
     return $this->observations;
   }
 
+  public function getConsumableId()
+  {
+    return $this->consumableId;
+  }
+
   public function getId()
   {
     return $this->id;
@@ -95,7 +103,8 @@ class EntryEntity implements JsonSerializable
       "unitOfOrder" => $this->unitOfOrder ?: "",
       "reasonOfOrder" => $this->reasonOfOrder ?: "",
       "priorityOfOrder" => $this->priorityOfOrder ?: "",
-      "observations" => $this->observations ?: ""
+      "observations" => $this->observations ?: "",
+      "consumableId" => $this->consumableId ?: "No"
     ];
 
     if (isset($this->id)) {

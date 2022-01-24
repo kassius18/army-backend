@@ -9,10 +9,16 @@ use PDO;
 class EntryFixture
 {
   private PDO $pdo;
+  private ?int $consumableId = null;
 
   public function __construct(PDO $pdo)
   {
     $this->pdo = $pdo;
+  }
+
+  public function setConsumableIdForTest(int $consumableId): void
+  {
+    $this->consumableId = $consumableId;
   }
 
   public function createEntries(int $numberOfEntriesToCreate, bool $withId = false, bool|int $startingFromOne = true): array
@@ -36,6 +42,7 @@ class EntryFixture
         rand(),
         rand(),
         uniqid(),
+        $this->consumableId,
         $withId ? $id : null
       );
 
@@ -43,22 +50,6 @@ class EntryFixture
     }
 
     return $entries;
-  }
-
-  public static function createEntryInputs(int $numberOfEntriesToCreate, bool $withId = false, bool|int $startingFromOne = true): array
-  {
-    $arrayOfInputs = [
-      "nameNumber" => uniqid(),
-      "name" => uniqid(),
-      "mainPart" => uniqid(),
-      "amountOfOrder" => rand(),
-      "unitOfOrder" => uniqid(),
-      "reasonOfOrder" => rand(),
-      "priorityOfOrder" => rand(),
-      "observations" => uniqid(),
-    ];
-    return $arrayOfInputs;
-    /* $withId ? $id : null; */
   }
 
   public function persistEntries(array $entries, bool|array $requestPrimaryKeys = false)
@@ -80,7 +71,8 @@ INSERT INTO request_row(
     unit_of_order,
     reason_of_order,
     priority_of_order,
-    observations
+    observations,
+    consumable_tab_id
 )
 VALUES(
     :firstPartOfPhi,
@@ -92,7 +84,8 @@ VALUES(
     :unitOfOrder,
     :reasonOfOrder,
     :priorityOfOrder,
-    :observations
+    :observations,
+    :consumableId
 )
 SQL;
 
@@ -108,6 +101,7 @@ SQL;
       "reasonOfOrder" => $entry->getReasonOfOrder(),
       "priorityOfOrder" => $entry->getPriorityOfOrder(),
       "observations" => $entry->getObservations(),
+      "consumableId" => $entry->getConsumableId()
     ]);
   }
 }

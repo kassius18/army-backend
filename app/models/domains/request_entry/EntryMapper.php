@@ -26,7 +26,8 @@ INSERT INTO request_row(
     unit_of_order,
     reason_of_order,
     priority_of_order,
-    observations
+    observations,
+    consumable_tab_id
 )
 VALUES(
     :firstPartOfPhi,
@@ -38,22 +39,24 @@ VALUES(
     :unitOfOrder,
     :reasonOfOrder,
     :priorityOfOrder,
-    :observations
+    :observations,
+    :consumableId
 )
 SQL;
 
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
-      'firstPartOfPhi' => $requestPrimaryKeys["firstPartOfPhi"],
-      'year' => $requestPrimaryKeys["year"],
-      'nameNumber' => $entry->getNameNumber(),
-      'name' => $entry->getName(),
-      'mainPart' => $entry->getMainPart(),
-      'amountOfOrder' => $entry->getAmountOfOrder(),
-      'unitOfOrder' => $entry->getUnitOfOrder(),
-      'reasonOfOrder' => $entry->getReasonOfOrder(),
-      'priorityOfOrder' => $entry->getPriorityOfOrder(),
-      'observations' => $entry->getObservations(),
+      "firstPartOfPhi" => $requestPrimaryKeys["firstPartOfPhi"],
+      "year" => $requestPrimaryKeys["year"],
+      "nameNumber" => $entry->getNameNumber(),
+      "name" => $entry->getName(),
+      "mainPart" => $entry->getMainPart(),
+      "amountOfOrder" => $entry->getAmountOfOrder(),
+      "unitOfOrder" => $entry->getUnitOfOrder(),
+      "reasonOfOrder" => $entry->getReasonOfOrder(),
+      "priorityOfOrder" => $entry->getPriorityOfOrder(),
+      "observations" => $entry->getObservations(),
+      "consumableId" => $entry->getConsumableId()
     ]);
   }
 
@@ -75,15 +78,15 @@ id = :id;
 SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
-      'nameNumber' => $entry->getNameNumber(),
-      'name' => $entry->getName(),
-      'mainPart' => $entry->getMainPart(),
-      'amountOfOrder' => $entry->getAmountOfOrder(),
-      'unitOfOrder' => $entry->getUnitOfOrder(),
-      'reasonOfOrder' => $entry->getReasonOfOrder(),
-      'priorityOfOrder' => $entry->getPriorityOfOrder(),
-      'observations' => $entry->getObservations(),
-      'id' => $id,
+      "nameNumber" => $entry->getNameNumber(),
+      "name" => $entry->getName(),
+      "mainPart" => $entry->getMainPart(),
+      "amountOfOrder" => $entry->getAmountOfOrder(),
+      "unitOfOrder" => $entry->getUnitOfOrder(),
+      "reasonOfOrder" => $entry->getReasonOfOrder(),
+      "priorityOfOrder" => $entry->getPriorityOfOrder(),
+      "observations" => $entry->getObservations(),
+      "id" => $id,
     ]);
   }
 
@@ -101,8 +104,8 @@ SQL;
     $statement = $this->pdo->prepare($sql);
     $statement->execute(
       [
-        'firstPartOfPhi' => $firstPartOfPhi,
-        'year' => $year
+        "firstPartOfPhi" => $firstPartOfPhi,
+        "year" => $year
       ]
     );
     $result = $statement->fetchAll();
@@ -121,7 +124,7 @@ WHERE
 SQL;
     $stm = $this->pdo->prepare($sql);
     $stm->execute(
-      ['id' => $entryId]
+      ["id" => $entryId]
     );
     return EntryFactory::createEntryFromRecord($stm->fetch());
   }
@@ -137,7 +140,7 @@ SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute(
       [
-        'id' => $id
+        "id" => $id
       ]
     );
   }

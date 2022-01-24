@@ -26,6 +26,7 @@ class EntryFactoryTest extends TestCase
         "reason_of_order" => 5,
         "priority_of_order" => 6,
         "observations" => "obs",
+        "consumable_tab_id" => 1,
         "id" => 7
       ], [
         "name_number" => "otherNameNumber",
@@ -36,6 +37,7 @@ class EntryFactoryTest extends TestCase
         "reason_of_order" => 6,
         "priority_of_order" => 7,
         "observations" => "otherObs",
+        "consumable_tab_id" => 2,
         "id" => 8
       ], [
         "name_number" => null,
@@ -46,6 +48,7 @@ class EntryFactoryTest extends TestCase
         "reason_of_order" => null,
         "priority_of_order" => null,
         "observations" => null,
+        "consumable_tab_id" => null,
         "id" => 9
       ]
     ];
@@ -59,6 +62,7 @@ class EntryFactoryTest extends TestCase
         "reasonOfOrder" => 5,
         "priorityOfOrder" => 6,
         "observations" => "obs",
+        "consumable" => 3,
         "id" => 7
       ], [
         "nameNumber" => "",
@@ -69,6 +73,7 @@ class EntryFactoryTest extends TestCase
         "reasonOfOrder" => "",
         "priorityOfOrder" => "",
         "observations" => "",
+        "consumable" => "",
         "id" => 7
       ]
     ];
@@ -85,6 +90,7 @@ class EntryFactoryTest extends TestCase
       self::$dbRecord[0]["reason_of_order"],
       self::$dbRecord[0]["priority_of_order"],
       self::$dbRecord[0]["observations"],
+      self::$dbRecord[0]["consumable_tab_id"],
       self::$dbRecord[0]["id"]
     );
 
@@ -97,6 +103,7 @@ class EntryFactoryTest extends TestCase
       self::$dbRecord[1]["reason_of_order"],
       self::$dbRecord[1]["priority_of_order"],
       self::$dbRecord[1]["observations"],
+      self::$dbRecord[1]["consumable_tab_id"],
       self::$dbRecord[1]["id"]
     );
 
@@ -109,6 +116,7 @@ class EntryFactoryTest extends TestCase
       self::$dbRecord[2]["reason_of_order"],
       self::$dbRecord[2]["priority_of_order"],
       self::$dbRecord[2]["observations"],
+      self::$dbRecord[2]["consumable_tab_id"],
       self::$dbRecord[2]["id"]
     );
 
@@ -121,9 +129,10 @@ class EntryFactoryTest extends TestCase
       self::$userInput[0]["reasonOfOrder"],
       self::$userInput[0]["priorityOfOrder"],
       self::$userInput[0]["observations"],
+      self::$userInput[0]["consumable"],
     );
 
-    $this->entryWithEmptyValues = new EntryEntity(null, null, null, null, null, null, null, null,);
+    $this->entryWithEmptyValues = new EntryEntity(null, null, null, null, null, null, null, null, null);
   }
 
   public function testCreatingEntryFromDatabaseRecord()

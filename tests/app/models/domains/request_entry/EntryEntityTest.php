@@ -14,6 +14,7 @@ class EntryEntityTest extends TestCase
   private int $reasonOfOrder =  4;
   private int $priorityOfOrder =  50;
   private string $observations =  "Π/Θ CAT";
+  private int $consumableId = 22;
 
   private EntryEntity $entryEntity;
 
@@ -28,6 +29,7 @@ class EntryEntityTest extends TestCase
       $this->reasonOfOrder,
       $this->priorityOfOrder,
       $this->observations,
+      $this->consumableId,
     );
 
     $this->entryEntityWithIdSet = new EntryEntity(
@@ -39,6 +41,7 @@ class EntryEntityTest extends TestCase
       $this->reasonOfOrder,
       $this->priorityOfOrder,
       $this->observations,
+      $this->consumableId,
       $this->id
     );
   }
@@ -53,6 +56,7 @@ class EntryEntityTest extends TestCase
     $this->assertEquals($this->entryEntity->getReasonOfOrder(), $this->reasonOfOrder);
     $this->assertEquals($this->entryEntity->getPriorityOfOrder(), $this->priorityOfOrder);
     $this->assertEquals($this->entryEntity->getObservations(), $this->observations);
+    $this->assertEquals($this->entryEntity->getConsumableId(), $this->consumableId);
     $this->assertEquals($this->entryEntityWithIdSet->getId(), $this->id);
   }
 
@@ -68,6 +72,7 @@ class EntryEntityTest extends TestCase
         "reasonOfOrder" => $this->reasonOfOrder,
         "priorityOfOrder" => $this->priorityOfOrder,
         "observations" => $this->observations,
+        "consumableId" => $this->consumableId,
         "id" => $this->id
       ]
     );
@@ -86,6 +91,7 @@ class EntryEntityTest extends TestCase
         "reasonOfOrder" => $this->reasonOfOrder,
         "priorityOfOrder" => $this->priorityOfOrder,
         "observations" => $this->observations,
+        "consumableId" => $this->consumableId,
       ]
     );
 
@@ -103,9 +109,10 @@ class EntryEntityTest extends TestCase
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
       "observations" => "",
+      "consumableId" => "No",
     ]);
 
-    $actual = new EntryEntity(null, null, null, null, null, null, null, null);
+    $actual = new EntryEntity(null, null, null, null, null, null, null, null, null);
     $this->assertJsonStringEqualsJsonString(
       $expected,
       json_encode($actual)
@@ -123,10 +130,11 @@ class EntryEntityTest extends TestCase
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
       "observations" => "",
+      "consumableId" => "No",
       "id" => 2,
     ]);
 
-    $actual = new EntryEntity(null, null, null, null, null, null, null, null, 2);
+    $actual = new EntryEntity(null, null, null, null, null, null, null, null, null, 2);
     $this->assertJsonStringEqualsJsonString(
       $expected,
       json_encode($actual)

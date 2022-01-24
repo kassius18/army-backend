@@ -19,6 +19,7 @@ class EntryMapperTest extends TestCase
 
   private array $requestPrimaryKeys = ["firstPartOfPhi" => 1, "year" => 2];
   private array $otherRequestPrimaryKeys = ["firstPartOfPhi" => 2, "year" => 3];
+  private int $consumableId = 1;
 
   public static function setUpBeforeClass(): void
   {
@@ -37,10 +38,13 @@ class EntryMapperTest extends TestCase
   {
     self::$phinxApp->setAutoExit(false);
     self::$phinxApp->run(new StringInput('migrate -e testing'), new NullOutput());
+    self::$fixture->setConsumableIdForTest($this->consumableId);
     //Inserting a row into parent table to test methods that require parent's PK
     $sql = "INSERT INTO `request` (`phi_first_part`, `year`) VALUES (1, 2);";
     self::$pdo->exec($sql);
     $sql = "INSERT INTO `request` (`phi_first_part`, `year`) VALUES (2, 3);";
+    self::$pdo->exec($sql);
+    $sql = "INSERT INTO `tab` (`id`,`name`, `usage`) VALUES ({$this->consumableId}, 'test', 'test');";
     self::$pdo->exec($sql);
     $this->entryMapper = new EntryMapper(self::$pdo);
   }

@@ -24,6 +24,7 @@ class EntryFactory
       $record["reason_of_order"],
       $record["priority_of_order"],
       $record["observations"],
+      $record["consumable_tab_id"],
       $record["id"]
     );
   }
@@ -39,6 +40,7 @@ class EntryFactory
       $record["reasonOfOrder"] ?: null,
       $record["priorityOfOrder"] ?: null,
       $record["observations"] ?: null,
+      $record["consumable"] ?: null,
     );
   }
 
