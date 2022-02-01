@@ -24,21 +24,21 @@ class RequestFactoryTest extends TestCase
         "year" => 3,
         "month" => 4,
         "day" => 5,
-        "id" => 1,
+        "request_id" => 1,
       ], [
         "phi_first_part" => 6,
         "phi_second_part" => 7,
         "year" => 8,
         "month" => 9,
         "day" => 10,
-        "id" => 2,
+        "request_id" => 2,
       ], [
         "phi_first_part" => null,
         "phi_second_part" => null,
         "year" => null,
         "month" => null,
         "day" => null,
-        "id" => 3,
+        "request_id" => 3,
       ]
     ];
 
@@ -67,7 +67,7 @@ class RequestFactoryTest extends TestCase
       self::$dbRecord[0]["year"],
       self::$dbRecord[0]["month"],
       self::$dbRecord[0]["day"],
-      self::$dbRecord[0]["id"]
+      self::$dbRecord[0]["request_id"]
     );
 
     $this->otherRequest = new RequestEntity(
@@ -76,7 +76,7 @@ class RequestFactoryTest extends TestCase
       self::$dbRecord[1]["year"],
       self::$dbRecord[1]["month"],
       self::$dbRecord[1]["day"],
-      self::$dbRecord[1]["id"]
+      self::$dbRecord[1]["request_id"]
     );
 
     $this->requestWithNullValues = new RequestEntity(
@@ -85,7 +85,7 @@ class RequestFactoryTest extends TestCase
       self::$dbRecord[2]["year"],
       self::$dbRecord[2]["month"],
       self::$dbRecord[2]["day"],
-      self::$dbRecord[2]["id"]
+      self::$dbRecord[2]["request_id"]
     );
 
     $this->requestWithoutId = new RequestEntity(
@@ -98,6 +98,15 @@ class RequestFactoryTest extends TestCase
 
     $this->requestWithEmptyValues = new RequestEntity(null, null, null, null, null);
   }
+
+
+  public function testCreatingRequestFromJOIN()
+  {
+    [$expected, $recordsFromJOIN] = include(TEST_DIR . "/fixtures/RequestFactoryFixture.php");
+    $actual = RequestFactory::createRequestsFromJOINRecord($recordsFromJOIN);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual[0]));
+  }
+
 
   public function testCreatingRequestFromDatabaseRecord()
   {

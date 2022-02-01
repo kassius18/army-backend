@@ -20,15 +20,15 @@ class VehicleFactoryTest extends TestCase
   {
     self::$dbRecord = [
       [
-        "id" => 1,
+        "vehicle_id" => 1,
         "plate" => "plate1",
         "vehicle_type" => "vehicle1"
       ], [
-        "id" => 2,
+        "vehicle_id" => 2,
         "plate" => "plate2",
         "vehicle_type" => "vehicle2"
       ], [
-        "id" => 3,
+        "vehicle_id" => 3,
         "plate" => null,
         "vehicle_type" => null
       ]
@@ -53,20 +53,20 @@ class VehicleFactoryTest extends TestCase
     $this->vehicle = new VehicleEntity(
       self::$dbRecord[0]["plate"],
       self::$dbRecord[0]["vehicle_type"],
-      self::$dbRecord[0]["id"],
+      self::$dbRecord[0]["vehicle_id"],
     );
 
     $this->secondVehicle = new VehicleEntity(
       self::$dbRecord[1]["plate"],
       self::$dbRecord[1]["vehicle_type"],
-      self::$dbRecord[1]["id"],
+      self::$dbRecord[1]["vehicle_id"],
 
     );
 
     $this->vehicleWithNullValues = new VehicleEntity(
       self::$dbRecord[2]["plate"],
       self::$dbRecord[2]["vehicle_type"],
-      self::$dbRecord[2]["id"],
+      self::$dbRecord[2]["vehicle_id"],
 
     );
 

@@ -1,5 +1,6 @@
 <?php
 
+use app\models\domains\part\PartEntity;
 use app\models\domains\request_entry\EntryEntity;
 use PHPUnit\Framework\TestCase;
 
@@ -15,6 +16,7 @@ class EntryEntityTest extends TestCase
   private int $priorityOfOrder =  50;
   private string $observations =  "Π/Θ CAT";
   private int $consumableId = 22;
+  private PartEntity $part;
 
   private EntryEntity $entryEntity;
 
@@ -44,6 +46,15 @@ class EntryEntityTest extends TestCase
       $this->consumableId,
       $this->id
     );
+
+    $this->part = new PartEntity(
+      uniqid(),
+      uniqid(),
+      rand(),
+      uniqid(),
+      uniqid(),
+      rand(),
+    );
   }
 
   public function testEntityStructure()
@@ -58,6 +69,59 @@ class EntryEntityTest extends TestCase
     $this->assertEquals($this->entryEntity->getObservations(), $this->observations);
     $this->assertEquals($this->entryEntity->getConsumableId(), $this->consumableId);
     $this->assertEquals($this->entryEntityWithIdSet->getId(), $this->id);
+  }
+
+  public function testSettingParts()
+  {
+    $this->entryEntity->setParts([$this->part]);
+    $this->assertEquals($this->entryEntity->getParts(), [$this->part]);
+  }
+
+  public function testSettingEmptyArrayResetsParts()
+  {
+    $this->entryEntity->addParts([$this->part]);
+    $this->assertEquals($this->entryEntity->getParts(), [$this->part]);
+
+    $this->entryEntity->setParts([]);
+    $this->assertEquals($this->entryEntity->getParts(), []);
+  }
+
+  public function testAddingEntries()
+  {
+    $secondPart =  new PartEntity(
+      uniqid(),
+      uniqid(),
+      rand(),
+      uniqid(),
+      uniqid(),
+      rand(),
+    );
+    $this->entryEntity->addParts([$this->part]);
+    $this->assertEquals($this->entryEntity->getParts(), [$this->part]);
+
+    $this->entryEntity->addParts([$secondPart]);
+    $this->assertEquals($this->entryEntity->getParts(), [$this->part, $secondPart]);
+  }
+
+  public function testSerializingToJsonWithPartsSet()
+  {
+    $this->entryEntity->setParts([$this->part]);
+
+    $expected = json_encode(
+      [
+        "nameNumber" => $this->nameNumber,
+        "name" => $this->name,
+        "mainPart" => $this->mainPart,
+        "amountOfOrder" => $this->amountOfOrder,
+        "unitOfOrder" => $this->unitOfOrder,
+        "reasonOfOrder" => $this->reasonOfOrder,
+        "priorityOfOrder" => $this->priorityOfOrder,
+        "observations" => $this->observations,
+        "consumableId" => $this->consumableId,
+        "parts" => json_encode([$this->part])
+      ]
+    );
+    $this->assertJsonStringEqualsJsonString($expected, json_encode($this->entryEntity));
   }
 
   public function testSerializingToJsonWithIdSet()

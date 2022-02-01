@@ -55,17 +55,43 @@ class TabMapperTest extends TestCase
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
 
+  public function testFindingOneTabById()
+  {
+    $expected = self::$fixture->createTabs(2, true);
+    self::$fixture->persistTabs($expected);
+
+    $actual = $this->tabMapper->findTabById(2);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected[1]), json_encode($actual));
+  }
+
   public function testSavingTab()
   {
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
     $this->assertCount(0, $actual);
 
     $expected = self::$fixture->createTabs(1);
-    $bool = $this->tabMapper->saveTab($expected[0]);
-    $this->assertTrue($bool);
+    $this->tabMapper->saveTab($expected[0]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
     $this->assertCount(1, $actual);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
+  }
+
+  public function testSavingTabReturnsTabCreated()
+  {
+    [$tab] = self::$fixture->createTabs(1);
+    $expected = $this->tabMapper->saveTab($tab);
+
+    [$actual] = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
+  }
+
+  public function testSavingTabReturnsCreatedTab()
+  {
+    [$tab] = self::$fixture->createTabs(1);
+    $expected = $this->tabMapper->saveTab($tab);
+
+    [$actual] = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
 

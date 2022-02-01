@@ -14,6 +14,18 @@ class TabMapper
     $this->pdo = $pdo;
   }
 
+  public function findTabById(int $id)
+  {
+    $sql = <<<SQL
+SELECT * FROM tab WHERE tab_id = :id;
+SQL;
+    $stm = $this->pdo->prepare($sql);
+    $stm->execute([
+      "id" => $id,
+    ]);
+    return TabFactory::createTabFromRecord($stm->fetch());
+  }
+
   public function getAllTabs()
   {
     $sql = "SELECT * FROM tab";
@@ -23,11 +35,11 @@ class TabMapper
     return $tabs;
   }
 
-  public function saveTab(TabEntity $tab): bool
+  public function saveTab(TabEntity $tab): false|TabEntity
   {
     $sql = <<<SQL
  INSERT INTO tab(
-    `id`,
+    `tab_id`,
     `name`,
     `usage`,
     `observations`
@@ -40,18 +52,23 @@ class TabMapper
 SQL;
 
     $statement = $this->pdo->prepare($sql);
-    return $statement->execute([
+    if ($statement->execute([
       "name" => $tab->getName(),
       "usage" => $tab->getUsage(),
       "observations" => $tab->getObservations(),
       "id" => $tab->getId()
-    ]);
+    ])) {
+      $lastId = $this->pdo->lastInsertId();
+      return $this->findTabById($lastId);
+    } else {
+      return false;
+    };
   }
 
   public function deleteTab(int $tabId): bool
   {
     $sql = <<<SQL
-      DELETE FROM tab WHERE id = :tabId;
+      DELETE FROM tab WHERE tab_id = :tabId;
 SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute(["tabId" => $tabId]);
@@ -65,7 +82,7 @@ SET
     `name` = :name ,
     `usage`= :usage,
     `observations`= :observations
-WHERE id = :tabId;
+WHERE tab_id = :tabId;
 SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute([
@@ -85,7 +102,7 @@ FROM
     `request_row`
 INNER JOIN part 
 WHERE `request_row`.`consumable_tab_id` = :tabId
-AND `part`.entry_id = `request_row`.id
+AND `part`.entry_id = `request_row`.request_row_id
 ;
 SQL;
     $statement = $this->pdo->prepare($sql);

@@ -52,14 +52,22 @@ class PartMapperTest extends TestCase
     $this->assertCount(0, $parts);
 
     $part = self::$fixture->createParts(1, true)[0];
-    $bool = $this->partMapper->savePartToEntry($part, 1);
-    $this->assertTrue($bool);
+    $this->partMapper->savePartToEntry($part, 1);
 
     $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(1, $parts);
     $actual = $parts[0];
 
     $this->assertJsonStringEqualsJsonString(json_encode($part), json_encode($actual));
+  }
+
+  public function testSavingPartReturnsPartCreated()
+  {
+    $part = self::$fixture->createParts(1, true)[0];
+    $expected = $this->partMapper->savePartToEntry($part, 1);
+
+    [$actual] = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
 
   public function testFindingAllParts()
@@ -102,25 +110,35 @@ class PartMapperTest extends TestCase
 
   public function testUpdatingOnePartById()
   {
-    [$part, $secondPart, $editedPart] = self::$fixture->createParts(3, true);
+    [$part, $secondPart] = self::$fixture->createParts(2, true);
+    [$editedPart] = self::$fixture->createParts(1, true);
     self::$fixture->persistParts([$part, $secondPart]);
 
     $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(2, $parts);
 
-    $bool = $this->partMapper->updatePartById($part->getId(), $editedPart);
-    $this->assertTrue($bool);
+    $this->partMapper->updatePartById($editedPart, $part->getId());
 
     $parts = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
     $this->assertCount(2, $parts);
 
-    MapperCommonMethods::testTwoEntitiesAreEqualWithoutCheckingForId(
-      $editedPart,
-      $parts[0]
-    );
-    MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId(
-      $editedPart,
-      $parts[1]
+    $this->assertJsonStringEqualsJsonString(json_encode($editedPart), json_encode($parts[0]));
+    $this->assertJsonStringNotEqualsJsonString(json_encode($editedPart), json_encode($parts[1]));
+  }
+
+  public function testUpdatingOnePartReturnsPartUpdated()
+  {
+    [$part] = self::$fixture->createParts(1, true);
+    [$editedPart] = self::$fixture->createParts(1, true);
+    self::$fixture->persistParts([$part]);
+
+    $expected = $this->partMapper->updatePartById($editedPart, $part->getId(),);
+
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "part");
+
+    $this->assertJsonStringEqualsJsonString(
+      json_encode($expected),
+      json_encode($actual[0])
     );
   }
 }

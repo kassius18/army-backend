@@ -1,7 +1,5 @@
 <?php
 
-use app\models\domains\vehicle\VehicleEntity;
-use app\models\domains\vehicle\VehicleFactory;
 use app\models\domains\vehicle\VehicleMapper;
 use common\MapperCommonMethods;
 use fixtures\VehicleFixture;
@@ -41,6 +39,15 @@ class VehicleMapperTest extends TestCase
     self::$phinxApp->run(new StringInput('rollback -e testing -t 0'), new NullOutput());
   }
 
+  public function testFindingOneVehicleById()
+  {
+    $expected = self::$fixture->createVehicles(2, true);
+    self::$fixture->persistVehicles($expected);
+
+    $actual = $this->vehicleMapper->findVehicleById(2);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected[1]), json_encode($actual));
+  }
+
   public function testGettingAllVehiclesFromDb()
   {
     $expected = self::$fixture->createVehicles(2);
@@ -57,11 +64,19 @@ class VehicleMapperTest extends TestCase
     $this->assertCount(0, $actual);
 
     $expected = self::$fixture->createVehicles(1);
-    $bool = $this->vehicleMapper->saveVehicle($expected[0]);
-    $this->assertTrue($bool);
+    $this->vehicleMapper->saveVehicle($expected[0]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
     $this->assertCount(1, $actual);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
+  }
+
+  public function testSavingVehicleReturnsCreatedVehicle()
+  {
+    [$vehicle] = self::$fixture->createVehicles(1);
+    $expected = $this->vehicleMapper->saveVehicle($vehicle);
+
+    [$actual] = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
     $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
 
@@ -90,13 +105,24 @@ class VehicleMapperTest extends TestCase
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
     $this->assertCount(2, $actual);
 
-    $bool = $this->vehicleMapper->updateVehicle($editedVehicle, $editedVehicle->getId());
-    $this->assertTrue($bool);
+    $this->vehicleMapper->updateVehicle($editedVehicle, $editedVehicle->getId());
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
     $this->assertCount(2, $actual);
 
     $this->assertJsonStringEqualsJsonString(json_encode($editedVehicle), json_encode($actual[0]));
-    MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId($secondVehicle, $editedVehicle);
+    $this->assertJsonStringNotEqualsJsonString(json_encode($editedVehicle), json_encode($actual[1]));
+  }
+
+  public function testEditingVehicleReturnsUpdateVehicle()
+  {
+    [$vehicle] = self::$fixture->createVehicles(1);
+    [$editedVehicle] = self::$fixture->createVehicles(1);
+    self::$fixture->persistVehicles([$vehicle]);
+
+    $editedVehicle = $this->vehicleMapper->updateVehicle($editedVehicle, $editedVehicle->getId());
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
+
+    $this->assertJsonStringEqualsJsonString(json_encode($editedVehicle), json_encode($actual[0]));
   }
 }

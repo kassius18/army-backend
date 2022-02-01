@@ -27,7 +27,7 @@ class EntryFactoryTest extends TestCase
         "priority_of_order" => 6,
         "observations" => "obs",
         "consumable_tab_id" => 1,
-        "id" => 7
+        "request_row_id" => 7
       ], [
         "name_number" => "otherNameNumber",
         "name" => "otherName",
@@ -38,7 +38,7 @@ class EntryFactoryTest extends TestCase
         "priority_of_order" => 7,
         "observations" => "otherObs",
         "consumable_tab_id" => 2,
-        "id" => 8
+        "request_row_id" => 8
       ], [
         "name_number" => null,
         "name" => null,
@@ -49,7 +49,7 @@ class EntryFactoryTest extends TestCase
         "priority_of_order" => null,
         "observations" => null,
         "consumable_tab_id" => null,
-        "id" => 9
+        "request_row_id" => 9
       ]
     ];
     self::$userInput = [
@@ -63,7 +63,6 @@ class EntryFactoryTest extends TestCase
         "priorityOfOrder" => 6,
         "observations" => "obs",
         "consumable" => 3,
-        "id" => 7
       ], [
         "nameNumber" => "",
         "name" => "",
@@ -74,7 +73,6 @@ class EntryFactoryTest extends TestCase
         "priorityOfOrder" => "",
         "observations" => "",
         "consumable" => "",
-        "id" => 7
       ]
     ];
   }
@@ -91,7 +89,7 @@ class EntryFactoryTest extends TestCase
       self::$dbRecord[0]["priority_of_order"],
       self::$dbRecord[0]["observations"],
       self::$dbRecord[0]["consumable_tab_id"],
-      self::$dbRecord[0]["id"]
+      self::$dbRecord[0]["request_row_id"]
     );
 
     $this->otherEntry = new EntryEntity(
@@ -104,7 +102,7 @@ class EntryFactoryTest extends TestCase
       self::$dbRecord[1]["priority_of_order"],
       self::$dbRecord[1]["observations"],
       self::$dbRecord[1]["consumable_tab_id"],
-      self::$dbRecord[1]["id"]
+      self::$dbRecord[1]["request_row_id"]
     );
 
     $this->entryWithNullValues = new EntryEntity(
@@ -117,7 +115,7 @@ class EntryFactoryTest extends TestCase
       self::$dbRecord[2]["priority_of_order"],
       self::$dbRecord[2]["observations"],
       self::$dbRecord[2]["consumable_tab_id"],
-      self::$dbRecord[2]["id"]
+      self::$dbRecord[2]["request_row_id"]
     );
 
     $this->entryWithoutId = new EntryEntity(

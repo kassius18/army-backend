@@ -9,7 +9,7 @@ class VehicleFactory
     return new VehicleEntity(
       $dbRecord["plate"],
       $dbRecord["vehicle_type"],
-      $dbRecord["id"]
+      $dbRecord["vehicle_id"]
     );
   }
 

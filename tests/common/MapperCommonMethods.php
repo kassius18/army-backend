@@ -46,8 +46,16 @@ class MapperCommonMethods
       case "request":
         $tableName = "request";
         $factory = '\app\models\domains\request\RequestFactory';
-        $method = "createManyRequestsFromRecord";
-        break;
+        $method = "createRequestsFromJOINRecord";
+        $sql = <<<SQL
+SELECT * FROM
+    request
+LEFT JOIN request_row ON request_row.request_phi_first_part = request.phi_first_part AND request_row.request_year = request.year
+LEFT JOIN part ON part.entry_id = request_row.request_row_id
+ORDER BY request_id;
+SQL;
+        $dbRecord = $pdo->query($sql)->fetchAll();
+        return call_user_func_array([$factory, $method], [$dbRecord]);
       case "tab":
         $tableName = "tab";
         $factory = '\app\models\domains\tab\TabFactory';
@@ -59,7 +67,7 @@ class MapperCommonMethods
         $method = "createManyVehiclesFromRecord";
         break;
     }
-    $sql = "SELECT * FROM {$tableName} ORDER BY id";
+    $sql = "SELECT * FROM {$tableName} ORDER BY ${tableName}_id";
     $dbRecord = $pdo->query($sql)->fetchAll();
     return call_user_func_array([$factory, $method], [$dbRecord]);
   }

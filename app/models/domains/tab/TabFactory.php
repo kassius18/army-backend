@@ -10,7 +10,7 @@ class TabFactory
       $dbRecord["name"],
       $dbRecord["usage"],
       $dbRecord["observations"],
-      $dbRecord["id"]
+      $dbRecord["tab_id"]
     );
   }
 

@@ -48,7 +48,7 @@ class TabFixture
   {
     $sql = <<<SQL
 INSERT INTO tab(
-    `id`,
+    `tab_id`,
     `name`,
     `usage`,
     `observations`

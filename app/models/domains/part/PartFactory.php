@@ -13,7 +13,7 @@ class PartFactory
       $dbRecord["tab_used"],
       $dbRecord["date_used"],
       $dbRecord["amount_used"],
-      $dbRecord["id"]
+      $dbRecord["part_id"]
     );
   }
 

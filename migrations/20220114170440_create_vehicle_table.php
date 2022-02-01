@@ -10,7 +10,7 @@ final class CreateVehicleTable extends AbstractMigration
   {
     $sql = <<<SQL
  CREATE TABLE vehicle(
-    `id` INT(6) AUTO_INCREMENT PRIMARY KEY,
+    `vehicle_id` INT(6) AUTO_INCREMENT PRIMARY KEY,
     `plate` VARCHAR(30),
     `vehicle_type` VARCHAR(30)
 );

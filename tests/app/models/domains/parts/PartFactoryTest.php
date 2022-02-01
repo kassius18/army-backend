@@ -25,7 +25,7 @@ class PartFactoryTest extends TestCase
         "tab_used" => "someTab",
         "date_used" => "someDate",
         "amount_used" => 1,
-        "id" => 1
+        "part_id" => 1
       ], [
         "date_recieved" => "someOtherDate",
         "pie_number" => "someOtherNumber",
@@ -33,7 +33,7 @@ class PartFactoryTest extends TestCase
         "tab_used" => "someOtherTab",
         "date_used" => "someOtherDate",
         "amount_used" => 2,
-        "id" => 2
+        "part_id" => 2
       ], [
         "date_recieved" => null,
         "pie_number" => null,
@@ -41,7 +41,7 @@ class PartFactoryTest extends TestCase
         "tab_used" => null,
         "date_used" => null,
         "amount_used" => null,
-        "id" => 3
+        "part_id" => 3
 
       ]
     ];
@@ -72,7 +72,7 @@ class PartFactoryTest extends TestCase
       self::$dbRecord[0]["tab_used"],
       self::$dbRecord[0]["date_used"],
       self::$dbRecord[0]["amount_used"],
-      self::$dbRecord[0]["id"],
+      self::$dbRecord[0]["part_id"],
     );
 
     $this->secondPart = new PartEntity(
@@ -82,7 +82,7 @@ class PartFactoryTest extends TestCase
       self::$dbRecord[1]["tab_used"],
       self::$dbRecord[1]["date_used"],
       self::$dbRecord[1]["amount_used"],
-      self::$dbRecord[1]["id"],
+      self::$dbRecord[1]["part_id"],
     );
 
     $this->partWithNullValues = new PartEntity(
@@ -92,7 +92,7 @@ class PartFactoryTest extends TestCase
       self::$dbRecord[2]["tab_used"],
       self::$dbRecord[2]["date_used"],
       self::$dbRecord[2]["amount_used"],
-      self::$dbRecord[2]["id"],
+      self::$dbRecord[2]["part_id"],
     );
 
     $this->partWithoutId = new PartEntity(

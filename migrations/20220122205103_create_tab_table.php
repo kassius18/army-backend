@@ -10,7 +10,7 @@ final class CreateTabTable extends AbstractMigration
   {
     $sql = <<<SQL
 CREATE TABLE tab(
-    `id` INT(6) AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    `tab_id` INT(6) AUTO_INCREMENT PRIMARY KEY NOT NULL,
     `name` VARCHAR(30),
     `usage` VARCHAR(30),
     `observations` VARCHAR(30)

@@ -4,6 +4,7 @@ use app\models\domains\request\RequestMapper;
 use app\models\domains\request_entry\EntryMapper;
 use common\MapperCommonMethods;
 use fixtures\EntryFixture;
+use fixtures\PartFixture;
 use fixtures\RequestFixture;
 use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
@@ -15,6 +16,7 @@ class RequestMapperTest extends TestCase
   private static PhinxApplication $phinxApp;
   private static $pdo;
   private static RequestFixture $fixture;
+  private static PartFixture $partFixture;
   private static EntryFixture $entryFixture;
   private RequestMapper $requestMapper;
   private EntryMapper $entryMapper;
@@ -24,7 +26,6 @@ class RequestMapperTest extends TestCase
     self::$pdo = include(TEST_DIR . "/setDatabaseForTestsScript.php");
     self::$phinxApp = new PhinxApplication();
     self::$fixture = new RequestFixture(self::$pdo);
-    self::$entryFixture = new EntryFixture(self::$pdo);
   }
 
   public static function tearDownAfterClass(): void
@@ -38,6 +39,8 @@ class RequestMapperTest extends TestCase
     self::$phinxApp->run(new StringInput('migrate -e testing'), new NullOutput());
     $this->requestMapper = new RequestMapper(self::$pdo);
     $this->entryMapper = new EntryMapper(self::$pdo);
+    self::$partFixture = new PartFixture(self::$pdo);
+    self::$entryFixture = new EntryFixture(self::$pdo, self::$partFixture);
   }
 
   protected function tearDown(): void
@@ -45,23 +48,42 @@ class RequestMapperTest extends TestCase
     self::$phinxApp->run(new StringInput('rollback -e testing -t 0'), new NullOutput());
   }
 
-  public function testFindOneEntryById()
+  public function testFindOneRequestById()
   {
-    $expected = self::$fixture->createRequests(2, true);
-    self::$fixture->persistRequests($expected);
-    $actual = $this->requestMapper->findOneById($expected[0]->getId());
-    $this->assertJsonStringEqualsJsonString(json_encode($expected[0]), json_encode($actual));
+    $requests = self::$fixture->createRequests(2, true);
+    self::$fixture->persistRequests($requests);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(3, $requests[0], true);
+    $requests[0]->addEntries($entries);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(2, $requests[1], true, 3);
+    $requests[1]->addEntries($entries);
+
+    $entriesWithoutParts = self::$entryFixture->createEntriesWithoutPartsAndPersistToRequest(1, $requests[0], true, 5);
+    $requests[0]->addEntries($entriesWithoutParts);
+
+    $requests[1]->setEntries($entries);
+    $expected = json_encode($requests[0]);
+
+    $actual = $this->requestMapper->findOneById($requests[0]->getId());
+    $this->assertJsonStringEqualsJsonString($expected, json_encode($actual));
   }
 
   public function testFindingOneByPhiAndYear()
   {
-    $expected = self::$fixture->createRequests(2, true);
-    self::$fixture->persistRequests($expected);
-    $actual = $this->requestMapper->findOneByPhiAndYear(
-      $expected[0]->getFirstPhi(),
-      $expected[0]->getYear()
-    );
-    $this->assertJsonStringEqualsJsonString(json_encode($expected[0]), json_encode($actual));
+    $requests = self::$fixture->createRequests(2, true);
+    self::$fixture->persistRequests($requests);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(3, $requests[0], true);
+    $requests[0]->addEntries($entries);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(2, $requests[1], true, 3);
+    $requests[1]->addEntries($entries);
+
+    $entriesWithoutParts = self::$entryFixture->createEntriesWithoutPartsAndPersistToRequest(1, $requests[0], true, 5);
+    $requests[0]->addEntries($entriesWithoutParts);
+
+    $requests[1]->setEntries($entries);
+    $expected = json_encode($requests[0]);
+
+    $actual = $this->requestMapper->findOneByPhiAndYear($requests[0]->getFirstPhi(), $requests[0]->getYear());
+    $this->assertJsonStringEqualsJsonString($expected, json_encode($actual));
   }
 
   public function testFindingManyByPhiSortedByYear()
@@ -74,7 +96,16 @@ class RequestMapperTest extends TestCase
       true,
       3
     );
+
     self::$fixture->persistRequests([...$requests, ...$requestsWithSamePhi]);
+
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(3, $requests[1], true);
+    $requests[1]->addEntries($entries);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(4, $requests[2], true, 3);
+    $requests[2]->addEntries($entries);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(1, $requestsWithSamePhi[0], true, 7);
+    $requestsWithSamePhi[0]->addEntries($entries);
+
     $requestsWithSamePhi = self::$fixture->sortRequestsByYear($requestsWithSamePhi);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
@@ -89,7 +120,6 @@ class RequestMapperTest extends TestCase
     );
   }
 
-
   public function testFindingByYearMonthAndDayInterval()
   {
     $startDate = [2003, 4, 21];
@@ -102,6 +132,10 @@ class RequestMapperTest extends TestCase
 
     $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate);
     $this->assertCount(4, $actual);
+    $this->assertEquals(
+      $requestsWithDateInInterval,
+      $actual
+    );
     $this->assertJsonStringEqualsJsonString(
       json_encode($requestsWithDateInInterval),
       json_encode($actual)
@@ -197,8 +231,7 @@ class RequestMapperTest extends TestCase
     $this->assertCount(0, $actual);
 
     $request = self::$fixture->createRequests(1, true);
-    $bool = $this->requestMapper->saveRequest($request[0]);
-    $this->assertTrue($bool);
+    $this->requestMapper->saveRequest($request[0]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
     $this->assertCount(1, $actual);
@@ -206,26 +239,55 @@ class RequestMapperTest extends TestCase
     $this->assertJsonStringEqualsJsonString(json_encode($request[0]), json_encode($actual[0]));
   }
 
+  public function testSavingRequestReturnsCreatedRequest()
+  {
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
+    $this->assertCount(0, $actual);
+
+    $request = self::$fixture->createRequests(1, true);
+    $expected = $this->requestMapper->saveRequest($request[0]);
+
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
+    $this->assertCount(1, $actual);
+
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual[0]));
+  }
+
   public function testUpdatingRequest()
   {
-    [$request, $secondRequest, $editedRequest] = self::$fixture->createRequests(3, true);
+    [$request, $secondRequest] = self::$fixture->createRequests(2, true);
+    [$editedRequest] = self::$fixture->createRequests(1, true);
     self::$fixture->persistRequests([$request, $secondRequest]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
     $this->assertCount(2, $actual);
 
-    $bool = $this->requestMapper->updateRequest($editedRequest, $request->getId());
-    $this->assertTrue($bool);
+    $this->requestMapper->updateRequest($editedRequest, $request->getId());
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
     $this->assertCount(2, $actual);
-    MapperCommonMethods::testTwoEntitiesAreEqualWithoutCheckingForId($actual[0], $editedRequest);
-    MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId($actual[1], $editedRequest);
+
+    $this->assertJsonStringEqualsJsonString(json_encode($actual[0]), json_encode($editedRequest));
+    $this->assertJsonStringNotEqualsJsonString(json_encode($actual[1]), json_encode($editedRequest));
+  }
+
+  public function testUpdatingRequestReturnsNewRequest()
+  {
+    [$request, $secondRequest] = self::$fixture->createRequests(2, true);
+    [$editedRequest] = self::$fixture->createRequests(1, true);
+    self::$fixture->persistRequests([$request, $secondRequest]);
+
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
+    $this->assertCount(2, $actual);
+
+    $requestReturned = $this->requestMapper->updateRequest($editedRequest, $request->getId());
+    $this->assertJsonStringEqualsJsonString(json_encode($editedRequest), json_encode($requestReturned));
   }
 
   public function testUpdatingRequestChangesChildrenToo()
   {
-    [$request, $editedRequest] = self::$fixture->createRequests(2, true);
+    [$request] = self::$fixture->createRequests(1, true);
+    [$editedRequest] = self::$fixture->createRequests(1, true);
     self::$fixture->persistRequests([$request]);
     $entries = self::$entryFixture->createEntries(2);
     self::$entryFixture->persistEntries(
@@ -238,8 +300,7 @@ class RequestMapperTest extends TestCase
     $this->assertCount(1, $actualRequests);
     $this->assertCount(2, $actualEntries);
 
-    $bool = $this->requestMapper->updateRequest($editedRequest, $request->getId());
-    $this->assertTrue($bool);
+    $this->requestMapper->updateRequest($editedRequest, $request->getId());
 
     $childrenOfEditedRequestEntries = $this->entryMapper->findAllByPhiAndYear(
       $editedRequest->getFirstPhi(),
@@ -247,8 +308,10 @@ class RequestMapperTest extends TestCase
     );
     $this->assertCount(2, $childrenOfEditedRequestEntries);
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
+    //set the entries to empty array as to compare only the requests
+    $actual[0]->setEntries([]);
     $this->assertCount(1, $actual);
-    MapperCommonMethods::testTwoEntitiesAreEqualWithoutCheckingForId($actual[0], $editedRequest);
+    $this->assertJsonStringEqualsJsonString(json_encode($actual[0]), json_encode($editedRequest));
   }
 
   public function testDeletingOneById()
@@ -356,6 +419,15 @@ class RequestMapperTest extends TestCase
     }
 
     self::$fixture->persistRequests($allRequsts);
+
+    $count = 0;
+    foreach ($allRequsts as $request) {
+      $amountOfPartsToCreate = rand(1, 1);
+      $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest($amountOfPartsToCreate, $request, true, $count);
+      $request->addEntries($entries);
+      $count += $amountOfPartsToCreate;
+    }
+
     $requestsWithDateInInterval = self::$fixture->sortRequestsByDate($requestsWithDateInInterval);
     return $requestsWithDateInInterval;
   }

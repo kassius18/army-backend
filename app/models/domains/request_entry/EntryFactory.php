@@ -25,7 +25,7 @@ class EntryFactory
       $record["priority_of_order"],
       $record["observations"],
       $record["consumable_tab_id"],
-      $record["id"]
+      $record["request_row_id"]
     );
   }
 

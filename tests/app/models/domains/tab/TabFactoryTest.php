@@ -20,17 +20,17 @@ class TabFactoryTest extends TestCase
   {
     self::$dbRecord = [
       [
-        "id" => 1,
+        "tab_id" => 1,
         "name" => "name1",
         "usage" => "tab1",
         "observations" => ""
       ], [
-        "id" => 2,
+        "tab_id" => 2,
         "name" => "name2",
         "usage" => "tab2",
         "observations" => "obs2"
       ], [
-        "id" => 3,
+        "tab_id" => 3,
         "name" => null,
         "usage" => null,
         "observations" => null
@@ -58,21 +58,21 @@ class TabFactoryTest extends TestCase
       self::$dbRecord[0]["name"],
       self::$dbRecord[0]["usage"],
       self::$dbRecord[0]["observations"],
-      self::$dbRecord[0]["id"],
+      self::$dbRecord[0]["tab_id"],
     );
 
     $this->secondTab = new TabEntity(
       self::$dbRecord[1]["name"],
       self::$dbRecord[1]["usage"],
       self::$dbRecord[1]["observations"],
-      self::$dbRecord[1]["id"],
+      self::$dbRecord[1]["tab_id"],
     );
 
     $this->tabWithNullValues = new TabEntity(
       self::$dbRecord[2]["name"],
       self::$dbRecord[2]["usage"],
       self::$dbRecord[2]["observations"],
-      self::$dbRecord[2]["id"],
+      self::$dbRecord[2]["tab_id"],
     );
 
     $this->tabFromUserInput = new TabEntity(

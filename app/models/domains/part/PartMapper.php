@@ -13,7 +13,7 @@ class PartMapper
     $this->pdo = $pdo;
   }
 
-  public function savePartToEntry(PartEntity $part, int $entryId): bool
+  public function savePartToEntry(PartEntity $part, int $entryId): false|PartEntity
   {
     $sql = <<<SQL
 INSERT INTO part (
@@ -35,7 +35,7 @@ INSERT INTO part (
 );
 SQL;
     $stm = $this->pdo->prepare($sql);
-    return $stm->execute([
+    if ($stm->execute([
       "entryId" => $entryId,
       "dateRecieved" => $part->getDateRecieved(),
       "pieNumber" => $part->getPieNumber(),
@@ -43,7 +43,12 @@ SQL;
       "tabUsed" => $part->getTabUsed(),
       "dateUsed" => $part->getDateUsed(),
       "amountUsed" => $part->getAmountUsed()
-    ]);
+    ])) {
+      $lastId = $this->pdo->lastInsertId();
+      return $this->findPartById($lastId);
+    } else {
+      return false;
+    };
   }
 
   public function findAllPartsByEntryId(int $entryId)
@@ -61,7 +66,7 @@ SQL;
   public function findPartById(int $id)
   {
     $sql = <<<SQL
-SELECT * FROM part WHERE id = :id;
+SELECT * FROM part WHERE part_id = :id;
 SQL;
     $stm = $this->pdo->prepare($sql);
     $stm->execute([
@@ -73,7 +78,7 @@ SQL;
   public function deletePartById(int $id): bool
   {
     $sql = <<<SQL
-DELETE FROM part WHERE id = :id;
+DELETE FROM part WHERE part_id = :id;
 SQL;
     $stm = $this->pdo->prepare($sql);
     return $stm->execute([
@@ -81,7 +86,7 @@ SQL;
     ]);
   }
 
-  public function updatePartById(int $id, PartEntity $editedPart)
+  public function updatePartById(PartEntity $editedPart, int $id): false|PartEntity
   {
     $sql = <<<SQL
 UPDATE part
@@ -92,11 +97,11 @@ SET
     tab_used = :tabUsed,
     date_used = :dateUsed,
     amount_used = :amountUsed
-WHERE id = :id 
+WHERE part_id = :id 
 ;
 SQL;
     $stm = $this->pdo->prepare($sql);
-    return $stm->execute([
+    if ($stm->execute([
       "id" => $id,
       "dateRecieved" => $editedPart->getDateRecieved(),
       "pieNumber" => $editedPart->getPieNumber(),
@@ -104,6 +109,10 @@ SQL;
       "tabUsed" => $editedPart->getTabUsed(),
       "dateUsed" => $editedPart->getDateUsed(),
       "amountUsed" => $editedPart->getAmountUsed()
-    ]);
+    ])) {
+      return $this->findPartById($id);
+    } else {
+      return false;
+    };
   }
 }

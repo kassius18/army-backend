@@ -1,6 +1,7 @@
 <?php
 
 use app\models\domains\request\RequestEntity;
+use app\models\domains\request_entry\EntryEntity;
 use PHPUnit\Framework\TestCase;
 
 class RequestEntityTest extends TestCase
@@ -13,6 +14,7 @@ class RequestEntityTest extends TestCase
   private int $id = 1;
   private RequestEntity $requestEntity;
   private RequestEntity $requestEntityWithIdSet;
+  private EntryEntity $entry;
 
   public function setUp(): void
   {
@@ -32,6 +34,18 @@ class RequestEntityTest extends TestCase
       $this->day,
       $this->id
     );
+
+    $this->entry = new EntryEntity(
+      uniqid(),
+      uniqid(),
+      uniqid(),
+      rand(),
+      uniqid(),
+      rand(),
+      rand(),
+      uniqid(),
+      rand(),
+    );
   }
 
   public function testEntityStructure()
@@ -42,6 +56,59 @@ class RequestEntityTest extends TestCase
     $this->assertEquals($this->requestEntity->getMonth(), $this->month);
     $this->assertEquals($this->requestEntity->getDay(), $this->day);
     $this->assertEquals($this->requestEntityWithIdSet->getId(), $this->id);
+  }
+
+  public function testSettingEntries()
+  {
+    $this->requestEntity->setEntries([$this->entry]);
+    $this->assertEquals($this->requestEntity->getEntries(), [$this->entry]);
+  }
+
+  public function testSettingEmptyArrayResetsEntries()
+  {
+    $this->requestEntity->addEntries([$this->entry]);
+    $this->assertEquals($this->requestEntity->getEntries(), [$this->entry]);
+
+    $this->requestEntity->setEntries([]);
+    $this->assertEquals($this->requestEntity->getEntries(), []);
+  }
+
+  public function testAddingEntries()
+  {
+    $secondEntry =  new EntryEntity(
+      uniqid(),
+      uniqid(),
+      uniqid(),
+      rand(),
+      uniqid(),
+      rand(),
+      rand(),
+      uniqid(),
+      rand(),
+    );
+    $this->requestEntity->addEntries([$this->entry]);
+    $this->assertEquals($this->requestEntity->getEntries(), [$this->entry]);
+
+    $this->requestEntity->addEntries([$secondEntry]);
+    $this->assertEquals($this->requestEntity->getEntries(), [$this->entry, $secondEntry]);
+  }
+
+  public function testSerializingToJsonWithPartsSet()
+  {
+
+    $this->requestEntity->setEntries([$this->entry]);
+    $expected = json_encode(
+      [
+        "firstPartOfPhi" => $this->firstPartOfPhi,
+        "secondPartOfPhi" => $this->secondPartOfPhi,
+        "year" => $this->year,
+        "month" => $this->month,
+        "day" => $this->day,
+        "entries" => json_encode([$this->entry])
+      ]
+    );
+
+    $this->assertJsonStringEqualsJsonString($expected, json_encode($this->requestEntity));
   }
 
   public function testSerializingToJsonWithIdSet()

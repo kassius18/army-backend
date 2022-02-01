@@ -44,7 +44,7 @@ class EntryMapperTest extends TestCase
     self::$pdo->exec($sql);
     $sql = "INSERT INTO `request` (`phi_first_part`, `year`) VALUES (2, 3);";
     self::$pdo->exec($sql);
-    $sql = "INSERT INTO `tab` (`id`,`name`, `usage`) VALUES ({$this->consumableId}, 'test', 'test');";
+    $sql = "INSERT INTO `tab` (`tab_id`,`name`, `usage`) VALUES ({$this->consumableId}, 'test', 'test');";
     self::$pdo->exec($sql);
     $this->entryMapper = new EntryMapper(self::$pdo);
   }
@@ -87,13 +87,24 @@ class EntryMapperTest extends TestCase
     $this->assertCount(0, $entries);
 
     $expected = self::$fixture->createEntries(1, true);
-    $bool = $this->entryMapper->saveEntryToRequest($expected[0], $this->requestPrimaryKeys);
+    $this->entryMapper->saveEntryToRequest($expected[0], $this->requestPrimaryKeys);
 
-    $this->assertTrue($bool);
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
     $this->assertCount(1, $actual);
 
     $this->assertJsonStringEqualsJsonString(json_encode($expected[0]), json_encode($actual[0]));
+  }
+
+  public function testSavingEntryReturnsCreatedEntry()
+  {
+    $entries = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(0, $entries);
+
+    [$entry] = self::$fixture->createEntries(1, true);
+    $expected = $this->entryMapper->saveEntryToRequest($entry, $this->requestPrimaryKeys);
+
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual[0]));
   }
 
   public function testDeletingOneById()
@@ -136,19 +147,32 @@ class EntryMapperTest extends TestCase
 
   public function testUpdatingOneById()
   {
-    $entries = self::$fixture->createEntries(3, true);
-    self::$fixture->persistEntries(array_slice($entries, 0, 2));
+    [$entry, $secondEntry] = self::$fixture->createEntries(2, true);
+    [$editedEntry] = self::$fixture->createEntries(1, true);
+    self::$fixture->persistEntries([$entry, $secondEntry]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
     $this->assertCount(2, $actual);
 
-    $bool = $this->entryMapper->updateEntryById($entries[2], $entries[0]->getId());
-    $this->assertTrue($bool);
+    $this->entryMapper->updateEntryById($editedEntry, $entry->getId());
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
     $this->assertCount(2, $actual);
 
-    MapperCommonMethods::testTwoEntitiesAreEqualWithoutCheckingForId($entries[2], $actual[0]);
-    MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId($entries[2], $actual[1]);
+    $this->assertJsonStringEqualsJsonString(json_encode($editedEntry), json_encode($actual[0]));
+    $this->assertJsonStringNotEqualsJsonString(json_encode($entry), json_encode($actual[1]));
+  }
+
+  public function testUpdatingReturnsUpdatedEntry()
+  {
+    [$entry] = self::$fixture->createEntries(1, true);
+    [$editedEntry] = self::$fixture->createEntries(1, true);
+    self::$fixture->persistEntries([$entry]);
+
+    $expectedEntry = $this->entryMapper->updateEntryById($editedEntry, $entry->getId());
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
+    $this->assertCount(1, $actual);
+
+    $this->assertJsonStringEqualsJsonString(json_encode($expectedEntry), json_encode($actual[0]));
   }
 }

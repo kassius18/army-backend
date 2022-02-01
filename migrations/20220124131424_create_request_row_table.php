@@ -10,7 +10,7 @@ final class CreateRequestRowTable extends AbstractMigration
   {
     $sql = <<<SQL
  CREATE TABLE request_row(
-    `id` INT(6) AUTO_INCREMENT PRIMARY KEY,
+    `request_row_id` INT(6) AUTO_INCREMENT PRIMARY KEY,
     `request_phi_first_part` INT(6),
     `request_year` INT(6),
     `name_number` VARCHAR(30),
@@ -23,12 +23,12 @@ final class CreateRequestRowTable extends AbstractMigration
     `observations` VARCHAR(30),
     `consumable_tab_id` INT(6),
 
-    FOREIGN KEY(`request_phi_first_part`, `request_YEAR`) 
+    FOREIGN KEY(`request_phi_first_part`, `request_year`) 
       REFERENCES request(`phi_first_part`,`year`)
       ON DELETE CASCADE ON UPDATE CASCADE,
 
     FOREIGN KEY (`consumable_tab_id`) 
-      REFERENCES tab(`id`)
+      REFERENCES tab(`tab_id`)
 );
 SQL;
     $this->execute($sql);

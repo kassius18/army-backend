@@ -2,6 +2,7 @@
 
 namespace fixtures;
 
+use app\models\domains\request\RequestEntity;
 use app\models\domains\request_entry\EntryEntity;
 use PDO;
 
@@ -9,16 +10,59 @@ use PDO;
 class EntryFixture
 {
   private PDO $pdo;
+  private PartFixture $partFixture;
   private ?int $consumableId = null;
+  private int $lastPartId = 0;
 
-  public function __construct(PDO $pdo)
+  public function __construct(PDO $pdo, PartFixture $partFixture = null)
   {
     $this->pdo = $pdo;
+    if (isset($partFixture)) {
+      $this->partFixture = $partFixture;
+    }
   }
 
   public function setConsumableIdForTest(?int $consumableId): void
   {
     $this->consumableId = $consumableId;
+  }
+
+  public function createEntriesWithPartsAndPersistToRequest(
+    int $numberOfEntriesToCreate,
+    RequestEntity $request,
+    bool $withId = false,
+    bool|int $startingFromOne = true
+  ): array {
+    $entries = $this->createEntries($numberOfEntriesToCreate, $withId, $startingFromOne);
+    $this->persistEntries(
+      $entries,
+      ["firstPartOfPhi" => $request->getFirstPhi(), "year" => $request->getYear()]
+    );
+
+    $entriesWithParts = [];
+    foreach ($entries as $entry) {
+      $amountOfPartsToCreate = rand(1, 1);
+      $parts = $this->partFixture->createParts($amountOfPartsToCreate, true, $this->lastPartId);
+      $entry->addParts($parts);
+      $this->partFixture->persistParts($parts, $entry->getId());
+      $this->lastPartId = $this->pdo->lastInsertId();
+      array_push($entriesWithParts, $entry);
+    }
+    return $entriesWithParts;
+  }
+
+  public function createEntriesWithoutPartsAndPersistToRequest(
+    int $numberOfEntriesToCreate,
+    RequestEntity $request,
+    bool $withId = false,
+    bool|int $startingFromOne = true
+  ): array {
+    $entriesWithoutParts = $this->createEntries($numberOfEntriesToCreate, $withId, $startingFromOne);
+    $this->persistEntries(
+      $entriesWithoutParts,
+      ["firstPartOfPhi" => $request->getFirstPhi(), "year" => $request->getYear()]
+    );
+    return $entriesWithoutParts;
   }
 
   public function createEntries(int $numberOfEntriesToCreate, bool $withId = false, bool|int $startingFromOne = true): array
@@ -55,10 +99,10 @@ class EntryFixture
   public function persistEntries(array $entries, bool|array $requestPrimaryKeys = false)
   {
     foreach ($entries as $entry)
-      $this->persistPart($entry, $requestPrimaryKeys);
+      $this->persistEntry($entry, $requestPrimaryKeys);
   }
 
-  private function persistPart(EntryEntity $entry, bool|array $requestPrimaryKeys)
+  private function persistEntry(EntryEntity $entry, bool|array $requestPrimaryKeys)
   {
     $sql = <<<SQL
 INSERT INTO request_row(

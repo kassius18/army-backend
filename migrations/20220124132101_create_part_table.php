@@ -10,7 +10,7 @@ final class CreatePartTable extends AbstractMigration
   {
     $sql = <<<SQL
  CREATE TABLE part(
-    `id` INT(6) AUTO_INCREMENT PRIMARY KEY,
+    `part_id` INT(6) AUTO_INCREMENT PRIMARY KEY,
     `entry_id` INT(6),
     `date_recieved` VARCHAR(30),
     `pie_number` VARCHAR(30),
@@ -18,7 +18,7 @@ final class CreatePartTable extends AbstractMigration
     `tab_used` VARCHAR(30),
     `date_used` VARCHAR(30),
     `amount_used` VARCHAR(30),
-    FOREIGN KEY(`entry_id`) REFERENCES request_row(`id`)
+    FOREIGN KEY (`entry_id`) REFERENCES request_row(`request_row_id`)
     ON DELETE CASCADE);
 SQL;
     $this->execute($sql);

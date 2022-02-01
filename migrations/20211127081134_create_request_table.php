@@ -10,7 +10,7 @@ final class CreateRequestTable extends AbstractMigration
   {
     $sql = <<<SQL
 CREATE TABLE request(
-    `id` INT(6) AUTO_INCREMENT NOT NULL UNIQUE,
+    `request_id` INT(6) AUTO_INCREMENT NOT NULL UNIQUE,
     `phi_first_part` INT(6) ,
     `phi_second_part` INT(6) ,
     `year` INT(6),

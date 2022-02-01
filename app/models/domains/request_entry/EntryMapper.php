@@ -13,7 +13,7 @@ class EntryMapper
     $this->pdo = $pdo;
   }
 
-  public function saveEntryToRequest(EntryEntity $entry, array $requestPrimaryKeys): bool
+  public function saveEntryToRequest(EntryEntity $entry, array $requestPrimaryKeys): false|EntryEntity
   {
     $sql = <<<SQL
 INSERT INTO request_row(
@@ -45,7 +45,7 @@ VALUES(
 SQL;
 
     $statement = $this->pdo->prepare($sql);
-    return $statement->execute([
+    if ($statement->execute([
       "firstPartOfPhi" => $requestPrimaryKeys["firstPartOfPhi"],
       "year" => $requestPrimaryKeys["year"],
       "nameNumber" => $entry->getNameNumber(),
@@ -57,10 +57,15 @@ SQL;
       "priorityOfOrder" => $entry->getPriorityOfOrder(),
       "observations" => $entry->getObservations(),
       "consumableId" => $entry->getConsumableId()
-    ]);
+    ])) {
+      $lastId = $this->pdo->lastInsertId();
+      return $this->findEntryById($lastId);
+    } else {
+      return false;
+    }
   }
 
-  public function updateEntryById(EntryEntity $entry, int $id): bool
+  public function updateEntryById(EntryEntity $entry, int $id): false|EntryEntity
   {
     $sql = <<<SQL
 UPDATE request_row
@@ -74,10 +79,10 @@ reason_of_order = :reasonOfOrder,
 priority_of_order = :priorityOfOrder,
 observations= :observations
 WHERE 
-id = :id;
+request_row_id = :id;
 SQL;
     $statement = $this->pdo->prepare($sql);
-    return $statement->execute([
+    if ($statement->execute([
       "nameNumber" => $entry->getNameNumber(),
       "name" => $entry->getName(),
       "mainPart" => $entry->getMainPart(),
@@ -87,9 +92,12 @@ SQL;
       "priorityOfOrder" => $entry->getPriorityOfOrder(),
       "observations" => $entry->getObservations(),
       "id" => $id,
-    ]);
+    ])) {
+      return $this->findEntryById($id);
+    } else {
+      return false;
+    }
   }
-
 
   public function findAllByPhiAndYear(int $firstPartOfPhi, int $year): array
   {
@@ -120,7 +128,7 @@ SELECT
 FROM
     request_row
 WHERE 
-    id = :id;
+    request_row_id = :id;
 SQL;
     $stm = $this->pdo->prepare($sql);
     $stm->execute(
@@ -135,7 +143,7 @@ SQL;
 DELETE FROM
     request_row
 WHERE
-    id = :id;
+    request_row_id = :id;
 SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute(

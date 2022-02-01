@@ -47,7 +47,7 @@ class VehicleFixture
   {
     $sql = <<<SQL
 INSERT INTO vehicle(
-    `id`,
+    `vehicle_id`,
     `plate`,
     `vehicle_type`
 )

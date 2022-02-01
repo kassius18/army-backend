@@ -3,21 +3,21 @@
 namespace app\controllers;
 
 use app\core\Request;
+use app\core\Response;
 use app\models\domains\request\RequestFactory;
 use app\models\domains\request\RequestMapper;
-use app\models\domains\request_entry\EntryFactory;
-use app\models\domains\request_entry\EntryMapper;
 
 class RequestController
 {
   private Request $request;
   private RequestMapper $requestMapper;
-  private EntryMapper $entryMapper;
-  public function __construct(Request $request, RequestMapper $requestMapper, EntryMapper $entryMapper)
+  private Response $response;
+
+  public function __construct(Request $request, RequestMapper $requestMapper, Response $response)
   {
     $this->request = $request;
     $this->requestMapper = $requestMapper;
-    $this->entryMapper = $entryMapper;
+    $this->response = $response;
   }
 
   public function handleGetRequest()
@@ -40,7 +40,18 @@ class RequestController
   {
     $requestAsArray = $this->request->getRequestBody();
     $request = RequestFactory::createRequestFromUserInput($requestAsArray);
-    $this->requestMapper->saveRequest($request, $this->entryMapper);
+    if ($this->requestMapper->saveRequest($request)) {
+      $request = $this->requestMapper->findOneByPhiAndYear(
+        $request->getFirstPhi(),
+        $request->getYear()
+      );
+
+      $this->response->setResponseBody(json_encode($request));
+    } else {
+      //handle not saving
+    }
+
+    $this->response->sendResponse();
   }
 
   public function handlePatchRequest()
