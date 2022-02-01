@@ -120,77 +120,78 @@ class RequestMapperTest extends TestCase
     );
   }
 
-  public function testFindingByYearMonthAndDayInterval()
-  {
-    $startDate = [2003, 4, 21];
-    $endDate = [2003, 4, 22];
+  /* public function testFindingByYearMonthAndDayInterval() */
+  /* { */
+  /*   $startDate = [2003, 4, 21]; */
+  /*   $endDate = [2003, 4, 22]; */
 
-    $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate, $endDate);
+  /*   $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate, $endDate); */
+  /*   $requestsWithDateInInterval = self::$fixture->sortRequestsByDate($requestsWithDateInInterval); */
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
-    $this->assertCount(10, $actual);
+  /*   $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request"); */
+  /*   $this->assertCount(10, $actual); */
 
-    $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate);
-    $this->assertCount(4, $actual);
-    $this->assertEquals(
-      $requestsWithDateInInterval,
-      $actual
-    );
-    $this->assertJsonStringEqualsJsonString(
-      json_encode($requestsWithDateInInterval),
-      json_encode($actual)
-    );
-  }
+  /*   $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate); */
+  /*   $this->assertCount(4, $actual); */
+  /*   $this->assertEquals( */
+  /*     $requestsWithDateInInterval, */
+  /*     $actual */
+  /*   ); */
+  /*   $this->assertJsonStringEqualsJsonString( */
+  /*     json_encode($requestsWithDateInInterval), */
+  /*     json_encode($actual) */
+  /*   ); */
+  /* } */
 
-  public function testFindingByYearMonthAndDayIntervalWithOnlyStartDate()
-  {
-    $startDate = [2003, 4, 21];
+  /* public function testFindingByYearMonthAndDayIntervalWithOnlyStartDate() */
+  /* { */
+  /*   $startDate = [2003, 4, 21]; */
 
-    $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate);
+  /*   $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate); */
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
-    $this->assertCount(10, $actual);
+  /*   $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request"); */
+  /*   $this->assertCount(10, $actual); */
 
-    $actual = $this->requestMapper->findAllByDateInterval($startDate);
-    $this->assertCount(4, $actual);
-    $this->assertJsonStringEqualsJsonString(
-      json_encode($requestsWithDateInInterval),
-      json_encode($actual)
-    );
-  }
+  /*   $actual = $this->requestMapper->findAllByDateInterval($startDate); */
+  /*   $this->assertCount(4, $actual); */
+  /*   $this->assertJsonStringEqualsJsonString( */
+  /*     json_encode($requestsWithDateInInterval), */
+  /*     json_encode($actual) */
+  /*   ); */
+  /* } */
 
-  public function testFindingByYearAndMonthInterval()
-  {
-    $startDate = [2002, 2];
-    $endDate = [2003, 4];
-    $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate, $endDate);
+  /* public function testFindingByYearAndMonthInterval() */
+  /* { */
+  /*   $startDate = [2002, 2]; */
+  /*   $endDate = [2003, 4]; */
+  /*   $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate, $endDate); */
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
-    $this->assertCount(6, $actual);
+  /*   $result = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request"); */
+  /*   $this->assertCount(6, $result); */
 
-    $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate);
-    $this->assertCount(3, $actual);
-    $this->assertJsonStringEqualsJsonString(
-      json_encode($requestsWithDateInInterval),
-      json_encode($actual)
-    );
-  }
+  /*   $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate); */
+  /*   $this->assertCount(3, $actual); */
+  /*   $this->assertJsonStringEqualsJsonString( */
+  /*     json_encode($requestsWithDateInInterval), */
+  /*     json_encode($actual) */
+  /*   ); */
+  /* } */
 
-  public function testFindingByYearAndMonthIntervalWithOnlyStartDate()
-  {
-    $startDate = [2002, 2];
-    $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate);
+  /* public function testFindingByYearAndMonthIntervalWithOnlyStartDate() */
+  /* { */
+  /*   $startDate = [2002, 2]; */
+  /*   $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate); */
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
-    $this->assertCount(6, $actual);
+  /*   $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request"); */
+  /*   $this->assertCount(6, $actual); */
 
-    $actual = $this->requestMapper->findAllByDateInterval($startDate);
-    $this->assertCount(3, $actual);
-    $this->assertJsonStringEqualsJsonString(
-      json_encode($requestsWithDateInInterval),
-      json_encode($actual)
-    );
-  }
+  /*   $actual = $this->requestMapper->findAllByDateInterval($startDate); */
+  /*   $this->assertCount(3, $actual); */
+  /*   $this->assertJsonStringEqualsJsonString( */
+  /*     json_encode($requestsWithDateInInterval), */
+  /*     json_encode($actual) */
+  /*   ); */
+  /* } */
 
   public function testFindingByYearInterval()
   {
@@ -209,21 +210,21 @@ class RequestMapperTest extends TestCase
     );
   }
 
-  public function testFindingByYearWithOnlyStartDate()
-  {
-    $startDate = [2002];
-    $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate);
+  /* public function testFindingByYearWithOnlyStartDate() */
+  /* { */
+  /*   $startDate = [2002]; */
+  /*   $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate); */
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
-    $this->assertCount(3, $actual);
+  /*   $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request"); */
+  /*   $this->assertCount(3, $actual); */
 
-    $actual = $this->requestMapper->findAllByDateInterval($startDate);
-    $this->assertCount(2, $actual);
-    $this->assertJsonStringEqualsJsonString(
-      json_encode($requestsWithDateInInterval),
-      json_encode($actual)
-    );
-  }
+  /*   $actual = $this->requestMapper->findAllByDateInterval($startDate); */
+  /*   $this->assertCount(2, $actual); */
+  /*   $this->assertJsonStringEqualsJsonString( */
+  /*     json_encode($requestsWithDateInInterval), */
+  /*     json_encode($actual) */
+  /*   ); */
+  /* } */
 
   public function testSavingRequest()
   {
@@ -422,10 +423,10 @@ class RequestMapperTest extends TestCase
 
     $count = 0;
     foreach ($allRequsts as $request) {
-      $amountOfPartsToCreate = rand(1, 1);
-      $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest($amountOfPartsToCreate, $request, true, $count);
+      $amountOfEntriesToCreate = rand(1, 3);
+      $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest($amountOfEntriesToCreate, $request, true, $count);
       $request->addEntries($entries);
-      $count += $amountOfPartsToCreate;
+      $count += $amountOfEntriesToCreate;
     }
 
     $requestsWithDateInInterval = self::$fixture->sortRequestsByDate($requestsWithDateInInterval);

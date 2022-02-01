@@ -15,6 +15,7 @@ class RequestEntityTest extends TestCase
   private RequestEntity $requestEntity;
   private RequestEntity $requestEntityWithIdSet;
   private EntryEntity $entry;
+  private EntryEntity $secondEntry;
 
   public function setUp(): void
   {
@@ -45,6 +46,20 @@ class RequestEntityTest extends TestCase
       rand(),
       uniqid(),
       rand(),
+      1
+    );
+
+    $this->secondEntry =  new EntryEntity(
+      uniqid(),
+      uniqid(),
+      uniqid(),
+      rand(),
+      uniqid(),
+      rand(),
+      rand(),
+      uniqid(),
+      rand(),
+      2
     );
   }
 
@@ -75,27 +90,21 @@ class RequestEntityTest extends TestCase
 
   public function testAddingEntries()
   {
-    $secondEntry =  new EntryEntity(
-      uniqid(),
-      uniqid(),
-      uniqid(),
-      rand(),
-      uniqid(),
-      rand(),
-      rand(),
-      uniqid(),
-      rand(),
-    );
     $this->requestEntity->addEntries([$this->entry]);
     $this->assertEquals($this->requestEntity->getEntries(), [$this->entry]);
 
-    $this->requestEntity->addEntries([$secondEntry]);
-    $this->assertEquals($this->requestEntity->getEntries(), [$this->entry, $secondEntry]);
+    $this->requestEntity->addEntries([$this->secondEntry]);
+    $this->assertEquals($this->requestEntity->getEntries(), [$this->entry, $this->secondEntry]);
+  }
+
+  public function testNewEntriesAreInsertedByOrderOfAscendingId()
+  {
+    $this->requestEntity->addEntries([$this->secondEntry, $this->entry]);
+    $this->assertEquals($this->requestEntity->getEntries(), [$this->entry, $this->secondEntry]);
   }
 
   public function testSerializingToJsonWithPartsSet()
   {
-
     $this->requestEntity->setEntries([$this->entry]);
     $expected = json_encode(
       [
@@ -107,7 +116,6 @@ class RequestEntityTest extends TestCase
         "entries" => json_encode([$this->entry])
       ]
     );
-
     $this->assertJsonStringEqualsJsonString($expected, json_encode($this->requestEntity));
   }
 

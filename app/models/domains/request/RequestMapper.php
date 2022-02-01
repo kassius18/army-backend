@@ -122,7 +122,7 @@ SELECT * FROM
 LEFT JOIN request_row ON request_row.request_phi_first_part = request.phi_first_part AND request_row.request_year = request.year
 LEFT JOIN part ON part.entry_id = request_row.request_row_id
 WHERE
-    YEAR >= :startYear
+    year >= :startYear
 AND
     year <= :endYear
 SQL;
@@ -158,7 +158,7 @@ SQL;
     $sql .= <<<SQL
 
 ORDER BY
-    year, month, day, request_id
+    request.year, request.month, request.day, request.request_id
 SQL;
     $statement = $this->pdo->prepare($sql);
     $statement->execute($preparedStatementValues);

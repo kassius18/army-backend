@@ -99,6 +99,12 @@ class EntryEntity implements JsonSerializable
       $this->parts = [];
     }
     array_push($this->parts, ...$parts);
+    usort($this->parts, function ($firstPart, $secondPart) {
+      if ($firstPart->getId() === $secondPart->getId()) {
+        return 0;
+      }
+      return ($firstPart->getId() < $secondPart->getId()) ? -1 : 1;
+    });
   }
 
   public function setParts(array $parts)

@@ -41,7 +41,7 @@ class EntryFixture
 
     $entriesWithParts = [];
     foreach ($entries as $entry) {
-      $amountOfPartsToCreate = rand(1, 1);
+      $amountOfPartsToCreate = rand(1, 3);
       $parts = $this->partFixture->createParts($amountOfPartsToCreate, true, $this->lastPartId);
       $entry->addParts($parts);
       $this->partFixture->persistParts($parts, $entry->getId());

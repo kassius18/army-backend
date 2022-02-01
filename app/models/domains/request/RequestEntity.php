@@ -73,6 +73,12 @@ class RequestEntity implements JsonSerializable
       $this->entries = [];
     }
     array_push($this->entries, ...$entries);
+    usort($this->entries, function ($firstEntry, $secondEntry) {
+      if ($firstEntry->getId() === $secondEntry->getId()) {
+        return 0;
+      }
+      return ($firstEntry->getId() < $secondEntry->getId()) ? -1 : 1;
+    });
   }
 
   public function jsonSerialize(): array

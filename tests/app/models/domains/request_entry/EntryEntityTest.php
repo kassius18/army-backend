@@ -17,6 +17,7 @@ class EntryEntityTest extends TestCase
   private string $observations =  "Π/Θ CAT";
   private int $consumableId = 22;
   private PartEntity $part;
+  private PartEntity $secondPart;
 
   private EntryEntity $entryEntity;
 
@@ -54,6 +55,16 @@ class EntryEntityTest extends TestCase
       uniqid(),
       uniqid(),
       rand(),
+      1
+    );
+    $this->secondPart =  new PartEntity(
+      uniqid(),
+      uniqid(),
+      rand(),
+      uniqid(),
+      uniqid(),
+      rand(),
+      2
     );
   }
 
@@ -88,19 +99,17 @@ class EntryEntityTest extends TestCase
 
   public function testAddingEntries()
   {
-    $secondPart =  new PartEntity(
-      uniqid(),
-      uniqid(),
-      rand(),
-      uniqid(),
-      uniqid(),
-      rand(),
-    );
     $this->entryEntity->addParts([$this->part]);
     $this->assertEquals($this->entryEntity->getParts(), [$this->part]);
 
-    $this->entryEntity->addParts([$secondPart]);
-    $this->assertEquals($this->entryEntity->getParts(), [$this->part, $secondPart]);
+    $this->entryEntity->addParts([$this->secondPart]);
+    $this->assertEquals($this->entryEntity->getParts(), [$this->part, $this->secondPart]);
+  }
+
+  public function testEntriesAreAddedByAscendingIdNoMatterTheOrderTheyAreAddedIn()
+  {
+    $this->entryEntity->addParts([$this->secondPart, $this->part]);
+    $this->assertEquals($this->entryEntity->getParts(), [$this->part, $this->secondPart]);
   }
 
   public function testSerializingToJsonWithPartsSet()
