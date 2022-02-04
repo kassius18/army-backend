@@ -182,7 +182,7 @@ class EntryEntityTest extends TestCase
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
       "observations" => "",
-      "consumableId" => "No",
+      "consumableId" => "none",
     ]);
 
     $actual = new EntryEntity(null, null, null, null, null, null, null, null, null);
@@ -203,7 +203,7 @@ class EntryEntityTest extends TestCase
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
       "observations" => "",
-      "consumableId" => "No",
+      "consumableId" => "none",
       "id" => 2,
     ]);
 

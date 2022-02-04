@@ -129,7 +129,7 @@ class EntryEntity implements JsonSerializable
       "reasonOfOrder" => $this->reasonOfOrder ?: "",
       "priorityOfOrder" => $this->priorityOfOrder ?: "",
       "observations" => $this->observations ?: "",
-      "consumableId" => $this->consumableId ?: "No"
+      "consumableId" => $this->consumableId ?: "none"
     ];
 
     if (isset($this->id)) {
