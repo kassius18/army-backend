@@ -1,6 +1,5 @@
 <?php
 
-use app\models\domains\part\PartMapper;
 use app\models\domains\request_entry\EntryMapper;
 use common\MapperCommonMethods;
 use fixtures\EntryFixture;
@@ -39,14 +38,8 @@ class EntryMapperTest extends TestCase
     self::$phinxApp->setAutoExit(false);
     self::$phinxApp->run(new StringInput('migrate -e testing'), new NullOutput());
     self::$fixture->setConsumableIdForTest($this->consumableId);
-    //Inserting a row into parent table to test methods that require parent's PK
-    $sql = "INSERT INTO `request` (`phi_first_part`, `year`) VALUES (1, 2);";
-    self::$pdo->exec($sql);
-    $sql = "INSERT INTO `request` (`phi_first_part`, `year`) VALUES (2, 3);";
-    self::$pdo->exec($sql);
-    $sql = "INSERT INTO `tab` (`tab_id`,`name`, `usage`) VALUES ({$this->consumableId}, 'test', 'test');";
-    self::$pdo->exec($sql);
     $this->entryMapper = new EntryMapper(self::$pdo);
+    self::$fixture->persistDependencies();
   }
 
   protected function tearDown(): void
@@ -148,6 +141,8 @@ class EntryMapperTest extends TestCase
   public function testUpdatingOneById()
   {
     [$entry, $secondEntry] = self::$fixture->createEntries(2, true);
+    self::$fixture->setConsumableIdForTest($this->consumableId + 1);
+    self::$fixture->persistDependencies($this->consumableId + 1);
     [$editedEntry] = self::$fixture->createEntries(1, true);
     self::$fixture->persistEntries([$entry, $secondEntry]);
 
@@ -166,6 +161,8 @@ class EntryMapperTest extends TestCase
   public function testUpdatingReturnsUpdatedEntry()
   {
     [$entry] = self::$fixture->createEntries(1, true);
+    self::$fixture->setConsumableIdForTest($this->consumableId + 1);
+    self::$fixture->persistDependencies($this->consumableId + 1);
     [$editedEntry] = self::$fixture->createEntries(1, true);
     self::$fixture->persistEntries([$entry]);
 

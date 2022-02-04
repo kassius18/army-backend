@@ -77,7 +77,8 @@ amount_of_order = :amountOfOrder,
 unit_of_order = :unitOfOrder,
 reason_of_order = :reasonOfOrder,
 priority_of_order = :priorityOfOrder,
-observations= :observations
+observations= :observations,
+consumable_tab_id= :consumable
 WHERE 
 request_row_id = :id;
 SQL;
@@ -91,6 +92,7 @@ SQL;
       "reasonOfOrder" => $entry->getReasonOfOrder(),
       "priorityOfOrder" => $entry->getPriorityOfOrder(),
       "observations" => $entry->getObservations(),
+      "consumable" => $entry->getConsumableId(),
       "id" => $id,
     ])) {
       return $this->findEntryById($id);

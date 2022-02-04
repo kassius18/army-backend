@@ -95,6 +95,25 @@ class EntryFixture
 
     return $entries;
   }
+  public function persistDependencies()
+  {
+    $sql = <<<SQL
+INSERT INTO `request` (`phi_first_part`, `year`) 
+VALUES 
+    (1, 2), 
+    (2, 3)
+ON DUPLICATE KEY UPDATE `phi_first_part` = VALUES(`phi_first_part`), `year` = VALUES(`year`) ;
+SQL;
+    $stm = $this->pdo->query($sql);
+
+    $sql = <<<SQL
+INSERT INTO `tab` (`tab_id`,`name`, `usage`) 
+VALUES (:consumableId, 'test', 'test')
+ON DUPLICATE KEY UPDATE `tab_id` = VALUES(`tab_id`), `name` = VALUES(`name`), `usage` = VALUES(`usage`) ;
+SQL;
+    $stm = $this->pdo->prepare($sql);
+    $stm->execute(["consumableId" => $this->consumableId]);
+  }
 
   public function persistEntries(array $entries, bool|array $requestPrimaryKeys = false)
   {
