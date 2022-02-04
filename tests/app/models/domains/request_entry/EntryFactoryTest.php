@@ -62,7 +62,7 @@ class EntryFactoryTest extends TestCase
         "reasonOfOrder" => 5,
         "priorityOfOrder" => 6,
         "observations" => "obs",
-        "consumable" => 3,
+        "consumableId" => 3,
       ], [
         "nameNumber" => "",
         "name" => "",
@@ -72,7 +72,7 @@ class EntryFactoryTest extends TestCase
         "reasonOfOrder" => "",
         "priorityOfOrder" => "",
         "observations" => "",
-        "consumable" => "",
+        "consumableId" => "",
       ]
     ];
   }
@@ -127,7 +127,7 @@ class EntryFactoryTest extends TestCase
       self::$userInput[0]["reasonOfOrder"],
       self::$userInput[0]["priorityOfOrder"],
       self::$userInput[0]["observations"],
-      self::$userInput[0]["consumable"],
+      self::$userInput[0]["consumableId"],
     );
 
     $this->entryWithEmptyValues = new EntryEntity(null, null, null, null, null, null, null, null, null);

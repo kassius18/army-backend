@@ -40,7 +40,7 @@ class EntryFactory
       $record["reasonOfOrder"] ?: null,
       $record["priorityOfOrder"] ?: null,
       $record["observations"] ?: null,
-      $record["consumable"] ?: null,
+      $record["consumableId"] ?: null,
     );
   }
 
