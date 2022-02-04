@@ -137,7 +137,7 @@ class EntryEntity implements JsonSerializable
     }
 
     if ($this->parts) {
-      $json["parts"] = json_encode($this->parts);
+      $json["parts"] = $this->parts;
     }
 
     return $json;

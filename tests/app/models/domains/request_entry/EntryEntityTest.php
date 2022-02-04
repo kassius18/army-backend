@@ -127,7 +127,7 @@ class EntryEntityTest extends TestCase
         "priorityOfOrder" => $this->priorityOfOrder,
         "observations" => $this->observations,
         "consumableId" => $this->consumableId,
-        "parts" => json_encode([$this->part])
+        "parts" => [$this->part]
       ]
     );
     $this->assertJsonStringEqualsJsonString($expected, json_encode($this->entryEntity));

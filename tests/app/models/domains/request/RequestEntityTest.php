@@ -113,7 +113,7 @@ class RequestEntityTest extends TestCase
         "year" => $this->year,
         "month" => $this->month,
         "day" => $this->day,
-        "entries" => json_encode([$this->entry])
+        "entries" => [$this->entry]
       ]
     );
     $this->assertJsonStringEqualsJsonString($expected, json_encode($this->requestEntity));

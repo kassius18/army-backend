@@ -96,7 +96,7 @@ class RequestEntity implements JsonSerializable
     }
 
     if ($this->entries) {
-      $json["entries"] = json_encode($this->entries);
+      $json["entries"] = $this->entries;
     }
 
     return $json;
