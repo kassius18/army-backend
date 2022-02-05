@@ -66,7 +66,7 @@ class PartEntity implements JsonSerializable
     return $this->id;
   }
 
-  public function jsonSerialize()
+  public function jsonSerialize(): array
   {
     $json = [
       "dateRecieved" => $this->dateRecieved ?: "",
