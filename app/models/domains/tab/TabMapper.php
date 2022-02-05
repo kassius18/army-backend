@@ -42,12 +42,14 @@ SQL;
     `tab_id`,
     `name`,
     `usage`,
-    `observations`
+    `observations`,
+    `starting_total`
 ) VALUES (
     :id,
     :name,
     :usage,
-    :observations
+    :observations,
+    :startingTotal
 );
 SQL;
 
@@ -56,6 +58,7 @@ SQL;
       "name" => $tab->getName(),
       "usage" => $tab->getUsage(),
       "observations" => $tab->getObservations(),
+      "startingTotal" => $tab->getStartingTotal(),
       "id" => $tab->getId()
     ])) {
       $lastId = $this->pdo->lastInsertId();
@@ -81,7 +84,8 @@ UPDATE tab
 SET 
     `name` = :name ,
     `usage`= :usage,
-    `observations`= :observations
+    `observations`= :observations,
+    `starting_total`= :startingTotal
 WHERE tab_id = :tabId;
 SQL;
     $statement = $this->pdo->prepare($sql);
@@ -89,6 +93,7 @@ SQL;
       "name" => $tab->getName(),
       "usage" => $tab->getUsage(),
       "observations" => $tab->getObservations(),
+      "startingTotal" => $tab->getStartingTotal(),
       "tabId" => $tabId
     ]);
   }

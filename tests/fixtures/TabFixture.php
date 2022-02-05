@@ -30,6 +30,7 @@ class TabFixture
         uniqid(),
         uniqid(),
         uniqid(),
+        rand(0, 100),
         $id
       );
 
@@ -51,13 +52,15 @@ INSERT INTO tab(
     `tab_id`,
     `name`,
     `usage`,
-    `observations`
+    `observations`,
+    `starting_total`
 )
 VALUES(
     :id,
     :name,
     :usage,
-    :observations
+    :observations,
+    :startingTotal
 );
 SQL;
 
@@ -67,6 +70,7 @@ SQL;
       "name" =>  $tab->getName(),
       "usage" => $tab->getUsage(),
       "observations" => $tab->getObservations(),
+      "startingTotal" => $tab->getStartingTotal()
     ]);
   }
 }

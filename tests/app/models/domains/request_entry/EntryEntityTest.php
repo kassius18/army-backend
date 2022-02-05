@@ -97,7 +97,7 @@ class EntryEntityTest extends TestCase
     $this->assertEquals($this->entryEntity->getParts(), []);
   }
 
-  public function testAddingEntries()
+  public function testAddingParts()
   {
     $this->entryEntity->addParts([$this->part]);
     $this->assertEquals($this->entryEntity->getParts(), [$this->part]);

@@ -10,6 +10,7 @@ class TabFactory
       $dbRecord["name"],
       $dbRecord["usage"],
       $dbRecord["observations"],
+      $dbRecord["starting_total"],
       $dbRecord["tab_id"]
     );
   }
@@ -31,6 +32,7 @@ class TabFactory
       $userPostInput["name"] ?: null,
       $userPostInput["usage"] ?: null,
       $userPostInput["observations"] ?: null,
+      $userPostInput["startingTotal"] ?: null,
       $userPostInput["id"]
     );
   }

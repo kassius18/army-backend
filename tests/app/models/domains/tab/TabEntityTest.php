@@ -9,6 +9,7 @@ class TabEntityTest extends TestCase
   private string $name = "someName";
   private string $usage = "someUsage";
   private string $observations = "obs";
+  private int $startingTotal = 0;
   private int $id = 3;
 
   public function setUp(): void
@@ -17,6 +18,7 @@ class TabEntityTest extends TestCase
       $this->name,
       $this->usage,
       $this->observations,
+      $this->startingTotal,
       $this->id
     );
   }
@@ -26,6 +28,7 @@ class TabEntityTest extends TestCase
     $this->assertEquals($this->name, $this->tabEntity->getName());
     $this->assertEquals($this->usage, $this->tabEntity->getUsage());
     $this->assertEquals($this->observations, $this->tabEntity->getObservations());
+    $this->assertEquals($this->startingTotal, $this->tabEntity->getStartingTotal());
     $this->assertEquals($this->id, $this->tabEntity->getId());
   }
 
@@ -35,6 +38,7 @@ class TabEntityTest extends TestCase
       "id" => $this->id,
       "name" => $this->name,
       "usage" => $this->usage,
+      "startingTotal" => $this->startingTotal,
       "observations" => $this->observations
     ]);
 
@@ -50,10 +54,11 @@ class TabEntityTest extends TestCase
       "name" => "",
       "usage" => "",
       "observations" => "",
+      "startingTotal" => 0,
       "id" => 3,
     ]);
 
-    $actual = new TabEntity(null, null, null, 3);
+    $actual = new TabEntity(null, null, null, null, 3);
     $this->assertJsonStringEqualsJsonString(
       $expected,
       json_encode($actual)

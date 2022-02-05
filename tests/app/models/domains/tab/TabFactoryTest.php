@@ -23,17 +23,20 @@ class TabFactoryTest extends TestCase
         "tab_id" => 1,
         "name" => "name1",
         "usage" => "tab1",
-        "observations" => ""
+        "observations" => "",
+        "starting_total" => 1
       ], [
         "tab_id" => 2,
         "name" => "name2",
         "usage" => "tab2",
-        "observations" => "obs2"
+        "observations" => "obs2",
+        "starting_total" => 2
       ], [
         "tab_id" => 3,
         "name" => null,
         "usage" => null,
-        "observations" => null
+        "observations" => null,
+        "starting_total" => 0
       ]
     ];
 
@@ -42,12 +45,14 @@ class TabFactoryTest extends TestCase
         "name" => "name3",
         "usage" => "tab3",
         "observations" => "obs3",
+        "startingTotal" => 5,
         "id" => "4"
       ], [
         "id" => 5,
         "name" => "",
         "usage" => "",
-        "observations" => ""
+        "observations" => "",
+        "startingTotal" => 0,
       ]
     ];
   }
@@ -58,6 +63,7 @@ class TabFactoryTest extends TestCase
       self::$dbRecord[0]["name"],
       self::$dbRecord[0]["usage"],
       self::$dbRecord[0]["observations"],
+      self::$dbRecord[0]["starting_total"],
       self::$dbRecord[0]["tab_id"],
     );
 
@@ -65,6 +71,7 @@ class TabFactoryTest extends TestCase
       self::$dbRecord[1]["name"],
       self::$dbRecord[1]["usage"],
       self::$dbRecord[1]["observations"],
+      self::$dbRecord[1]["starting_total"],
       self::$dbRecord[1]["tab_id"],
     );
 
@@ -72,6 +79,7 @@ class TabFactoryTest extends TestCase
       self::$dbRecord[2]["name"],
       self::$dbRecord[2]["usage"],
       self::$dbRecord[2]["observations"],
+      self::$dbRecord[2]["starting_total"],
       self::$dbRecord[2]["tab_id"],
     );
 
@@ -79,6 +87,7 @@ class TabFactoryTest extends TestCase
       self::$userInput[0]["name"],
       self::$userInput[0]["usage"],
       self::$userInput[0]["observations"],
+      self::$userInput[0]["startingTotal"],
       self::$userInput[0]["id"],
     );
 
@@ -86,6 +95,7 @@ class TabFactoryTest extends TestCase
       self::$userInput[1]["name"],
       self::$userInput[1]["usage"],
       self::$userInput[1]["observations"],
+      self::$userInput[1]["startingTotal"],
       self::$userInput[1]["id"],
     );
   }
