@@ -9,6 +9,7 @@ ini_set("html_errors", "On");
 error_reporting(E_ALL);
 
 use app\core\Request;
+use app\core\Response;
 use app\core\Router;
 
 define("ROOT_DIR", dirname(__DIR__));
@@ -39,9 +40,26 @@ $container = $builder->build();
 
 $request = $container->get(Request::class);
 $router = $container->get(Router::class);
+$response = $container->get(Response::class);
 
-$router->setGetRoute("/requests/", "app\controllers\RequestController");
+$router->setGetRoute("/requests", "app\controllers\RequestController");
 $router->setPostRoute("/requests", "app\controllers\RequestController");
+$router->setDeleteRoute("/requests/:id", "app\controllers\RequestController");
+$router->setPutRoute("/requests/:id", "app\controllers\RequestController");
+
+$router->setPostRoute("/entries", "app\controllers\EntryController");
+$router->setDeleteRoute("/entries/:id", "app\controllers\EntryController");
+$router->setPutRoute("/entries/:id", "app\controllers\EntryController");
+
+$router->setPostRoute("/parts", "app\controllers\PartController");
+$router->setDeleteRoute("/parts/:id", "app\controllers\PartController");
+$router->setPutRoute("/parts/:id", "app\controllers\PartController");
+
+$router->setGetRoute("/tabs", "app\controllers\TabController");
+$router->setGetRoute("/tabs/:id", "app\controllers\TabController");
+$router->setDeleteRoute("/tabs/:id", "app\controllers\TabController");
+$router->setPostRoute("/tabs", "app\controllers\TabController");
+$router->setPutRoute("/tabs/:id", "app\controllers\TabController");
 
 $router->setGetRoute("/vehicles", "app\controllers\VehicleController");
 $router->setPostRoute("/vehicles", "app\controllers\VehicleController");
@@ -49,5 +67,16 @@ $router->setDeleteRoute("/vehicles/:id", "app\controllers\VehicleController");
 $router->setPutRoute("/vehicles/:id", "app\controllers\VehicleController");
 
 [$controllerName, $action] = $router->route($request->getRequestMethod(), $request->getRequestUri());
+
+
 $controller = $container->get($controllerName);
 $controller->$action();
+
+die();
+try {
+  $controller = $container->get($controllerName);
+  $controller->$action();
+} catch (Exception $e) {
+  $response->setStatusCode(500);
+  $response->sendResponse();
+}

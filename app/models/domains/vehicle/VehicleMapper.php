@@ -72,6 +72,7 @@ SQL;
     $sql = <<<SQL
 UPDATE vehicle 
 SET
+    vehicle_id = :id,
     plate = :plate ,
     vehicle_type= :vehicleType
 WHERE
@@ -79,6 +80,7 @@ WHERE
 SQL;
     $statement = $this->pdo->prepare($sql);
     if ($statement->execute([
+      "id" => $vehicle->getId(),
       "plate" => $vehicle->getPlate(),
       "vehicleType" => $vehicle->getVehicleType(),
       "vehicleId" => $vehicleId

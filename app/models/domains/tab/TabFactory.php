@@ -2,8 +2,43 @@
 
 namespace app\models\domains\tab;
 
+use app\models\domains\part\PartFactory;
+
 class TabFactory
 {
+
+  public static function createTabsFromJOINRecord(array $records): array
+  {
+    $arrayOfTabs = [];
+    $listOfPartIds = [];
+    $listOfTabIds = [];
+
+    foreach ($records as $record) {
+
+      $tabRecord = array_slice($record, 0, 5, true);
+      $partRecord = array_slice($record, 5);
+
+      if (!isset($listOfTabIds[$tabRecord["tab_id"]])) {
+        $tab = self::createTabFromRecord($tabRecord);
+        $listOfTabIds[$tab->getId()] = $tab;
+        array_push($arrayOfTabs, $tab);
+      } else {
+        $tab = $listOfTabIds[$tabRecord["tab_id"]];
+      }
+
+      if (!isset($listOfPartIds[$partRecord["part_id"]])) {
+        if ($record["part_id"]) {
+          $part = PartFactory::createPartFromRecord($partRecord);
+          $listOfPartIds[$part->getId()] = $part;
+          $tab->addParts([$part]);
+        }
+      } else {
+        $part = $listOfPartIds[$partRecord["part_id"]];
+      }
+    }
+    return $arrayOfTabs;
+  }
+
   static function createTabFromRecord(array $dbRecord)
   {
     return new TabEntity(

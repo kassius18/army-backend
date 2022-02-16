@@ -47,7 +47,7 @@ SQL;
     };
   }
 
-  public function findOneByPhiAndYear(int $firstPartOfPhi, int $year): RequestEntity
+  public function findOneByPhiAndYear(int $firstPartOfPhi, int $year): array|RequestEntity
   {
     $sql = <<<SQL
 SELECT
@@ -68,6 +68,9 @@ SQL;
     );
     $result = $statement->fetchAll();
     $request = RequestFactory::createRequestsFromJOINRecord($result);
+    if (empty($request)) {
+      return [];
+    }
     return $request[0];
   }
 

@@ -107,7 +107,7 @@ class EntryEntity implements JsonSerializable
     });
   }
 
-  public function setParts(array $parts)
+  public function setParts(array $parts): void
   {
     $this->parts = $parts;
   }

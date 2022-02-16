@@ -35,6 +35,34 @@ SQL;
     return $tabs;
   }
 
+  public function getAllNonEmptyTabsWithParts()
+  {
+    $sql = <<<SQL
+SELECT DISTINCT tab.* , part.* FROM `request_row`
+LEFT JOIN part ON `request_row`.`request_row_id` = `part`.entry_id
+LEFT JOIN tab ON `tab`.tab_id = `request_row`.`consumable_tab_id`
+WHERE `request_row`.`consumable_tab_id` IS NOT NULL
+AND `part`.`part_id` IS NOT NULL
+SQL;
+    $stm = $this->pdo->prepare($sql);
+    $stm->execute();
+    return TabFactory::createTabsFromJOINRecord($stm->fetchAll());
+  }
+
+  public function getAllTabsWithParts()
+  {
+    $sql = <<<SQL
+SELECT DISTINCT tab.* , part.* FROM `request_row`
+LEFT JOIN part ON `request_row`.`request_row_id` = `part`.entry_id
+LEFT JOIN tab ON `tab`.tab_id = `request_row`.`consumable_tab_id`
+WHERE `request_row`.`consumable_tab_id` IS NOT NULL
+AND `tab`.`tab_id` IS NOT NULL
+SQL;
+    $stm = $this->pdo->prepare($sql);
+    $stm->execute();
+    return TabFactory::createTabsFromJOINRecord($stm->fetchAll());
+  }
+
   public function saveTab(TabEntity $tab): false|TabEntity
   {
     $sql = <<<SQL
@@ -77,7 +105,7 @@ SQL;
     return $statement->execute(["tabId" => $tabId]);
   }
 
-  public function updateTab(TabEntity $tab, int $tabId): bool
+  public function updateTab(TabEntity $tab, int $tabId): false|TabEntity
   {
     $sql = <<<SQL
 UPDATE tab 
@@ -89,13 +117,38 @@ SET
 WHERE tab_id = :tabId;
 SQL;
     $statement = $this->pdo->prepare($sql);
-    return $statement->execute([
-      "name" => $tab->getName(),
-      "usage" => $tab->getUsage(),
-      "observations" => $tab->getObservations(),
-      "startingTotal" => $tab->getStartingTotal(),
-      "tabId" => $tabId
-    ]);
+    if (
+      $statement->execute([
+        "name" => $tab->getName(),
+        "usage" => $tab->getUsage(),
+        "observations" => $tab->getObservations(),
+        "startingTotal" => $tab->getStartingTotal(),
+        "tabId" => $tabId
+      ])
+    ) {
+      return $this->findTabById($tabId);
+    } else {
+      return false;
+    };
+  }
+
+  public function getIdsOfNonEmptyTabs(): array
+  {
+    $sql = <<<SQL
+SELECT  DISTINCT(consumable_tab_id) FROM `request_row`
+INNER JOIN part
+WHERE `request_row`.`request_row_id` = `part`.entry_id
+AND `part`.entry_id = `request_row`.request_row_id
+AND `request_row`.`consumable_tab_id` IS NOT NULL
+SQL;
+    $statement = $this->pdo->prepare($sql);
+    $statement->execute([]);
+    $records = $statement->fetchAll();
+    $arrayOfIds = [];
+    foreach ($records as $record) {
+      array_push($arrayOfIds, $record["consumable_tab_id"]);
+    }
+    return $arrayOfIds;
   }
 
   public function findAllPartsThatBelongToTab(int $tabId): array

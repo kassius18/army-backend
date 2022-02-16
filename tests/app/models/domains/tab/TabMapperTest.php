@@ -113,15 +113,14 @@ class TabMapperTest extends TestCase
 
   public function testEditingTab()
   {
-    [$tab, $secondTab] = self::$fixture->createTabs(2);
-    [$editedTab] = self::$fixture->createTabs(1);
+    [$tab, $secondTab] = self::$fixture->createTabs(2, true);
+    [$editedTab] = self::$fixture->createTabs(1, true);
     self::$fixture->persistTabs([$tab, $secondTab]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
     $this->assertCount(2, $actual);
 
-    $bool = $this->tabMapper->updateTab($editedTab, $editedTab->getId());
-    $this->assertTrue($bool);
+    $this->tabMapper->updateTab($editedTab, $editedTab->getId());
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
     $this->assertCount(2, $actual);
@@ -129,6 +128,176 @@ class TabMapperTest extends TestCase
     $this->assertJsonStringEqualsJsonString(json_encode($editedTab), json_encode($actual[0]));
     MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId($secondTab, $editedTab);
   }
+
+  public function testEditingTabReturnsEditedTab()
+  {
+    [$tab] = self::$fixture->createTabs(1, true);
+    [$editedTab] = self::$fixture->createTabs(1);
+    self::$fixture->persistTabs([$tab]);
+
+    $actual = $this->tabMapper->updateTab($editedTab, $editedTab->getId());
+
+    $this->assertJsonStringEqualsJsonString(json_encode($editedTab), json_encode($actual));
+  }
+
+  public function testGettingIdsOfAllNonEmptyTabs()
+  {
+    $tabs = self::$fixture->createTabs(3, true, rand(1, 5));
+    self::$fixture->persistTabs($tabs);
+
+    $idsOfNonEmptyTabs = [$tabs[1]->getId()];
+
+    self::$entryFixture->setConsumableIdForTest($tabs[1]->getId());
+    $entriesThatBelongToTab = self::$entryFixture->createEntries(1, true);
+
+    self::$entryFixture->setConsumableIdForTest(null);
+    $orphanEntry = self::$entryFixture->createEntries(1, true);
+    self::$entryFixture->persistEntries([...$entriesThatBelongToTab, ...$orphanEntry]);
+
+    $partsThatBelongToEntryThatBelongsToTab = self::$partFixture->createParts(2, true);
+    $partsThatBelongToOrphanEntry = self::$partFixture->createParts(2, true);
+
+    self::$partFixture->persistParts(
+      $partsThatBelongToEntryThatBelongsToTab,
+      $entriesThatBelongToTab[0]->getId()
+    );
+    self::$partFixture->persistParts(
+      $partsThatBelongToOrphanEntry,
+      $orphanEntry[0]->getId()
+    );
+    $actual = $this->tabMapper->getIdsOfNonEmptyTabs();
+    $this->assertEquals($idsOfNonEmptyTabs, $actual);
+  }
+
+  public function testGettingAllTabsWithParts()
+  {
+    $tabs = self::$fixture->createTabs(3);
+    self::$fixture->persistTabs($tabs);
+
+    self::$entryFixture->setConsumableIdForTest($tabs[0]->getId());
+    $entriesThatBelongToTab = self::$entryFixture->createEntries(2, true);
+    self::$entryFixture->setConsumableIdForTest($tabs[1]->getId());
+    $entriesThatBelongToSecondTab = self::$entryFixture->createEntries(2, true, 2);
+
+    self::$entryFixture->setConsumableIdForTest($tabs[2]->getId());
+    $entriesThatBelongToDifferentTab = self::$entryFixture->createEntries(2, true, 4);
+
+    self::$entryFixture->setConsumableIdForTest(null);
+    $entriesThatBelongToNoTab = self::$entryFixture->createEntries(2, true, 6);
+
+    $allEntries = [
+      ...$entriesThatBelongToTab,
+      ...$entriesThatBelongToSecondTab,
+      ...$entriesThatBelongToDifferentTab,
+      ...$entriesThatBelongToNoTab
+    ];
+    self::$entryFixture->persistEntries($allEntries);
+
+    $partsThatBelongToFirstEntryThatBelongsToTab = self::$partFixture->createParts(2, true);
+    self::$partFixture->persistParts(
+      $partsThatBelongToFirstEntryThatBelongsToTab,
+      $entriesThatBelongToTab[0]->getId()
+    );
+
+    $partsThatBelongToSecondEntryThatBelongsToTab = self::$partFixture->createParts(1, true, 2);
+    self::$partFixture->persistParts(
+      $partsThatBelongToSecondEntryThatBelongsToTab,
+      $entriesThatBelongToTab[1]->getId()
+    );
+
+    $partsThatBelongToFirstEntryThatBelongsToSecondTab = self::$partFixture->createParts(1, true, 3);
+    self::$partFixture->persistParts(
+      $partsThatBelongToFirstEntryThatBelongsToSecondTab,
+      $entriesThatBelongToSecondTab[0]->getId()
+    );
+
+    $partsThatBelongToSecondEntryThatBelongsToSecondTab = self::$partFixture->createParts(2, true, 4);
+    self::$partFixture->persistParts(
+      $partsThatBelongToSecondEntryThatBelongsToSecondTab,
+      $entriesThatBelongToSecondTab[1]->getId()
+    );
+
+    $partsThatBelongToEntryWithNoTab = self::$partFixture->createParts(1, true, 8);
+    self::$partFixture->persistParts($partsThatBelongToEntryWithNoTab);
+
+    $tabs[0]->addParts([
+      ...$partsThatBelongToFirstEntryThatBelongsToTab, ...$partsThatBelongToSecondEntryThatBelongsToTab
+    ]);
+    $tabs[1]->addParts([
+      ...$partsThatBelongToFirstEntryThatBelongsToSecondTab, ...$partsThatBelongToSecondEntryThatBelongsToSecondTab
+    ]);
+
+    $actual = $this->tabMapper->getAllTabsWithParts();
+    $this->assertJsonStringEqualsJsonString(
+      json_encode($tabs),
+      json_encode($actual)
+    );
+  }
+  public function testGettingNonEmptyTabsWithParts()
+  {
+    $tabs = self::$fixture->createTabs(3);
+    self::$fixture->persistTabs($tabs);
+
+    self::$entryFixture->setConsumableIdForTest($tabs[0]->getId());
+    $entriesThatBelongToTab = self::$entryFixture->createEntries(2, true);
+    self::$entryFixture->setConsumableIdForTest($tabs[1]->getId());
+    $entriesThatBelongToSecondTab = self::$entryFixture->createEntries(2, true, 2);
+
+    self::$entryFixture->setConsumableIdForTest($tabs[2]->getId());
+    $entriesThatBelongToDifferentTab = self::$entryFixture->createEntries(2, true, 4);
+
+    self::$entryFixture->setConsumableIdForTest(null);
+    $entriesThatBelongToNoTab = self::$entryFixture->createEntries(2, true, 6);
+
+    $allEntries = [
+      ...$entriesThatBelongToTab,
+      ...$entriesThatBelongToSecondTab,
+      ...$entriesThatBelongToDifferentTab,
+      ...$entriesThatBelongToNoTab
+    ];
+    self::$entryFixture->persistEntries($allEntries);
+
+    $partsThatBelongToFirstEntryThatBelongsToTab = self::$partFixture->createParts(2, true);
+    self::$partFixture->persistParts(
+      $partsThatBelongToFirstEntryThatBelongsToTab,
+      $entriesThatBelongToTab[0]->getId()
+    );
+
+    $partsThatBelongToSecondEntryThatBelongsToTab = self::$partFixture->createParts(1, true, 2);
+    self::$partFixture->persistParts(
+      $partsThatBelongToSecondEntryThatBelongsToTab,
+      $entriesThatBelongToTab[1]->getId()
+    );
+
+    $partsThatBelongToFirstEntryThatBelongsToSecondTab = self::$partFixture->createParts(1, true, 3);
+    self::$partFixture->persistParts(
+      $partsThatBelongToFirstEntryThatBelongsToSecondTab,
+      $entriesThatBelongToSecondTab[0]->getId()
+    );
+
+    $partsThatBelongToSecondEntryThatBelongsToSecondTab = self::$partFixture->createParts(2, true, 4);
+    self::$partFixture->persistParts(
+      $partsThatBelongToSecondEntryThatBelongsToSecondTab,
+      $entriesThatBelongToSecondTab[1]->getId()
+    );
+
+    $partsThatBelongToEntryWithNoTab = self::$partFixture->createParts(1, true, 8);
+    self::$partFixture->persistParts($partsThatBelongToEntryWithNoTab);
+
+    $tabs[0]->addParts([
+      ...$partsThatBelongToFirstEntryThatBelongsToTab, ...$partsThatBelongToSecondEntryThatBelongsToTab
+    ]);
+    $tabs[1]->addParts([
+      ...$partsThatBelongToFirstEntryThatBelongsToSecondTab, ...$partsThatBelongToSecondEntryThatBelongsToSecondTab
+    ]);
+
+    $actual = $this->tabMapper->getAllNonEmptyTabsWithParts();
+    $this->assertJsonStringEqualsJsonString(
+      json_encode([$tabs[0], $tabs[1]]),
+      json_encode($actual)
+    );
+  }
+
 
   public function testGettingAllPartsBelogningToALLEntriesBelongingToATab()
   {
@@ -173,7 +342,6 @@ class TabMapperTest extends TestCase
 
     $partsThatBelongToEntryWithNoTab = self::$partFixture->createParts(1, true, 5);
     self::$partFixture->persistParts($partsThatBelongToEntryWithNoTab);
-
 
     $partsExpected = [
       ...$partsThatBelongToFirstEntryThatBelongsToTab,

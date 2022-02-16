@@ -11,6 +11,7 @@ class TabEntity implements JsonSerializable
   private ?string $usage;
   private ?string $observations;
   private ?int $startingTotal;
+  private ?array $parts = null;
 
   public function __construct(
     ?string $name,
@@ -51,14 +52,41 @@ class TabEntity implements JsonSerializable
     return $this->startingTotal;
   }
 
+  public function getParts()
+  {
+    return $this->parts;
+  }
+
+  public function setParts(array $parts): void
+  {
+    $this->parts = $parts;
+  }
+
+  public function addParts(array $parts): void
+  {
+    if (!$this->parts) {
+      $this->parts = [];
+    }
+    array_push($this->parts, ...$parts);
+    usort($this->parts, function ($firstPart, $secondPart) {
+      if ($firstPart->getId() === $secondPart->getId()) {
+        return 0;
+      }
+      return ($firstPart->getId() < $secondPart->getId()) ? -1 : 1;
+    });
+  }
+
   public function jsonSerialize(): array
   {
-    return [
+    $json = [
       "name" => $this->name ?: "",
       "usage" => $this->usage ?: "",
       "observations" => $this->observations ?: "",
       "startingTotal" => $this->startingTotal ?: 0,
       "id" => $this->id,
+      "parts" => $this->parts ?: [],
     ];
+
+    return $json;
   }
 }

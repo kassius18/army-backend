@@ -115,6 +115,13 @@ class TabFactoryTest extends TestCase
     );
   }
 
+  public function testCreatingRequestFromJOIN()
+  {
+    [$expected, $recordsFromJOIN] = include(TEST_DIR . "/fixtures/TabFactoryFixture.php");
+    $actual = TabFactory::createTabsFromJOINRecord($recordsFromJOIN);
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
+  }
+
   public function testCreatingManyTabsFromDatabaseRecord()
   {
     $expected = [$this->tab, $this->secondTab, $this->tabWithNullValues];

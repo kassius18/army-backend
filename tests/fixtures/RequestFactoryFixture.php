@@ -115,16 +115,35 @@ $recordsFromJoin = [
     'tab_used' => null,
     'date_used' => null,
     'amount_used' => null,
+  ], [
+    'request_id' => 2,
+    'phi_first_part' => 1855294779,
+    'phi_second_part' => 1584092229,
+    'year' => 1100369292,
+    'month' => 1390753353,
+    'day' => 898893964,
+    'request_row_id' => 4,
+    'request_phi_first_part' => 1855294779,
+    'request_year' => 1100369292,
+    'name_number' => "61f80b54dfb7f",
+    'name' => "61f80b54dfb82",
+    'main_part' => "61f80b54dfb85",
+    'amount_of_order' => 203099896,
+    'unit_of_order' => "61f80b54dfb89",
+    'reason_of_order' => 1469856502,
+    'priority_of_order' => 1192362177,
+    'observations' => "61f80b54dfb8e",
+    'consumable_tab_id' => null,
+    'part_id' => 4,
+    'entry_id' => 4,
+    'date_recieved' => "61f80b54e153e",
+    'pie_number' => "61f80b54e1540",
+    'amount_recieved' => 1818884197,
+    'tab_used' => "61f80b54e1544",
+    'date_used' => "61f80b54e1546",
+    'amount_used' => "1482217923",
   ]
 ];
-
-$request = new RequestEntity(
-  $recordsFromJoin[0]["phi_first_part"],
-  $recordsFromJoin[0]["phi_second_part"],
-  $recordsFromJoin[0]["year"],
-  $recordsFromJoin[0]["month"],
-  $recordsFromJoin[0]["day"],
-);
 
 $request = RequestFactory::createRequestFromRecord($recordsFromJoin[0]);
 $entry = EntryFactory::createEntryFromRecord($recordsFromJoin[0]);
@@ -143,4 +162,10 @@ $entry->addParts([$part]);
 $entry = EntryFactory::createEntryFromRecord($recordsFromJoin[3]);
 $request->addEntries([$entry]);
 
-return [$request, $recordsFromJoin];
+$secondRequest = RequestFactory::createRequestFromRecord($recordsFromJoin[4]);
+$entry = EntryFactory::createEntryFromRecord($recordsFromJoin[4]);
+$secondRequest->addEntries([$entry]);
+$part = PartFactory::createPartFromRecord($recordsFromJoin[4]);
+$entry->addParts([$part]);
+
+return [[$request, $secondRequest], $recordsFromJoin];

@@ -99,14 +99,12 @@ class RequestFactoryTest extends TestCase
     $this->requestWithEmptyValues = new RequestEntity(null, null, null, null, null);
   }
 
-
   public function testCreatingRequestFromJOIN()
   {
     [$expected, $recordsFromJOIN] = include(TEST_DIR . "/fixtures/RequestFactoryFixture.php");
     $actual = RequestFactory::createRequestsFromJOINRecord($recordsFromJOIN);
-    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual[0]));
+    $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($actual));
   }
-
 
   public function testCreatingRequestFromDatabaseRecord()
   {
