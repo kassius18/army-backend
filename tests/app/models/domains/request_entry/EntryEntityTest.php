@@ -12,7 +12,7 @@ class EntryEntityTest extends TestCase
   private string $mainPart =  "Π/Θ";
   private int $amountOfOrder =  1;
   private string $unitOfOrder =  "τεμ.";
-  private int $reasonOfOrder =  4;
+  private string $reasonOfOrder =  "04";
   private int $priorityOfOrder =  50;
   private string $observations =  "Π/Θ CAT";
   private int $consumableId = 22;
@@ -182,7 +182,7 @@ class EntryEntityTest extends TestCase
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
       "observations" => "",
-      "consumableId" => "none",
+      "consumableId" => "",
     ]);
 
     $actual = new EntryEntity(null, null, null, null, null, null, null, null, null);
@@ -203,7 +203,7 @@ class EntryEntityTest extends TestCase
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
       "observations" => "",
-      "consumableId" => "none",
+      "consumableId" => "",
       "id" => 2,
     ]);
 

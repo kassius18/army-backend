@@ -24,12 +24,8 @@ class VehicleController
   public function handleGetRequest()
   {
     $allVehicles = $this->vehicleMapper->getAllVehicles();
-    if ($allVehicles) {
-      $this->response->setResponseBody(json_encode($allVehicles));
-      $this->response->setStatusCode(200);
-    } else {
-      $this->response->setStatusCode(500);
-    }
+    $this->response->setResponseBody(json_encode($allVehicles));
+    $this->response->setStatusCode(200);
     $this->response->sendResponse();
   }
 

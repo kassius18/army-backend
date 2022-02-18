@@ -68,15 +68,14 @@ $router->setPutRoute("/vehicles/:id", "app\controllers\VehicleController");
 
 [$controllerName, $action] = $router->route($request->getRequestMethod(), $request->getRequestUri());
 
-
 $controller = $container->get($controllerName);
 $controller->$action();
 
-die();
-try {
-  $controller = $container->get($controllerName);
-  $controller->$action();
-} catch (Exception $e) {
-  $response->setStatusCode(500);
-  $response->sendResponse();
-}
+/* die(); */
+/* try { */
+/*   $controller = $container->get($controllerName); */
+/*   $controller->$action(); */
+/* } catch (Exception $e) { */
+/*   $response->setStatusCode(500); */
+/*   $response->sendResponse(); */
+/* } */

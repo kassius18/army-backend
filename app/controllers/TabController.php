@@ -50,13 +50,9 @@ class TabController
         }
       } else {
         try {
-          $allTabs = $this->tabMapper->getAllTabsWithParts();
-          if ($allTabs) {
-            $this->response->setResponseBody(json_encode($allTabs));
-            $this->response->setStatusCode(200);
-          } else {
-            $this->response->setStatusCode(500);
-          }
+          $allTabs = $this->tabMapper->getAllTabs();
+          $this->response->setResponseBody(json_encode($allTabs));
+          $this->response->setStatusCode(200);
         } catch (PDOException $e) {
           $this->response->setStatusCode(500);
         }

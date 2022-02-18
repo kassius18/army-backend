@@ -18,7 +18,7 @@ final class CreateRequestRowTable extends AbstractMigration
     `main_part` VARCHAR(30),
     `amount_of_order` INT(6),
     `unit_of_order` VARCHAR(20),
-    `reason_of_order` INT(6),
+    `reason_of_order` VARCHAR(30),
     `priority_of_order` INT(6),
     `observations` VARCHAR(30),
     `consumable_tab_id` INT(6),

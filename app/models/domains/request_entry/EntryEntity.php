@@ -11,7 +11,7 @@ class EntryEntity implements JsonSerializable
   private ?string $mainPart;
   private ?int $amountOfOrder;
   private ?string $unitOfOrder;
-  private ?int $reasonOfOrder;
+  private ?string $reasonOfOrder;
   private ?int $priorityOfOrder;
   private ?string $observations;
   private ?int $consumableId;
@@ -24,7 +24,7 @@ class EntryEntity implements JsonSerializable
     ?string $mainPart,
     ?int $amountOfOrder,
     ?string $unitOfOrder,
-    ?int $reasonOfOrder,
+    ?string $reasonOfOrder,
     ?int $priorityOfOrder,
     ?string $observations,
     ?int $consumableId,
@@ -129,7 +129,7 @@ class EntryEntity implements JsonSerializable
       "reasonOfOrder" => $this->reasonOfOrder ?: "",
       "priorityOfOrder" => $this->priorityOfOrder ?: "",
       "observations" => $this->observations ?: "",
-      "consumableId" => $this->consumableId ?: "none"
+      "consumableId" => $this->consumableId ?: ""
     ];
 
     if (isset($this->id)) {
