@@ -146,6 +146,7 @@ class EntryEntityTest extends TestCase
         "priorityOfOrder" => $this->priorityOfOrder,
         "observations" => $this->observations,
         "consumableId" => $this->consumableId,
+        "parts" => [],
         "id" => $this->id
       ]
     );
@@ -165,6 +166,7 @@ class EntryEntityTest extends TestCase
         "priorityOfOrder" => $this->priorityOfOrder,
         "observations" => $this->observations,
         "consumableId" => $this->consumableId,
+        "parts" => [],
       ]
     );
 
@@ -182,6 +184,7 @@ class EntryEntityTest extends TestCase
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
       "observations" => "",
+      "parts" => [],
       "consumableId" => "",
     ]);
 
@@ -204,6 +207,7 @@ class EntryEntityTest extends TestCase
       "priorityOfOrder" => "",
       "observations" => "",
       "consumableId" => "",
+      "parts" => [],
       "id" => 2,
     ]);
 

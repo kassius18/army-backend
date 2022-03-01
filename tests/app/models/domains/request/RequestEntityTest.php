@@ -128,7 +128,8 @@ class RequestEntityTest extends TestCase
         "year" => $this->year,
         "month" => $this->month,
         "day" => $this->day,
-        "id" => $this->id
+        "id" => $this->id,
+        "entries" => []
       ]
     );
 
@@ -143,7 +144,8 @@ class RequestEntityTest extends TestCase
         "secondPartOfPhi" => $this->secondPartOfPhi,
         "year" => $this->year,
         "month" => $this->month,
-        "day" => $this->day
+        "day" => $this->day,
+        "entries" => []
       ]
     );
 
@@ -157,7 +159,8 @@ class RequestEntityTest extends TestCase
       "secondPartOfPhi" => "",
       "year" => "",
       "month" => "",
-      "day" => ""
+      "day" => "",
+      "entries" => []
     ]);
 
     $actual = new RequestEntity(null, null, null, null, null);
@@ -175,6 +178,7 @@ class RequestEntityTest extends TestCase
       "year" => "",
       "month" => "",
       "day" => "",
+      "entries" => [],
       "id" => $this->id
     ]);
 

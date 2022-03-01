@@ -15,7 +15,7 @@ class EntryEntity implements JsonSerializable
   private ?int $priorityOfOrder;
   private ?string $observations;
   private ?int $consumableId;
-  private ?array $parts = null;
+  private ?array $parts = [];
   private ?int $id;
 
   public function __construct(
@@ -95,9 +95,6 @@ class EntryEntity implements JsonSerializable
 
   public function addParts(array $parts): void
   {
-    if (!$this->parts) {
-      $this->parts = [];
-    }
     array_push($this->parts, ...$parts);
     usort($this->parts, function ($firstPart, $secondPart) {
       if ($firstPart->getId() === $secondPart->getId()) {
@@ -129,7 +126,8 @@ class EntryEntity implements JsonSerializable
       "reasonOfOrder" => $this->reasonOfOrder ?: "",
       "priorityOfOrder" => $this->priorityOfOrder ?: "",
       "observations" => $this->observations ?: "",
-      "consumableId" => $this->consumableId ?: ""
+      "consumableId" => $this->consumableId ?: "",
+      "parts" => $this->parts
     ];
 
     if (isset($this->id)) {

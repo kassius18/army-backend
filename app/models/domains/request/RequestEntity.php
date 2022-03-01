@@ -11,7 +11,7 @@ class RequestEntity implements JsonSerializable
   private ?int $year;
   private ?int $month;
   private ?int $day;
-  private ?array $entries = null;
+  private ?array $entries = [];
   private ?int $id;
 
   public function __construct(
@@ -69,9 +69,6 @@ class RequestEntity implements JsonSerializable
 
   public function addEntries(array $entries): void
   {
-    if (!$this->entries) {
-      $this->entries = [];
-    }
     array_push($this->entries, ...$entries);
     usort($this->entries, function ($firstEntry, $secondEntry) {
       if ($firstEntry->getId() === $secondEntry->getId()) {
@@ -84,19 +81,16 @@ class RequestEntity implements JsonSerializable
   public function jsonSerialize(): array
   {
     $json = [
-      'firstPartOfPhi' => $this->firstPartOfPhi ?: "",
-      'secondPartOfPhi' => $this->secondPartOfPhi ?: "",
-      'year' => $this->year ?: "",
-      'month' => $this->month ?: "",
-      'day' => $this->day ?: "",
+      "firstPartOfPhi" => $this->firstPartOfPhi ?: "",
+      "secondPartOfPhi" => $this->secondPartOfPhi ?: "",
+      "year" => $this->year ?: "",
+      "month" => $this->month ?: "",
+      "day" => $this->day ?: "",
+      "entries" => $this->entries,
     ];
 
     if (isset($this->id)) {
       $json["id"] = $this->id;
-    }
-
-    if ($this->entries) {
-      $json["entries"] = $this->entries;
     }
 
     return $json;
