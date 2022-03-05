@@ -110,6 +110,7 @@ SQL;
     $sql = <<<SQL
 UPDATE tab 
 SET 
+    `tab_id` = :id,
     `name` = :name ,
     `usage`= :usage,
     `observations`= :observations,
@@ -119,6 +120,7 @@ SQL;
     $statement = $this->pdo->prepare($sql);
     if (
       $statement->execute([
+        "id" => $tab->getId(),
         "name" => $tab->getName(),
         "usage" => $tab->getUsage(),
         "observations" => $tab->getObservations(),
@@ -126,7 +128,8 @@ SQL;
         "tabId" => $tabId
       ])
     ) {
-      return $this->findTabById($tabId);
+      return $this->findTabById($tab->getId());
+      /* return $this->findTabById($tabId); */
     } else {
       return false;
     };

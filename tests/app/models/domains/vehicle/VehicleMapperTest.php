@@ -99,19 +99,27 @@ class VehicleMapperTest extends TestCase
   public function testEditingVehicle()
   {
     [$vehicle, $secondVehicle] = self::$fixture->createVehicles(2);
-    [$editedVehicle] = self::$fixture->createVehicles(1);
+    [$editedVehicle] = self::$fixture->createVehicles(1, 2);
     self::$fixture->persistVehicles([$vehicle, $secondVehicle]);
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
-    $this->assertCount(2, $actual);
+    $allVehiclesInDb = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
+    $this->assertCount(2, $allVehiclesInDb);
 
-    $this->vehicleMapper->updateVehicle($editedVehicle, $editedVehicle->getId());
+    $this->vehicleMapper->updateVehicle($editedVehicle, $vehicle->getId());
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
-    $this->assertCount(2, $actual);
+    $allVehiclesInDb = MapperCommonMethods::getAllFromDBTable(self::$pdo, "vehicle");
+    $this->assertCount(2, $allVehiclesInDb);
 
-    $this->assertJsonStringEqualsJsonString(json_encode($editedVehicle), json_encode($actual[0]));
-    $this->assertJsonStringNotEqualsJsonString(json_encode($editedVehicle), json_encode($actual[1]));
+    foreach ($allVehiclesInDb as $vehicle) {
+      if ($vehicle->getId() === $editedVehicle->getId()) {
+        $actual = $vehicle;
+      } else {
+        $nonEditedVehicle = $vehicle;
+      }
+    }
+
+    $this->assertJsonStringEqualsJsonString(json_encode($editedVehicle), json_encode($actual));
+    $this->assertJsonStringNotEqualsJsonString(json_encode($editedVehicle), json_encode($nonEditedVehicle));
   }
 
   public function testEditingVehicleReturnsUpdateVehicle()

@@ -29,33 +29,17 @@ class TabController
       try {
         $parts = $this->tabMapper->findAllPartsThatBelongToTab($tabId);
         $this->response->setStatusCode(200);
-        $this->response->setResponseBody(json_encode(
-          [$parts]
-        ));
+        $this->response->setResponseBody(json_encode($parts));
       } catch (PDOException $e) {
         $this->response->setStatusCode(500);
       }
     } else {
-      $getRequest = $this->request->getQueryParameters();
-      if (isset($getRequest["showNonEmpty"]) && $getRequest["showNonEmpty"] === "true") {
-        try {
-          $idOfNonEmptyTabs = $this->tabMapper->getIdsOfNonEmptyTabs();
-          $arrayOfIdAndParts = [];
-          foreach ($idOfNonEmptyTabs as $id) {
-            $arrayOfIdAndParts[$id] = $this->tabMapper->findAllPartsThatBelongToTab($id);
-          }
-          $this->response->setResponseBody(json_encode($arrayOfIdAndParts));
-          $this->response->setStatusCode(200);
-        } catch (PDOException $e) {
-        }
-      } else {
-        try {
-          $allTabs = $this->tabMapper->getAllTabs();
-          $this->response->setResponseBody(json_encode($allTabs));
-          $this->response->setStatusCode(200);
-        } catch (PDOException $e) {
-          $this->response->setStatusCode(500);
-        }
+      try {
+        $allTabs = $this->tabMapper->getAllTabs();
+        $this->response->setResponseBody(json_encode($allTabs));
+        $this->response->setStatusCode(200);
+      } catch (PDOException $e) {
+        $this->response->setStatusCode(500);
       }
     }
     $this->response->sendResponse();

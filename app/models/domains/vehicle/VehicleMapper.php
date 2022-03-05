@@ -85,7 +85,7 @@ SQL;
       "vehicleType" => $vehicle->getVehicleType(),
       "vehicleId" => $vehicleId
     ])) {
-      return $this->findVehicleById($vehicleId);
+      return $this->findVehicleById($vehicle->getId());
     } else {
       return false;
     };

@@ -113,20 +113,31 @@ class TabMapperTest extends TestCase
 
   public function testEditingTab()
   {
-    [$tab, $secondTab] = self::$fixture->createTabs(2, true);
-    [$editedTab] = self::$fixture->createTabs(1, true);
+    [$tab, $secondTab] = self::$fixture->createTabs(2);
+    [$editedTab] = self::$fixture->createTabs(1, 2);
     self::$fixture->persistTabs([$tab, $secondTab]);
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
-    $this->assertCount(2, $actual);
+    $allTabsInDb = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
+    $this->assertCount(2, $allTabsInDb);
 
-    $this->tabMapper->updateTab($editedTab, $editedTab->getId());
+    $this->tabMapper->updateTab($editedTab, $tab->getId());
 
-    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
-    $this->assertCount(2, $actual);
+    $allTabsInDb = MapperCommonMethods::getAllFromDBTable(self::$pdo, "tab");
+    $this->assertCount(2, $allTabsInDb);
 
-    $this->assertJsonStringEqualsJsonString(json_encode($editedTab), json_encode($actual[0]));
-    MapperCommonMethods::testTwoEntitiesAreNotEqualWithoutCheckingForId($secondTab, $editedTab);
+    foreach ($allTabsInDb as $tab) {
+      if ($tab->getId() === $editedTab->getId()) {
+        $actual = $tab;
+      } else {
+        $nonEditedTab = $tab;
+      }
+    }
+
+    $this->assertJsonStringEqualsJsonString(json_encode($editedTab), json_encode($actual));
+    $this->assertJsonStringNotEqualsJsonString(
+      json_encode($editedTab),
+      json_encode($nonEditedTab)
+    );
   }
 
   public function testEditingTabReturnsEditedTab()
