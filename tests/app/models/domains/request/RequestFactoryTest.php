@@ -24,6 +24,7 @@ class RequestFactoryTest extends TestCase
         "year" => 3,
         "month" => 4,
         "day" => 5,
+        "request_vehicle_id" => 2,
         "request_id" => 1,
       ], [
         "phi_first_part" => 6,
@@ -31,6 +32,7 @@ class RequestFactoryTest extends TestCase
         "year" => 8,
         "month" => 9,
         "day" => 10,
+        "request_vehicle_id" => 3,
         "request_id" => 2,
       ], [
         "phi_first_part" => null,
@@ -38,6 +40,7 @@ class RequestFactoryTest extends TestCase
         "year" => null,
         "month" => null,
         "day" => null,
+        "request_vehicle_id" => null,
         "request_id" => 3,
       ]
     ];
@@ -49,12 +52,14 @@ class RequestFactoryTest extends TestCase
         "year" => 3,
         "month" => 4,
         "day" => 5,
+        "vehicleId" => 25,
       ], [
         "firstPartOfPhi" => "",
         "secondPartOfPhi" => "",
         "year" => "",
         "month" => "",
         "day" => "",
+        "vehicleId" => ""
       ]
     ];
   }
@@ -67,6 +72,7 @@ class RequestFactoryTest extends TestCase
       self::$dbRecord[0]["year"],
       self::$dbRecord[0]["month"],
       self::$dbRecord[0]["day"],
+      self::$dbRecord[0]["request_vehicle_id"],
       self::$dbRecord[0]["request_id"]
     );
 
@@ -76,6 +82,7 @@ class RequestFactoryTest extends TestCase
       self::$dbRecord[1]["year"],
       self::$dbRecord[1]["month"],
       self::$dbRecord[1]["day"],
+      self::$dbRecord[1]["request_vehicle_id"],
       self::$dbRecord[1]["request_id"]
     );
 
@@ -85,6 +92,7 @@ class RequestFactoryTest extends TestCase
       self::$dbRecord[2]["year"],
       self::$dbRecord[2]["month"],
       self::$dbRecord[2]["day"],
+      self::$dbRecord[2]["request_vehicle_id"],
       self::$dbRecord[2]["request_id"]
     );
 
@@ -94,9 +102,10 @@ class RequestFactoryTest extends TestCase
       self::$userInput[0]["year"],
       self::$userInput[0]["month"],
       self::$userInput[0]["day"],
+      self::$userInput[0]["vehicleId"],
     );
 
-    $this->requestWithEmptyValues = new RequestEntity(null, null, null, null, null);
+    $this->requestWithEmptyValues = new RequestEntity(null, null, null, null, null, null);
   }
 
   public function testCreatingRequestFromJOIN()

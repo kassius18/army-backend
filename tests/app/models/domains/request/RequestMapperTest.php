@@ -6,6 +6,7 @@ use common\MapperCommonMethods;
 use fixtures\EntryFixture;
 use fixtures\PartFixture;
 use fixtures\RequestFixture;
+use fixtures\VehicleFixture;
 use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\StringInput;
@@ -20,6 +21,7 @@ class RequestMapperTest extends TestCase
   private static EntryFixture $entryFixture;
   private RequestMapper $requestMapper;
   private EntryMapper $entryMapper;
+  private VehicleFixture $vehicleFixture;
 
   public static function setUpBeforeClass(): void
   {
@@ -40,6 +42,7 @@ class RequestMapperTest extends TestCase
     $this->requestMapper = new RequestMapper(self::$pdo);
     $this->entryMapper = new EntryMapper(self::$pdo);
     self::$partFixture = new PartFixture(self::$pdo);
+    $this->vehicleFixture = new VehicleFixture(self::$pdo);
     self::$entryFixture = new EntryFixture(self::$pdo, self::$partFixture);
   }
 
@@ -133,10 +136,6 @@ class RequestMapperTest extends TestCase
 
     $actual = $this->requestMapper->findAllByDateInterval($startDate, $endDate);
     $this->assertCount(4, $actual);
-    $this->assertEquals(
-      $requestsWithDateInInterval,
-      $actual
-    );
     $this->assertJsonStringEqualsJsonString(
       json_encode($requestsWithDateInInterval),
       json_encode($actual)
@@ -210,21 +209,21 @@ class RequestMapperTest extends TestCase
     );
   }
 
-  /* public function testFindingByYearWithOnlyStartDate() */
-  /* { */
-  /*   $startDate = [2002]; */
-  /*   $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate); */
+  public function testFindingByYearWithOnlyStartDate()
+  {
+    $startDate = [2002];
+    $requestsWithDateInInterval = $this->getRequestsFromDateIntervals($startDate);
 
-  /*   $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request"); */
-  /*   $this->assertCount(3, $actual); */
+    $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
+    $this->assertCount(3, $actual);
 
-  /*   $actual = $this->requestMapper->findAllByDateInterval($startDate); */
-  /*   $this->assertCount(2, $actual); */
-  /*   $this->assertJsonStringEqualsJsonString( */
-  /*     json_encode($requestsWithDateInInterval), */
-  /*     json_encode($actual) */
-  /*   ); */
-  /* } */
+    $actual = $this->requestMapper->findAllByDateInterval($startDate);
+    $this->assertCount(2, $actual);
+    $this->assertJsonStringEqualsJsonString(
+      json_encode($requestsWithDateInInterval),
+      json_encode($actual)
+    );
+  }
 
   public function testSavingRequest()
   {
@@ -357,6 +356,29 @@ class RequestMapperTest extends TestCase
 
     $actualEntries = MapperCommonMethods::getAllFromDBTable(self::$pdo, "entry");
     $this->assertcount(2, $actualEntries);
+  }
+
+  public function testFindingByVehicle()
+  {
+    [$vehicle] = $this->vehicleFixture->createVehicles(1);
+    $this->vehicleFixture->persistVehicles([$vehicle]);
+
+    [$requestBelonginToVehicleOne] = self::$fixture->createOneRequestWithVehicle($vehicle->getId());
+    [$secondRequestBelonginToVehicleOne] = self::$fixture->createOneRequestWithVehicle($vehicle->getId(), 1);
+    [$requestWithoutVehicle] = self::$fixture->createOneRequestWithVehicle(null, 2);
+    self::$fixture->persistRequests([$requestBelonginToVehicleOne, $secondRequestBelonginToVehicleOne, $requestWithoutVehicle]);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(3, $requestBelonginToVehicleOne, true);
+    $requestBelonginToVehicleOne->addEntries($entries);
+    $entries = self::$entryFixture->createEntriesWithPartsAndPersistToRequest(rand(1, 3), $secondRequestBelonginToVehicleOne, true, 3);
+    $secondRequestBelonginToVehicleOne->addEntries($entries);
+
+    $actual = $this->requestMapper->findAllByVehicle($vehicle->getId());
+
+    $this->assertCount(2, $actual);
+    $this->assertJsonStringEqualsJsonString(
+      json_encode([$requestBelonginToVehicleOne, $secondRequestBelonginToVehicleOne]),
+      json_encode($actual)
+    );
   }
 
   private function getRequestsFromDateIntervals($startDate, $endDate = null)

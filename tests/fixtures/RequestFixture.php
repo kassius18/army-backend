@@ -64,6 +64,7 @@ class RequestFixture
       isset($inputs["year"]) ? rand($inputs["year"][0], $inputs["year"][1]) : rand(),
       isset($inputs["month"]) ? rand($inputs["month"][0], $inputs["month"][1]) : rand(),
       isset($inputs["day"]) ? rand($inputs["day"][0], $inputs["day"][1]) : rand(),
+      isset($inputs["vehicleId"]) ? $inputs["vehicleId"] : null,
       $id
     );
   }
@@ -80,16 +81,18 @@ class RequestFixture
 INSERT INTO request(
     phi_first_part,
     phi_second_part,
-    YEAR,
-    MONTH,
-    DAY
+    year,
+    month,
+    day,
+    request_vehicle_id
 )
 VALUES(
     :firstPartOfPhi,
     :secondPartOfPhi,
     :year,
     :month,
-    :day
+    :day,
+    :vehicleId
 );
 SQL;
     $stm = $this->pdo->prepare($sql);
@@ -99,6 +102,7 @@ SQL;
       "year" => $request->getYear(),
       "month" => $request->getMonth(),
       "day" => $request->getDay(),
+      "vehicleId" => $request->getVehicleId(),
     ]);
   }
 
@@ -138,5 +142,17 @@ SQL;
       return 0;
     }
     return ($firstRequest->getYear() < $secondRequest->getYear()) ? -1 : 1;
+  }
+
+  public function createOneRequestWithVehicle($vehicleId = null, $startId = 0)
+  {
+    $request = $this->createRequestsWithInputs(
+      1,
+      ["vehicleId" => $vehicleId],
+      true,
+      $startId
+    );
+
+    return $request;
   }
 }

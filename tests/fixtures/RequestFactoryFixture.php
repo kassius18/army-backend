@@ -1,7 +1,6 @@
 <?php
 
 use app\models\domains\part\PartFactory;
-use app\models\domains\request\RequestEntity;
 use app\models\domains\request\RequestFactory;
 use app\models\domains\request_entry\EntryFactory;
 
@@ -13,6 +12,7 @@ $recordsFromJoin = [
     'year' => 1100369292,
     'month' => 1390753353,
     'day' => 898893964,
+    'request_vehicle_id' => 10,
     'request_row_id' => 1,
     'request_phi_first_part' => 1855294779,
     'request_year' => 1100369292,
@@ -41,6 +41,7 @@ $recordsFromJoin = [
     'year' => 1100369292,
     'month' => 1390753353,
     'day' => 898893964,
+    'request_vehicle_id' => 15,
     'request_row_id' => 1,
     'request_phi_first_part' => 1855294779,
     'request_year' => 1100369292,
@@ -68,6 +69,7 @@ $recordsFromJoin = [
     'year' => 1100369292,
     'month' => 1390753353,
     'day' => 898893964,
+    'request_vehicle_id' => 12,
     'request_row_id' => 2,
     'request_phi_first_part' => 1855294779,
     'request_year' => 1100369292,
@@ -95,6 +97,7 @@ $recordsFromJoin = [
     'year' => 1100369292,
     'month' => 1390753353,
     'day' => 898893964,
+    'request_vehicle_id' => 2,
     'request_row_id' => 3,
     'request_phi_first_part' => 185080809,
     'request_year' => 11001908,
@@ -122,6 +125,7 @@ $recordsFromJoin = [
     'year' => 1100369292,
     'month' => 1390753353,
     'day' => 898893964,
+    'request_vehicle_id' => 250,
     'request_row_id' => 4,
     'request_phi_first_part' => 1855294779,
     'request_year' => 1100369292,

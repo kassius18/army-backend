@@ -12,6 +12,7 @@ class RequestEntityTest extends TestCase
   private int $month = 05;
   private int $day = 15;
   private int $id = 1;
+  private int $vehicleId = 5;
   private RequestEntity $requestEntity;
   private RequestEntity $requestEntityWithIdSet;
   private EntryEntity $entry;
@@ -24,7 +25,8 @@ class RequestEntityTest extends TestCase
       $this->secondPartOfPhi,
       $this->year,
       $this->month,
-      $this->day
+      $this->day,
+      $this->vehicleId,
     );
 
     $this->requestEntityWithIdSet = new RequestEntity(
@@ -33,6 +35,7 @@ class RequestEntityTest extends TestCase
       $this->year,
       $this->month,
       $this->day,
+      $this->vehicleId,
       $this->id
     );
 
@@ -70,6 +73,7 @@ class RequestEntityTest extends TestCase
     $this->assertEquals($this->requestEntity->getYear(), $this->year);
     $this->assertEquals($this->requestEntity->getMonth(), $this->month);
     $this->assertEquals($this->requestEntity->getDay(), $this->day);
+    $this->assertEquals($this->requestEntity->getVehicleId(), $this->vehicleId);
     $this->assertEquals($this->requestEntityWithIdSet->getId(), $this->id);
   }
 
@@ -113,6 +117,7 @@ class RequestEntityTest extends TestCase
         "year" => $this->year,
         "month" => $this->month,
         "day" => $this->day,
+        "vehicleId" => $this->vehicleId,
         "entries" => [$this->entry]
       ]
     );
@@ -128,6 +133,7 @@ class RequestEntityTest extends TestCase
         "year" => $this->year,
         "month" => $this->month,
         "day" => $this->day,
+        "vehicleId" => $this->vehicleId,
         "id" => $this->id,
         "entries" => []
       ]
@@ -145,6 +151,7 @@ class RequestEntityTest extends TestCase
         "year" => $this->year,
         "month" => $this->month,
         "day" => $this->day,
+        "vehicleId" => $this->vehicleId,
         "entries" => []
       ]
     );
@@ -160,10 +167,11 @@ class RequestEntityTest extends TestCase
       "year" => "",
       "month" => "",
       "day" => "",
+      "vehicleId" => "",
       "entries" => []
     ]);
 
-    $actual = new RequestEntity(null, null, null, null, null);
+    $actual = new RequestEntity(null, null, null, null, null, null);
     $this->assertJsonStringEqualsJsonString(
       $expected,
       json_encode($actual)
@@ -178,11 +186,12 @@ class RequestEntityTest extends TestCase
       "year" => "",
       "month" => "",
       "day" => "",
+      "vehicleId" => "",
       "entries" => [],
       "id" => $this->id
     ]);
 
-    $actual = new RequestEntity(null, null, null, null, null, $this->id);
+    $actual = new RequestEntity(null, null, null, null, null, null, $this->id);
     $this->assertJsonStringEqualsJsonString(
       $expected,
       json_encode($actual)

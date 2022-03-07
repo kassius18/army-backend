@@ -211,4 +211,25 @@ SQL;
     $statement = $this->pdo->prepare($sql);
     return $statement->execute(["id" => $requestId]);
   }
+
+  public function findAllByVehicle($vehicleId): array
+  {
+    $sql = <<<SQL
+SELECT * FROM
+    request
+LEFT JOIN request_row ON request_row.request_phi_first_part = request.phi_first_part AND request_row.request_year = request.year
+LEFT JOIN part ON part.entry_id = request_row.request_row_id
+WHERE
+    `request`.request_vehicle_id = :id
+ORDER BY
+    `request`.request_id
+SQL;
+    $statement = $this->pdo->prepare($sql);
+    $statement->execute([
+      "id" => $vehicleId,
+    ]);
+    $records = $statement->fetchAll();
+    $requests = RequestFactory::createRequestsFromJOINRecord($records);
+    return $requests;
+  }
 }

@@ -16,9 +16,9 @@ class RequestFactory
 
     foreach ($records as $record) {
 
-      $requestRecord = array_slice($record, 0, 6, true);
-      $entryRecord = array_slice($record, 6, 12, true);
-      $partRecord = array_slice($record, 18);
+      $requestRecord = array_slice($record, 0, 7, true);
+      $entryRecord = array_slice($record, 7, 13, true);
+      $partRecord = array_slice($record, 19);
 
       if (!isset($listOfRequestIds[$requestRecord["request_id"]])) {
         $request = self::createRequestFromRecord($requestRecord);
@@ -70,6 +70,7 @@ class RequestFactory
       $record["year"],
       $record["month"],
       $record["day"],
+      $record["request_vehicle_id"],
       $record["request_id"]
     );
   }
@@ -82,6 +83,7 @@ class RequestFactory
       $userPostInput["year"] ?: null,
       $userPostInput["month"] ?: null,
       $userPostInput["day"] ?: null,
+      $userPostInput["vehicleId"] ?: null,
     );
   }
 

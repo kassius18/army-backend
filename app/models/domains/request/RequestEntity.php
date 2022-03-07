@@ -11,6 +11,7 @@ class RequestEntity implements JsonSerializable
   private ?int $year;
   private ?int $month;
   private ?int $day;
+  private ?int $vehicleId;
   private ?array $entries = [];
   private ?int $id;
 
@@ -20,6 +21,7 @@ class RequestEntity implements JsonSerializable
     ?int $year,
     ?int $month,
     ?int $day,
+    ?int $vehicleId,
     ?int $id = null
   ) {
     $this->firstPartOfPhi = $firstPartOfPhi;
@@ -27,6 +29,7 @@ class RequestEntity implements JsonSerializable
     $this->year = $year;
     $this->month = $month;
     $this->day = $day;
+    $this->vehicleId = $vehicleId;
     $this->id = $id;
   }
 
@@ -50,6 +53,10 @@ class RequestEntity implements JsonSerializable
   public function getDay(): ?int
   {
     return $this->day;
+  }
+  public function getVehicleId(): ?int
+  {
+    return $this->vehicleId;
   }
 
   public function getId(): ?int
@@ -86,6 +93,7 @@ class RequestEntity implements JsonSerializable
       "year" => $this->year ?: "",
       "month" => $this->month ?: "",
       "day" => $this->day ?: "",
+      "vehicleId" => $this->vehicleId ?: "",
       "entries" => $this->entries,
     ];
 

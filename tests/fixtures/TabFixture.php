@@ -59,7 +59,7 @@ VALUES(
     :id,
     :name,
     :usage,
-    :observations
+    :observations,
     :startingTotal
 );
 SQL;
