@@ -66,13 +66,13 @@ class RequestController
       $this->response->setResponseBody(
         json_encode($this->requestMapper->findManyByPhi($getRequest["phi"]))
       );
-    } else if ($getRequest["findBy"] = "phi-year") {
+    } else if ($getRequest["findBy"] === "phi-year") {
       $this->response->setResponseBody(
         json_encode($this->requestMapper->findOneByPhiAndYear($getRequest["phi"], $getRequest["year"]))
       );
-    } else if ($getRequest["findBy"] = "vehicle") {
+    } else if ($getRequest["findBy"] === "vehicle") {
       $this->response->setResponseBody(
-        json_encode($this->requestMapper->findAllByVehicle($getRequest["vehicleId"], $getRequest["year"]))
+        json_encode($this->requestMapper->findAllByVehicle($getRequest["vehicleId"]))
       );
     }
     $this->response->setStatusCode(200);
