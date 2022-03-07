@@ -70,6 +70,10 @@ class RequestController
       $this->response->setResponseBody(
         json_encode($this->requestMapper->findOneByPhiAndYear($getRequest["phi"], $getRequest["year"]))
       );
+    } else if ($getRequest["findBy"] = "vehicle") {
+      $this->response->setResponseBody(
+        json_encode($this->requestMapper->findAllByVehicle($getRequest["vehicleId"], $getRequest["year"]))
+      );
     }
     $this->response->setStatusCode(200);
     $this->response->sendResponse();

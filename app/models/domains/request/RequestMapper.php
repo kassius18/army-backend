@@ -19,16 +19,18 @@ class RequestMapper
 INSERT INTO request(
     phi_first_part,
     phi_second_part,
-    YEAR,
-    MONTH,
-    DAY
+    year,
+    month,
+    day,
+    request_vehicle_id
 )
 VALUES(
     :firstPartOfPhi,
     :secondPartOfPhi,
     :year,
     :month,
-    :day
+    :day,
+    :vehicleId
 );
 SQL;
 
@@ -38,7 +40,8 @@ SQL;
       'secondPartOfPhi' => $request->getSecondPhi(),
       'year' => $request->getYear(),
       'month' => $request->getMonth(),
-      'day' => $request->getDay()
+      'day' => $request->getDay(),
+      'vehicleId' => $request->getVehicleId()
     ])) {
       $lastId = $this->pdo->lastInsertId();
       return $this->findOneById($lastId);
@@ -179,7 +182,8 @@ SET
     `phi_second_part` = :secondPartOfPhi,
     `year` = :year,
     `month` = :month,
-    `day` = :day
+    `day` = :day,
+    `request_vehicle_id` = :vehicleId
 WHERE
     `request_id` = :id
 SQL;
@@ -191,6 +195,7 @@ SQL;
       'year' => $request->getYear(),
       'month' => $request->getMonth(),
       'day' => $request->getDay(),
+      'vehicleId' => $request->getVehicleId(),
       'id' => $requestId
     ])) {
       return $this->findOneById($requestId);

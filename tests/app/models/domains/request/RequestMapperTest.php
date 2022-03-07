@@ -227,10 +227,13 @@ class RequestMapperTest extends TestCase
 
   public function testSavingRequest()
   {
+    [$vehicle] = $this->vehicleFixture->createVehicles(1);
+    $this->vehicleFixture->persistVehicles([$vehicle]);
+
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
     $this->assertCount(0, $actual);
 
-    $request = self::$fixture->createRequests(1, true);
+    $request = self::$fixture->createOneRequestWithVehicle($vehicle->getId());
     $this->requestMapper->saveRequest($request[0]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
@@ -241,10 +244,13 @@ class RequestMapperTest extends TestCase
 
   public function testSavingRequestReturnsCreatedRequest()
   {
+    [$vehicle] = $this->vehicleFixture->createVehicles(1);
+    $this->vehicleFixture->persistVehicles([$vehicle]);
+
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
     $this->assertCount(0, $actual);
 
-    $request = self::$fixture->createRequests(1, true);
+    $request = self::$fixture->createOneRequestWithVehicle($vehicle->getId());
     $expected = $this->requestMapper->saveRequest($request[0]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
@@ -255,8 +261,12 @@ class RequestMapperTest extends TestCase
 
   public function testUpdatingRequest()
   {
-    [$request, $secondRequest] = self::$fixture->createRequests(2, true);
-    [$editedRequest] = self::$fixture->createRequests(1, true);
+    [$vehicle, $secondVehicle] = $this->vehicleFixture->createVehicles(2);
+    $this->vehicleFixture->persistVehicles([$vehicle, $secondVehicle]);
+
+    [$request] = self::$fixture->createOneRequestWithVehicle($vehicle->getId());
+    [$secondRequest] = self::$fixture->createRequests(1, true, 1);
+    [$editedRequest] = self::$fixture->createOneRequestWithVehicle($secondVehicle->getId());
     self::$fixture->persistRequests([$request, $secondRequest]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
@@ -273,8 +283,12 @@ class RequestMapperTest extends TestCase
 
   public function testUpdatingRequestReturnsNewRequest()
   {
-    [$request, $secondRequest] = self::$fixture->createRequests(2, true);
-    [$editedRequest] = self::$fixture->createRequests(1, true);
+    [$vehicle, $secondVehicle] = $this->vehicleFixture->createVehicles(2);
+    $this->vehicleFixture->persistVehicles([$vehicle, $secondVehicle]);
+
+    [$request] = self::$fixture->createOneRequestWithVehicle($vehicle->getId());
+    [$secondRequest] = self::$fixture->createRequests(1, true, 1);
+    [$editedRequest] = self::$fixture->createOneRequestWithVehicle($secondVehicle->getId());
     self::$fixture->persistRequests([$request, $secondRequest]);
 
     $actual = MapperCommonMethods::getAllFromDBTable(self::$pdo, "request");
