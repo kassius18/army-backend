@@ -2,18 +2,15 @@
 
 use app\models\domains\tab\TabMapper;
 use common\MapperCommonMethods;
+use common\SetDatabaseForTest;
 use fixtures\EntryFixture;
 use fixtures\PartFixture;
 use fixtures\TabFixture;
-use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\NullOutput;
 
 class TabMapperTest extends TestCase
 {
   private static ?PDO $pdo;
-  private static PhinxApplication $phinxApp;
   private static TabFixture $fixture;
   private static EntryFixture $entryFixture;
   private static PartFixture $partFixture;
@@ -21,8 +18,7 @@ class TabMapperTest extends TestCase
 
   public static function setUpBeforeClass(): void
   {
-    self::$pdo = include(TEST_DIR . "/setDatabaseForTestsScript.php");
-    self::$phinxApp = new PhinxApplication();
+    self::$pdo = SetDatabaseForTest::getConnection();
     self::$fixture = new TabFixture(self::$pdo);
     self::$entryFixture = new EntryFixture(self::$pdo);
     self::$partFixture = new PartFixture(self::$pdo);
@@ -35,14 +31,13 @@ class TabMapperTest extends TestCase
 
   protected function setUp(): void
   {
-    self::$phinxApp->setAutoExit(false);
-    self::$phinxApp->run(new StringInput('migrate -e testing'), new NullOutput());
+    SetDatabaseForTest::applyMigrations();
     $this->tabMapper = new TabMapper(self::$pdo);
   }
 
   protected function tearDown(): void
   {
-    self::$phinxApp->run(new StringInput('rollback -e testing -t 0'), new NullOutput());
+    SetDatabaseForTest::removeMigrations();
   }
 
   public function testGettingAllTabsFromDb()

@@ -85,7 +85,6 @@ class EntryFixture
         uniqid(),
         rand(),
         rand(),
-        uniqid(),
         $this->consumableId,
         $withId ? $id : null
       );
@@ -134,7 +133,6 @@ INSERT INTO request_row(
     unit_of_order,
     reason_of_order,
     priority_of_order,
-    observations,
     consumable_tab_id
 )
 VALUES(
@@ -147,7 +145,6 @@ VALUES(
     :unitOfOrder,
     :reasonOfOrder,
     :priorityOfOrder,
-    :observations,
     :consumableId
 )
 SQL;
@@ -163,7 +160,6 @@ SQL;
       "unitOfOrder" => $entry->getUnitOfOrder(),
       "reasonOfOrder" => $entry->getReasonOfOrder(),
       "priorityOfOrder" => $entry->getPriorityOfOrder(),
-      "observations" => $entry->getObservations(),
       "consumableId" => $entry->getConsumableId()
     ]);
   }

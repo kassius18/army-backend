@@ -26,7 +26,6 @@ INSERT INTO request_row(
     unit_of_order,
     reason_of_order,
     priority_of_order,
-    observations,
     consumable_tab_id
 )
 VALUES(
@@ -39,7 +38,6 @@ VALUES(
     :unitOfOrder,
     :reasonOfOrder,
     :priorityOfOrder,
-    :observations,
     :consumableId
 )
 SQL;
@@ -55,7 +53,6 @@ SQL;
       "unitOfOrder" => $entry->getUnitOfOrder(),
       "reasonOfOrder" => $entry->getReasonOfOrder(),
       "priorityOfOrder" => $entry->getPriorityOfOrder(),
-      "observations" => $entry->getObservations(),
       "consumableId" => $entry->getConsumableId()
     ])) {
       $lastId = $this->pdo->lastInsertId();
@@ -77,7 +74,6 @@ amount_of_order = :amountOfOrder,
 unit_of_order = :unitOfOrder,
 reason_of_order = :reasonOfOrder,
 priority_of_order = :priorityOfOrder,
-observations= :observations,
 consumable_tab_id= :consumable
 WHERE 
 request_row_id = :id;
@@ -91,7 +87,6 @@ SQL;
       "unitOfOrder" => $entry->getUnitOfOrder(),
       "reasonOfOrder" => $entry->getReasonOfOrder(),
       "priorityOfOrder" => $entry->getPriorityOfOrder(),
-      "observations" => $entry->getObservations(),
       "consumable" => $entry->getConsumableId(),
       "id" => $id,
     ])) {

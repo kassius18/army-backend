@@ -17,8 +17,8 @@ class RequestFactory
     foreach ($records as $record) {
 
       $requestRecord = array_slice($record, 0, 7, true);
-      $entryRecord = array_slice($record, 7, 13, true);
-      $partRecord = array_slice($record, 19);
+      $entryRecord = array_slice($record, 7, 11, true);
+      $partRecord = array_slice($record, 18);
 
       if (!isset($listOfRequestIds[$requestRecord["request_id"]])) {
         $request = self::createRequestFromRecord($requestRecord);

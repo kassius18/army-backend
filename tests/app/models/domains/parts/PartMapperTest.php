@@ -2,16 +2,13 @@
 
 use app\models\domains\part\PartMapper;
 use common\MapperCommonMethods;
+use common\SetDatabaseForTest;
 use fixtures\PartFixture;
-use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\NullOutput;
 
 class PartMapperTest extends TestCase
 {
   private static ?PDO $pdo;
-  private static PhinxApplication $phinxApp;
   private static PartFixture $fixture;
   private PartMapper $partMapper;
 
@@ -20,8 +17,7 @@ class PartMapperTest extends TestCase
 
   public static function setUpBeforeClass(): void
   {
-    self::$pdo = include(TEST_DIR . "/setDatabaseForTestsScript.php");
-    self::$phinxApp = new PhinxApplication();
+    self::$pdo = SetDatabaseForTest::getConnection();
     self::$fixture = new PartFixture(self::$pdo);
   }
 
@@ -32,8 +28,7 @@ class PartMapperTest extends TestCase
 
   protected function setUp(): void
   {
-    self::$phinxApp->setAutoExit(false);
-    self::$phinxApp->run(new StringInput('migrate -e testing'), new NullOutput());
+    SetDatabaseForTest::applyMigrations();
     //It will create a foreign key of entry_id = 1 and =2 which can be used when inserting parts. 
     $sql = "INSERT INTO request_row () VALUES ();";
     self::$pdo->exec($sql);
@@ -43,7 +38,7 @@ class PartMapperTest extends TestCase
 
   protected function tearDown(): void
   {
-    self::$phinxApp->run(new StringInput('rollback -e testing -t 0'), new NullOutput());
+    SetDatabaseForTest::removeMigrations();
   }
 
   public function testSavingPart()

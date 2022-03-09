@@ -47,7 +47,6 @@ class RequestEntityTest extends TestCase
       uniqid(),
       rand(),
       rand(),
-      uniqid(),
       rand(),
       1
     );
@@ -60,7 +59,6 @@ class RequestEntityTest extends TestCase
       uniqid(),
       rand(),
       rand(),
-      uniqid(),
       rand(),
       2
     );

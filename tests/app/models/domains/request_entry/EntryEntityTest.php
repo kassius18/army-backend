@@ -14,7 +14,6 @@ class EntryEntityTest extends TestCase
   private string $unitOfOrder =  "τεμ.";
   private string $reasonOfOrder =  "04";
   private int $priorityOfOrder =  50;
-  private string $observations =  "Π/Θ CAT";
   private int $consumableId = 22;
   private PartEntity $part;
   private PartEntity $secondPart;
@@ -31,7 +30,6 @@ class EntryEntityTest extends TestCase
       $this->unitOfOrder,
       $this->reasonOfOrder,
       $this->priorityOfOrder,
-      $this->observations,
       $this->consumableId,
     );
 
@@ -43,7 +41,6 @@ class EntryEntityTest extends TestCase
       $this->unitOfOrder,
       $this->reasonOfOrder,
       $this->priorityOfOrder,
-      $this->observations,
       $this->consumableId,
       $this->id
     );
@@ -77,7 +74,6 @@ class EntryEntityTest extends TestCase
     $this->assertEquals($this->entryEntity->getUnitOfOrder(), $this->unitOfOrder);
     $this->assertEquals($this->entryEntity->getReasonOfOrder(), $this->reasonOfOrder);
     $this->assertEquals($this->entryEntity->getPriorityOfOrder(), $this->priorityOfOrder);
-    $this->assertEquals($this->entryEntity->getObservations(), $this->observations);
     $this->assertEquals($this->entryEntity->getConsumableId(), $this->consumableId);
     $this->assertEquals($this->entryEntityWithIdSet->getId(), $this->id);
   }
@@ -125,7 +121,6 @@ class EntryEntityTest extends TestCase
         "unitOfOrder" => $this->unitOfOrder,
         "reasonOfOrder" => $this->reasonOfOrder,
         "priorityOfOrder" => $this->priorityOfOrder,
-        "observations" => $this->observations,
         "consumableId" => $this->consumableId,
         "parts" => [$this->part]
       ]
@@ -144,7 +139,6 @@ class EntryEntityTest extends TestCase
         "unitOfOrder" => $this->unitOfOrder,
         "reasonOfOrder" => $this->reasonOfOrder,
         "priorityOfOrder" => $this->priorityOfOrder,
-        "observations" => $this->observations,
         "consumableId" => $this->consumableId,
         "parts" => [],
         "id" => $this->id
@@ -164,7 +158,6 @@ class EntryEntityTest extends TestCase
         "unitOfOrder" => $this->unitOfOrder,
         "reasonOfOrder" => $this->reasonOfOrder,
         "priorityOfOrder" => $this->priorityOfOrder,
-        "observations" => $this->observations,
         "consumableId" => $this->consumableId,
         "parts" => [],
       ]
@@ -183,12 +176,11 @@ class EntryEntityTest extends TestCase
       "unitOfOrder" => "",
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
-      "observations" => "",
       "parts" => [],
       "consumableId" => "",
     ]);
 
-    $actual = new EntryEntity(null, null, null, null, null, null, null, null, null);
+    $actual = new EntryEntity(null, null, null, null, null, null, null, null);
     $this->assertJsonStringEqualsJsonString(
       $expected,
       json_encode($actual)
@@ -205,13 +197,12 @@ class EntryEntityTest extends TestCase
       "unitOfOrder" => "",
       "reasonOfOrder" => "",
       "priorityOfOrder" => "",
-      "observations" => "",
       "consumableId" => "",
       "parts" => [],
       "id" => 2,
     ]);
 
-    $actual = new EntryEntity(null, null, null, null, null, null, null, null, null, 2);
+    $actual = new EntryEntity(null, null, null, null, null, null, null, null, 2);
     $this->assertJsonStringEqualsJsonString(
       $expected,
       json_encode($actual)

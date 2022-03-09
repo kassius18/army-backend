@@ -1,7 +1,8 @@
 <?php
 
-namespace common;
+declare(strict_types=1);
 
+namespace common;
 
 use function PHPUnit\Framework\assertJsonStringEqualsJsonString;
 use function PHPUnit\Framework\assertJsonStringNotEqualsJsonString;

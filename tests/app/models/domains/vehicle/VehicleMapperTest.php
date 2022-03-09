@@ -2,23 +2,19 @@
 
 use app\models\domains\vehicle\VehicleMapper;
 use common\MapperCommonMethods;
+use common\SetDatabaseForTest;
 use fixtures\VehicleFixture;
-use Phinx\Console\PhinxApplication;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\NullOutput;
 
 class VehicleMapperTest extends TestCase
 {
   private static ?PDO $pdo;
-  private static PhinxApplication $phinxApp;
   private static VehicleFixture $fixture;
   private VehicleMapper $vehicleMapper;
 
   public static function setUpBeforeClass(): void
   {
-    self::$pdo = include(TEST_DIR . "/setDatabaseForTestsScript.php");
-    self::$phinxApp = new PhinxApplication();
+    self::$pdo = SetDatabaseForTest::getConnection();
     self::$fixture = new VehicleFixture(self::$pdo);
   }
 
@@ -29,14 +25,13 @@ class VehicleMapperTest extends TestCase
 
   protected function setUp(): void
   {
-    self::$phinxApp->setAutoExit(false);
-    self::$phinxApp->run(new StringInput('migrate -e testing'), new NullOutput());
+    SetDatabaseForTest::applyMigrations();
     $this->vehicleMapper = new VehicleMapper(self::$pdo);
   }
 
   protected function tearDown(): void
   {
-    self::$phinxApp->run(new StringInput('rollback -e testing -t 0'), new NullOutput());
+    SetDatabaseForTest::removeMigrations();
   }
 
   public function testFindingOneVehicleById()
