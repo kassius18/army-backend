@@ -2,17 +2,10 @@
 
 use Dotenv\Dotenv;
 
-/* if (!isset($_ENV["dotenv"]) || !$_ENV["dotenv"]) { */
-/*   var_dump(!isset($_ENV["dotenv"]) || $_ENV["dotenv"]); */
-/*   var_dump("running"); */
-/*   $dotenv = Dotenv::createImmutable("./app"); */
-/*   $dotenv->load(); */
-/* } */
-
-/* $dotenv = Dotenv::createImmutable("./app"); */
-/* $dotenv->load(); */
-
-var_dump("we get here");
+if (!isset($_ENV["dotenv"]) || !$_ENV["dotenv"]) {
+  $dotenv = Dotenv::createImmutable("./app");
+  $dotenv->load();
+}
 
 return
   [
