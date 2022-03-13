@@ -2,8 +2,17 @@
 
 use Dotenv\Dotenv;
 
-$dotenv = Dotenv::createImmutable("./app");
-$dotenv->load();
+/* if (!isset($_ENV["dotenv"]) || !$_ENV["dotenv"]) { */
+/*   var_dump(!isset($_ENV["dotenv"]) || $_ENV["dotenv"]); */
+/*   var_dump("running"); */
+/*   $dotenv = Dotenv::createImmutable("./app"); */
+/*   $dotenv->load(); */
+/* } */
+
+/* $dotenv = Dotenv::createImmutable("./app"); */
+/* $dotenv->load(); */
+
+var_dump("we get here");
 
 return
   [
@@ -15,11 +24,11 @@ return
       'default_migration_table' => 'phinxlog',
       'default_environment' => 'development',
       'production' => [
-        'adapter' => $_ENV['driver'],
-        'host' => $_ENV['host'],
+        'adapter' => $_ENV['production_driver'],
+        'host' => $_ENV['production_host'],
         'name' => $_ENV['dbname_production'],
-        'user' => $_ENV['username'],
-        'pass' => $_ENV['password'],
+        'user' => $_ENV['production_username'],
+        'pass' => $_ENV['production_password'],
       ],
       'development' => [
         'adapter' => $_ENV['driver'],

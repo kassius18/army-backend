@@ -11,6 +11,9 @@ error_reporting(E_ALL);
 use app\core\Request;
 use app\core\Response;
 use app\core\Router;
+use Phinx\Console\PhinxApplication;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\NullOutput;
 
 define("ROOT_DIR", dirname(__DIR__));
 define("APP_DIR", ROOT_DIR . DIRECTORY_SEPARATOR . "app");
@@ -37,6 +40,14 @@ $builder->addDefinitions([
 ]);
 
 $container = $builder->build();
+
+if ($_ENV["migrate"] === "on") {
+  $_ENV["dotenv"] = true;
+  $phinxApp = $container->get(PhinxApplication::class);
+  $phinxApp->setAutoExit(false);
+  $phinxApp->run(new StringInput("migrate -e production -c ../phinx.php"), new NullOutput());
+  die("migrated");
+}
 
 $request = $container->get(Request::class);
 $router = $container->get(Router::class);
