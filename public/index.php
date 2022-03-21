@@ -41,7 +41,7 @@ $builder->addDefinitions([
 
 $container = $builder->build();
 
-if (isset($ENV) && $_ENV["migrate"] === "on") {
+if (isset($_ENV) && $_ENV["migrate"] === "on") {
   $_ENV["dotenv"] = true;
   $phinxApp = $container->get(PhinxApplication::class);
   $phinxApp->setAutoExit(false);
