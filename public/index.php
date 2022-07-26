@@ -41,13 +41,12 @@ $builder->addDefinitions([
 
 $container = $builder->build();
 
-if (isset($_ENV) && $_ENV["migrate"] === "on") {
-  $_ENV["dotenv"] = true;
-  $phinxApp = $container->get(PhinxApplication::class);
-  $phinxApp->setAutoExit(false);
-  $phinxApp->run(new StringInput("migrate -e production -c ../phinx.php"), new NullOutput());
-  die("migrated");
-}
+/* if (isset($_ENV) && $_ENV["migrate"] === "on") { */
+/*   $_ENV["dotenv"] = true; */
+/*   $phinxApp = $container->get(PhinxApplication::class); */
+/*   $phinxApp->setAutoExit(false); */
+/*   $phinxApp->run(new StringInput("migrate -e production -c ../phinx.php"), new NullOutput()); */
+/* } */
 
 $request = $container->get(Request::class);
 $router = $container->get(Router::class);
